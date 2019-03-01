@@ -1,6 +1,7 @@
 local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local listHelpers = require 'src/util/list'
+local Player = require 'src/entity/Player'
 
 -- Entity vars
 local entities
@@ -34,11 +35,20 @@ local function load()
  
  -- -- Init sounds
  -- initSounds()
- 
+
  -- Initialize game vars
  entities = {}
  -- -- Start at the title screen
  -- initTitleScreen(true)
+
+ p1 = Player:spawn({
+   -- rankIndex = cardProps.rankIndex,
+   -- suitIndex = cardProps.suitIndex,
+   x = constants.GAME_WIDTH/2,
+   y = constants.GAME_HEIGHT/2,
+   -- vr = math.random(-80, 80),
+   -- hand = hand
+ })
 end
 
 local function update(dt)
@@ -49,11 +59,11 @@ local function update(dt)
  -- Update all entities
  local index, entity
  for index, entity in ipairs(entities) do
-   if entity:checkScene(scene) and entity.isAlive then
-     entity.timeAlive = entity.timeAlive + dt
-     entity:update(dt)
-     entity:countDownToDeath(dt)
-   end
+   -- if entity:checkScene(scene) and entity.isAlive then
+   --   entity.timeAlive = entity.timeAlive + dt
+   --   entity:update(dt)
+   --   entity:countDownToDeath(dt)
+   -- end
  end
  -- Remove dead entities
  entities = removeDeadEntities(entities)
@@ -66,6 +76,8 @@ end
 local function draw()
  -- Draw background
  love.graphics.clear(0,0,0.25,1)
+
+ p1:draw()
 
  -- local col, row
  -- for col = -2, math.ceil(constants.GAME_WIDTH / 40) + 2 do

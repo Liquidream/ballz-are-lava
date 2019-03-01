@@ -10,7 +10,8 @@ if CASTLE_PREFETCH then
    'src/entity/Entity.lua',
    'src/util/createClass.lua',
    'src/constants.lua',
-   'src/game.lua'
+   'src/game.lua',
+   'img/player.png',
  })
 end
 
@@ -22,6 +23,10 @@ local translateScreenToCenterDy = 0
 
 function love.load()
  --print(constants.GAME_WIDTH)
+ 
+ -- force "point" scaling
+ --love.graphics.setDefaultFilter('nearest', 'nearest', 0)
+
  game.load()
 end
 
@@ -30,6 +35,13 @@ function love.update(dt)
 end
 
 function love.draw()
+ -- Set Filter
+ love.graphics.setDefaultFilter('nearest', 'nearest')
+ -- Apply camera transformations
+ --love.graphics.translate(constants.RENDER_X, constants.RENDER_Y)
+ love.graphics.scale(3, 3)
+ --love.graphics.scale(constants.RENDER_SCALE, constants.RENDER_SCALE)
+
  game.draw()
 end
 
