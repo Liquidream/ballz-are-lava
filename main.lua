@@ -7,10 +7,11 @@
 if CASTLE_PREFETCH then
  CASTLE_PREFETCH({
    'main.lua',
+   'src/game.lua',
+   'src/constants.lua',
    'src/entity/Entity.lua',
    'src/util/createClass.lua',
-   'src/constants.lua',
-   'src/game.lua',
+   'src/util/colour.lua',
    'img/player.png',
  })
 end
@@ -35,14 +36,19 @@ function love.update(dt)
 end
 
 function love.draw()
+ -- (pn) start a new transformation
+ love.graphics.push()
  -- Set Filter
  love.graphics.setDefaultFilter('nearest', 'nearest')
  -- Apply camera transformations
  --love.graphics.translate(constants.RENDER_X, constants.RENDER_Y)
- love.graphics.scale(3, 3)
- --love.graphics.scale(constants.RENDER_SCALE, constants.RENDER_SCALE)
+ --love.graphics.scale(3, 3)
+ love.graphics.scale(constants.RENDER_SCALE, constants.RENDER_SCALE)
 
  game.draw()
+
+ -- (pn) restore 100% scale state
+ love.graphics.pop()
 end
 
 

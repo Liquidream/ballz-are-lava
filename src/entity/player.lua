@@ -8,6 +8,7 @@ local SPRITESHEET = SpriteSheet.new('img/player.png', {
 })
 
 local Player = Entity.extend({
+ size = 0.25, -- 0..1 (scale)
  -- width = constants.CARD_WIDTH,
  -- height = constants.CARD_HEIGHT,
 
@@ -17,6 +18,13 @@ constructor = function(self)
   -- self.shape = love.physics.newRectangleShape(self.width, self.height)
 end,
 update = function(self, dt)
+  -- get the position of the mouse
+  self.x, self.y = love.mouse.getPosition()
+  -- adjust mouse position for scale
+  self.x = self.x / constants.RENDER_SCALE
+  self.y = self.y / constants.RENDER_SCALE
+
+  self.size = math.min(self.size+0.01, 1)
   -- -- Rotate
   -- if not self:animationsInclude('rotation') then
   --   self.rotation = self.rotation + self.vr * dt
@@ -41,12 +49,12 @@ draw = function(self)
  -- local w = self.width / 2
  -- local h = self.height / 2
  
- love.graphics.setColor(255, 0, 0)
- love.graphics.circle("fill", self.x, self.y, 25)
+ -- love.graphics.setColor(255, 0, 0)
+ -- love.graphics.circle("fill", self.x, self.y, 25)
 
  love.graphics.setColor(1, 1, 1)
  local sprite = 'BASE'
- SPRITESHEET:drawCentered(sprite, self.x + 24, self.y)
+ SPRITESHEET:drawCentered(sprite, self.x, self.y, nil, nil, nil, self.size, self.size)
 
 end,
 })

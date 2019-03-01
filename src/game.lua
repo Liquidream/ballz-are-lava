@@ -2,6 +2,7 @@ local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local listHelpers = require 'src/util/list'
 local Player = require 'src/entity/Player'
+local colour = require 'src/util/colour'
 
 -- Entity vars
 local entities
@@ -56,6 +57,9 @@ local function update(dt)
  -- backgroundCycleY = (backgroundCycleY + dt) % 16.0
  -- -- Update all promises
  -- Promise.updateActivePromises(dt)
+
+ p1:update()
+
  -- Update all entities
  local index, entity
  for index, entity in ipairs(entities) do
@@ -75,7 +79,9 @@ end
 
 local function draw()
  -- Draw background
- love.graphics.clear(0,0,0.25,1)
+ 
+ love.graphics.clear(colour[26])
+ --love.graphics.clear(0,0,0.25,1)
 
  p1:draw()
 
