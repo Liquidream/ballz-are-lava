@@ -59,8 +59,16 @@ local function load()
   table.insert(lavaBalls, Ball:spawn({
    -- optional overloads
   }))
-
  end
+
+  -- Create target balls
+  local targetBalls = {}
+  for i=1,level.numTargetBalls do
+   table.insert(targetBalls, Ball:spawn({
+    -- optional overloads
+    ball_type=constants.BALL_TYPES[2]
+   }))
+  end
 
 
 end
