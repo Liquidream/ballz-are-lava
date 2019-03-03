@@ -106,7 +106,8 @@ local function update(dt)
  -- lava balls
  for index, lball in ipairs(lavaBalls) do
   if collision.objectsAreTouching(p1,lball) then
-   lball:die()
+   -- TODO: Player death (unless invinc/shield)
+   --lball:die()
    print("dead!!")
   end
  end

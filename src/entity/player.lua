@@ -21,25 +21,11 @@ end,
 update = function(self, dt)
   -- get the position of the mouse (in game coord)
   self.x, self.y = mouseX, mouseY
+  -- keep player within screen bounds
+  self.x = math.max(0, math.min(constants.GAME_WIDTH,self.x))
+  self.y = math.max(0, math.min(constants.GAME_HEIGHT,self.y))
   -- increase player size from start
   self.size = math.min(self.size+0.01, 0.75)--1
-  -- -- Rotate
-  -- if not self:animationsInclude('rotation') then
-  --   self.rotation = self.rotation + self.vr * dt
-  -- end
-  -- -- Dilate time near the apex of a launch
-  -- local timeMult = 1.0
-  -- if self.canBeShot and self.gravity ~= 0.0 then
-  --   timeMult = 0.9 + 1.3 * math.min(0.2 * math.abs(self.vy) / self.gravity, 1.0)
-  -- end
-  -- local dt2 = dt * timeMult
-  -- -- Accelerate downwards
-  -- self.vy = self.vy + self.gravity * dt2
-  -- Entity.update(self, dt2)
-  -- -- Fall offscreen
-  -- if self.y > constants.GAME_HEIGHT + constants.CARD_HEIGHT then
-  --   self:die()
-  -- end
 end,
 draw = function(self)
  local x = self.x

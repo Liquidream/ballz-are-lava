@@ -32,8 +32,12 @@ update = function(self, dt)
   -- Check ball bounds
   if self.x<=0 or self.x>constants.GAME_WIDTH then
    self.vx = self.vx * -1 
+   -- move away from boundary
+   self.x = self.x + self.vx * dt
   elseif self.y<=0 or self.y>constants.GAME_HEIGHT then
    self.vy = self.vy * -1 
+   -- move away from boundary
+   self.y = self.y + self.vy * dt
   end
   
   -- -- Rotate
