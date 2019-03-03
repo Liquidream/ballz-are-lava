@@ -9,7 +9,7 @@ local SPRITESHEET = SpriteSheet.new('img/player.png', {
 
 local Player = Entity.extend({
  size = 0.25, -- 0..1 (scale)
- radius = 18,
+ radius = 15,
  -- width = constants.CARD_WIDTH,
  -- height = constants.CARD_HEIGHT,
 
@@ -19,13 +19,10 @@ constructor = function(self)
   -- self.shape = love.physics.newRectangleShape(self.width, self.height)
 end,
 update = function(self, dt)
-  -- get the position of the mouse
-  self.x, self.y = love.mouse.getPosition()
-  -- adjust mouse position for scale
-  self.x = (self.x-constants.RENDER_X) / constants.RENDER_SCALE
-  self.y = (self.y-constants.RENDER_Y) / constants.RENDER_SCALE
-
-  self.size = math.min(self.size+0.01, 1)
+  -- get the position of the mouse (in game coord)
+  self.x, self.y = mouseX, mouseY
+  -- increase player size from start
+  self.size = math.min(self.size+0.01, 0.75)--1
   -- -- Rotate
   -- if not self:animationsInclude('rotation') then
   --   self.rotation = self.rotation + self.vr * dt

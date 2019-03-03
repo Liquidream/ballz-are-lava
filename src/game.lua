@@ -24,6 +24,9 @@ local function removeDeadEntities(list)
  end)
 end
 
+-- mouse pos (in game co-ordinates)
+mouseX=nil
+mouseY=nil
 
 
 
@@ -79,19 +82,26 @@ local function update(dt)
  -- backgroundCycleY = (backgroundCycleY + dt) % 16.0
  -- -- Update all promises
  -- Promise.updateActivePromises(dt)
-
- p1:update()
+ 
+ -- Update mouse position
+ -- get the position of the mouse
+ mouseX, mouseY = love.mouse.getPosition()
+ -- adjust mouse position for scale
+ mouseX = (mouseX-constants.RENDER_X) / constants.RENDER_SCALE
+ mouseY = (mouseY-constants.RENDER_Y) / constants.RENDER_SCALE
 
  -- Update all entities
  local index, entity
  for index, entity in ipairs(entities) do
-   if entity:checkScene(scene) and entity.isAlive then
-     entity.timeAlive = entity.timeAlive + dt
-     entity:update(dt)
-     entity:countDownToDeath(dt)
-   end
+  if entity:checkScene(scene) and entity.isAlive then
+   entity.timeAlive = entity.timeAlive + dt
+   entity:update(dt)
+   entity:countDownToDeath(dt)
+  end
  end
-
+ 
+ 
+  p1:update()
  -- check player collisions
  -- lava balls
  for index, lball in ipairs(lavaBalls) do
@@ -115,11 +125,26 @@ local function update(dt)
  end)
 end
 
+local function draw_background()
+ local gridSize=16
+ -- navy
+ love.graphics.clear(colour[26])
+ love.graphics.setColor(colour[24])
+ -- red
+ -- love.graphics.clear(colour[26])
+ -- love.graphics.setColor(colour[6])
+ --
+ for x=0, constants.GAME_WIDTH, gridSize do
+   love.graphics.line(x,0,x,constants.GAME_HEIGHT)
+ end
+ for y=0, constants.GAME_HEIGHT, gridSize do
+   love.graphics.line(0,y,constants.GAME_WIDTH,y)
+ end
+end
+
 local function draw()
  -- Draw background
- 
- love.graphics.clear(colour[26])
- --love.graphics.clear(0,0,0.25,1)
+ draw_background()
 
  p1:draw()
 
@@ -151,9 +176,11 @@ local function draw()
 end
 
 
+
 return {
  load = load,
  update = update,
  draw = draw,
+ draw_background = draw_background,
  --onMousePressed = onMousePressed
 }

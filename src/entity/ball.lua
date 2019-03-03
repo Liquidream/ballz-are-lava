@@ -16,8 +16,8 @@ local Ball = Entity.extend({
  constructor = function(self)
   Entity.constructor(self)
   
-  self.x = love.math.random(constants.GAME_WIDTH)
-  self.y = love.math.random(constants.GAME_HEIGHT)
+  self.x = love.math.random(constants.GAME_WIDTH-20)+10
+  self.y = love.math.random(constants.GAME_HEIGHT-20)+10
   self.angle = love.math.random() * (2*math.pi)
   self.vx = self.speed * math.cos(self.angle)
   self.vy = self.speed * math.sin(self.angle)
@@ -57,7 +57,7 @@ draw = function(self)
  
  -- love.graphics.setColor(255, 0, 0)
  -- love.graphics.circle("fill", self.x, self.y, 25)
- print("balltype="..self.ball_type)
+
  local sprite = (self.ball_type==constants.BALL_TYPES.LAVA) and "LAVABALL" or "TARGET"
  if sprite == "LAVABALL" then
   local offset = math.abs(math.sin(self.timeAlive * 8))
