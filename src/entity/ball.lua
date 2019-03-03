@@ -9,7 +9,8 @@ local SPRITESHEET = SpriteSheet.new('img/ball.png', {
 
 local Ball = Entity.extend({
  size = 1, -- 0..1 (scale)
- ball_type = constants.BALL_TYPES[1],
+ radius = 1,
+ ball_type = constants.BALL_TYPES.LAVA,
  speed = 100,
  
  constructor = function(self)
@@ -56,11 +57,11 @@ draw = function(self)
  
  -- love.graphics.setColor(255, 0, 0)
  -- love.graphics.circle("fill", self.x, self.y, 25)
-
- local sprite = self.ball_type --LAVABALL' or 'TARGET'
+ print("balltype="..self.ball_type)
+ local sprite = (self.ball_type==constants.BALL_TYPES.LAVA) and "LAVABALL" or "TARGET"
  if sprite == "LAVABALL" then
   local offset = math.abs(math.sin(self.timeAlive * 8))
-  love.graphics.setColor(0.25+math.max(0.25,offset), math.max(0.25,offset), math.max(0.25,offset))
+  love.graphics.setColor(0.5+math.max(0.25,offset), math.max(0.25,offset), math.max(0.25,offset))
  else
   love.graphics.setColor(1, 1, 1)
  end

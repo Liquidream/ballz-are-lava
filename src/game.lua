@@ -5,6 +5,7 @@ local Player = require 'src/entity/Player'
 local Ball = require 'src/entity/Ball'
 local colour = require 'src/util/colour'
 local generateLevel = require 'src/generateLevel'
+local collision = require 'src/util/collision'
 
 -- Entity vars
 local entities
@@ -41,6 +42,8 @@ local function load()
 
  -- Initialize game vars
  entities = {}
+ lavaBalls = {}
+ targetBalls = {}
  -- -- Start at the title screen
  -- initTitleScreen(true)
 
@@ -54,7 +57,6 @@ local function load()
  local level = generateLevel(1)
 
  -- Create lava balls
- local lavaBalls = {}
  for i=1,level.numLavaBalls do
   table.insert(lavaBalls, Ball:spawn({
    -- optional overloads
@@ -62,11 +64,10 @@ local function load()
  end
 
   -- Create target balls
-  local targetBalls = {}
   for i=1,level.numTargetBalls do
    table.insert(targetBalls, Ball:spawn({
     -- optional overloads
-    ball_type=constants.BALL_TYPES[2]
+    ball_type=constants.BALL_TYPES.TARGET,
    }))
   end
 
@@ -90,6 +91,22 @@ local function update(dt)
      entity:countDownToDeath(dt)
    end
  end
+
+ -- check player collisions
+ -- lava balls
+ for index, lball in ipairs(lavaBalls) do
+  if collision.objectsAreTouching(p1,lball) then
+   lball:die()
+   print("dead!!")
+  end
+ end
+ -- target balls
+ for index, tball in ipairs(targetBalls) do
+  if collision.objectsAreTouching(p1,tball) then
+   tball:die()
+  end
+ end
+
  -- Remove dead entities
  entities = removeDeadEntities(entities)
  -- Sort entities for rendering
@@ -131,9 +148,8 @@ local function draw()
  -- love.graphics.setColor(colour[27])
  -- love.graphics.rectangle("line", 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT )
  
-
- 
 end
+
 
 return {
  load = load,
