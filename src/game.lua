@@ -84,11 +84,11 @@ local function update(dt)
  -- Update all entities
  local index, entity
  for index, entity in ipairs(entities) do
-   --if entity:checkScene(scene) and entity.isAlive then
-   --   entity.timeAlive = entity.timeAlive + dt
+   if entity:checkScene(scene) and entity.isAlive then
+     entity.timeAlive = entity.timeAlive + dt
      entity:update(dt)
-   --   entity:countDownToDeath(dt)
-   --end
+     entity:countDownToDeath(dt)
+   end
  end
  -- Remove dead entities
  entities = removeDeadEntities(entities)
@@ -122,7 +122,7 @@ local function draw()
  -- end
  -- Draw all entities
  for index, entity in ipairs(entities) do
-   love.graphics.setColor(1, 1, 1, 1)
+  love.graphics.setColor(1, 1, 1)
    entity:draw()
  end
 

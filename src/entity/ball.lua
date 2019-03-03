@@ -57,8 +57,13 @@ draw = function(self)
  -- love.graphics.setColor(255, 0, 0)
  -- love.graphics.circle("fill", self.x, self.y, 25)
 
- love.graphics.setColor(1, 1, 1)
  local sprite = self.ball_type --LAVABALL' or 'TARGET'
+ if sprite == "LAVABALL" then
+  local offset = math.abs(math.sin(self.timeAlive * 8))
+  love.graphics.setColor(0.25+math.max(0.25,offset), math.max(0.25,offset), math.max(0.25,offset))
+ else
+  love.graphics.setColor(1, 1, 1)
+ end
  SPRITESHEET:drawCentered(sprite, self.x, self.y, nil, nil, nil, self.size, self.size)
 
 end,

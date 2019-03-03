@@ -43,13 +43,40 @@ local Entity = createClass({
   self.vxPrev = self.vx
   self.vyPrev = self.vy
  end,
- die = function(self)
-  if self.isAlive then
-    self.isAlive = false
-    self:onDeath()
+ countDownToDeath = function(self, dt)
+  if self.timeToDeath > 0 then
+    self.timeToDeath = self.timeToDeath - dt
+    if self.timeToDeath <= 0 then
+      self:die()
+      return true
+    end
   end
+  return false
  end,
- onDeath = function(self) end
+ die = function(self)
+   if self.isAlive then
+     self.isAlive = false
+     self:onDeath()
+   end
+ end,
+ onDeath = function(self) end,
+ onMousePressed = function(self, x, y) end,
+ checkScene = function(self, scene)
+   if self.scenes then
+     local isInValidScene = false
+     local index, scene2
+     for index, scene2 in ipairs(self.scenes) do
+       if scene2 == scene then
+         isInValidScene = true
+       end
+     end
+     if not isInValidScene then
+       self:die()
+       return false
+     end
+   end
+   return true
+ end,
 })
 
 return Entity
