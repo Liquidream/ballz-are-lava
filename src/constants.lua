@@ -1,6 +1,6 @@
 -- Game dimensions are display-independent (i.e. not pixel-based)
-local GAME_WIDTH = 500 --640 --320
-local GAME_HEIGHT = 250 --360 --180
+local GAME_WIDTH = 512 --640 --320
+local GAME_HEIGHT = 288 --360 --180
 local GAME_LEFT = 0
 local GAME_RIGHT = GAME_WIDTH
 local GAME_TOP = 0

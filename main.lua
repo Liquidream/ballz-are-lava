@@ -18,6 +18,7 @@ end
 
 local constants = require 'src/constants'
 local game = require 'src/game'
+local colour = require 'src/util/colour'
 
 local translateScreenToCenterDx = 0
 local translateScreenToCenterDy = 0
@@ -59,7 +60,7 @@ love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_TOP -
 love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_BOTTOM, constants.GAME_WIDTH + 2000, 1000)
 
 -- Draw game bounds
--- love.graphics.setColor(0, 1, 0, 1)
+-- love.graphics.setColor(colour[17])
 -- love.graphics.rectangle('line', 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT)
 
 
@@ -85,9 +86,9 @@ end
 local total_time_elapsed = 0
 
 -- helper function
-function fromRGB(red, green, blue) -- alpha?
- return {red/255, green/255, blue/255}
-end
+-- function fromRGB(red, green, blue) -- alpha?
+--  return {red/255, green/255, blue/255}
+-- end
 
 
 -- function love.load()
