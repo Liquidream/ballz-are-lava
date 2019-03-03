@@ -9,7 +9,7 @@ local SPRITESHEET = SpriteSheet.new('img/player.png', {
 
 local Player = Entity.extend({
  size = 0.25, -- 0..1 (scale)
- radius = 15,
+ radius = 18, --15
  renderLayer=7,
  -- width = constants.CARD_WIDTH,
  -- height = constants.CARD_HEIGHT,
@@ -26,7 +26,7 @@ update = function(self, dt)
   self.x = math.max(0, math.min(constants.GAME_WIDTH,self.x))
   self.y = math.max(0, math.min(constants.GAME_HEIGHT,self.y))
   -- increase player size from start
-  self.size = math.min(self.size+0.01, 0.75)--1
+  self.size = math.min(self.size+0.01, 1) --0.75)--1
 end,
 draw = function(self)
  local x = self.x
