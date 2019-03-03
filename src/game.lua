@@ -2,7 +2,9 @@ local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local listHelpers = require 'src/util/list'
 local Player = require 'src/entity/Player'
+local Ball = require 'src/entity/Ball'
 local colour = require 'src/util/colour'
+local generateLevel = require 'src/generateLevel'
 
 -- Entity vars
 local entities
@@ -42,14 +44,25 @@ local function load()
  -- -- Start at the title screen
  -- initTitleScreen(true)
 
+ -- Create player
  p1 = Player:spawn({
-   -- rankIndex = cardProps.rankIndex,
-   -- suitIndex = cardProps.suitIndex,
    x = constants.GAME_WIDTH/2,
    y = constants.GAME_HEIGHT/2,
-   -- vr = math.random(-80, 80),
-   -- hand = hand
  })
+
+ -- Generate a new level
+ local level = generateLevel(1)
+
+ -- Create lava balls
+ local lavaBalls = {}
+ for i=1,level.numLavaBalls do
+  table.insert(lavaBalls, Ball:spawn({
+   -- optional overloads
+  }))
+
+ end
+
+
 end
 
 local function update(dt)
@@ -63,11 +76,11 @@ local function update(dt)
  -- Update all entities
  local index, entity
  for index, entity in ipairs(entities) do
-   -- if entity:checkScene(scene) and entity.isAlive then
+   --if entity:checkScene(scene) and entity.isAlive then
    --   entity.timeAlive = entity.timeAlive + dt
-   --   entity:update(dt)
+     entity:update(dt)
    --   entity:countDownToDeath(dt)
-   -- end
+   --end
  end
  -- Remove dead entities
  entities = removeDeadEntities(entities)

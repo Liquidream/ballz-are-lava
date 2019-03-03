@@ -31,15 +31,15 @@ local Entity = createClass({
    self.vyPrev = vy
  end,
  applyVelocity = function(self, dt)
-  if not self:animationsInclude('x') and not self:animationsInclude('y') then
-    if self.frameRateIndependent and self.vxPrev ~= nil and self.vyPrev ~= nil then
-      self.x = self.x + (self.vx + self.vxPrev) / 2 * dt
-      self.y = self.y + (self.vy + self.vyPrev) / 2 * dt
-    else
+  -- if not self:animationsInclude('x') and not self:animationsInclude('y') then
+  --   if self.frameRateIndependent and self.vxPrev ~= nil and self.vyPrev ~= nil then
+  --     self.x = self.x + (self.vx + self.vxPrev) / 2 * dt
+  --     self.y = self.y + (self.vy + self.vyPrev) / 2 * dt
+  --   else
       self.x = self.x + self.vx * dt
       self.y = self.y + self.vy * dt
-    end
-  end
+  --   end
+  --end
   self.vxPrev = self.vx
   self.vyPrev = self.vy
  end,
