@@ -5,7 +5,7 @@ local listHelpers = require 'src/util/list'
 
 local function generateLevelDifficulty(levelNumber)
  local allowAces = levelNumber >= 9
- local numLavaBalls = 30
+ local numLavaBalls = 8
  local numTargetBalls = 10
  local lavaBallsSpeed = 5
 

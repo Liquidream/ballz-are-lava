@@ -125,6 +125,14 @@ local function draw()
    love.graphics.setColor(1, 1, 1, 1)
    entity:draw()
  end
+
+
+ -- Draw game boundary
+ -- love.graphics.setColor(colour[27])
+ -- love.graphics.rectangle("line", 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT )
+ 
+
+ 
 end
 
 return {

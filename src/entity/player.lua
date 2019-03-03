@@ -21,8 +21,8 @@ update = function(self, dt)
   -- get the position of the mouse
   self.x, self.y = love.mouse.getPosition()
   -- adjust mouse position for scale
-  self.x = self.x / constants.RENDER_SCALE
-  self.y = self.y / constants.RENDER_SCALE
+  self.x = (self.x-constants.RENDER_X) / constants.RENDER_SCALE
+  self.y = (self.y-constants.RENDER_Y) / constants.RENDER_SCALE
 
   self.size = math.min(self.size+0.01, 1)
   -- -- Rotate

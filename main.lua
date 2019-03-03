@@ -23,8 +23,9 @@ local translateScreenToCenterDx = 0
 local translateScreenToCenterDy = 0
 
 function love.load()
- --print(constants.GAME_WIDTH)
- 
+ print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
+ local win_w,win_h=love.graphics.getDimensions()
+ print("window size: "..win_w..","..win_h)
  -- force "point" scaling
  --love.graphics.setDefaultFilter('nearest', 'nearest', 0)
 
@@ -36,19 +37,40 @@ function love.update(dt)
 end
 
 function love.draw()
- -- (pn) start a new transformation
+ -- Center everything within Castle window
  love.graphics.push()
+ translateScreenToCenterDx = 0.5 * (love.graphics.getWidth() - constants.SCREEN_WIDTH)
+ translateScreenToCenterDy = 0.5 * (love.graphics.getHeight() - constants.SCREEN_HEIGHT)
+ love.graphics.translate(translateScreenToCenterDx, translateScreenToCenterDy)
  -- Set Filter
  love.graphics.setDefaultFilter('nearest', 'nearest')
  -- Apply camera transformations
- --love.graphics.translate(constants.RENDER_X, constants.RENDER_Y)
+ love.graphics.translate(constants.RENDER_X, constants.RENDER_Y)
  --love.graphics.scale(3, 3)
  love.graphics.scale(constants.RENDER_SCALE, constants.RENDER_SCALE)
 
  game.draw()
 
- -- (pn) restore 100% scale state
+-- Draw blinders
+love.graphics.setColor(0, 0, 0, 1)
+love.graphics.rectangle('fill', constants.GAME_RIGHT, constants.GAME_TOP - 1000, 1000, constants.GAME_HEIGHT + 2000)
+love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_TOP - 1000, 1000, constants.GAME_HEIGHT + 2000)
+love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_TOP - 1000, constants.GAME_WIDTH + 2000, 1000)
+love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_BOTTOM, constants.GAME_WIDTH + 2000, 1000)
+
+-- Draw game bounds
+-- love.graphics.setColor(0, 1, 0, 1)
+-- love.graphics.rectangle('line', 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT)
+
+
+ -- Pop centering within Castle window 
+ -- (and restore 100% scale state)
  love.graphics.pop()
+
+ -- Draw screen bounds
+-- love.graphics.setColor(0, 1, 0, 1)
+-- love.graphics.rectangle('line', 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
+
 end
 
 
