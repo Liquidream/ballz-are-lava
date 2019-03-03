@@ -27,8 +27,9 @@ function love.load()
  print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
  local win_w,win_h=love.graphics.getDimensions()
  print("window size: "..win_w..","..win_h)
- -- force "point" scaling
- --love.graphics.setDefaultFilter('nearest', 'nearest', 0)
+
+ -- make default mouse invisible
+ love.mouse.setVisible(false) 
 
  game.load()
 end

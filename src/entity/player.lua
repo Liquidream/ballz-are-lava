@@ -10,6 +10,7 @@ local SPRITESHEET = SpriteSheet.new('img/player.png', {
 local Player = Entity.extend({
  size = 0.25, -- 0..1 (scale)
  radius = 15,
+ renderLayer=7,
  -- width = constants.CARD_WIDTH,
  -- height = constants.CARD_HEIGHT,
 
