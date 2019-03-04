@@ -21,11 +21,36 @@ constructor = function(self)
   -- self.shape = love.physics.newRectangleShape(self.width, self.height)
 end,
 update = function(self, dt)
-  -- get the position of the mouse (in game coord)
-  self.x, self.y = mouseX, mouseY
+
+ -- keyboard controls override mouse
+ local speed = 75
+ if love.keyboard.isDown("right") then
+  self.x = self.x + speed * dt
+ end
+ if love.keyboard.isDown("left") then
+  self.x = self.x - speed * dt
+ end
+ if love.keyboard.isDown("up") then
+  self.y = self.y - speed * dt
+  --print("up arrow pressed at "..total_time_elapsed)
+ end
+ if love.keyboard.isDown("down") then
+  self.y = self.y + speed * dt
+ end
+ 
+  -- set player to position of the mouse (in game coord)
+  if (mouseX ~= lastMouseX) then 
+    self.x = mouseX -- mouse xpos
+  end
+  if (mouseY ~= lastMouseY) then 
+   self.y = mouseY -- mouse ypos
+  end
+  --self.x, self.y = mouseX, mouseY
+  
   -- keep player within screen bounds
   self.x = math.max(0, math.min(constants.GAME_WIDTH,self.x))
   self.y = math.max(0, math.min(constants.GAME_HEIGHT,self.y))
+
   -- increase player size from start
   self.size = math.min(self.size+0.01, 1) --0.75)--1
 end,

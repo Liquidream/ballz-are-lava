@@ -103,7 +103,7 @@ local function update(dt)
  
  -- Update player (if alive)
  if p1.isAlive then
-  p1:update()
+  p1:update(dt)
   -- check player collisions
   -- lava balls
   for index, lball in ipairs(lavaBalls) do
@@ -153,6 +153,9 @@ local function draw_background()
  for y=0, constants.GAME_HEIGHT, gridSize do
    love.graphics.line(0,y,constants.GAME_WIDTH,y)
  end
+
+ -- remember values
+ lastMouseX, lastMouseY = mouseX, mouseY
 end
 
 local function draw()
