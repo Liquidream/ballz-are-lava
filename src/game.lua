@@ -101,21 +101,32 @@ local function update(dt)
   end
  end
  
- 
+ -- Update player (if alive)
+ if p1.isAlive then
   p1:update()
- -- check player collisions
- -- lava balls
- for index, lball in ipairs(lavaBalls) do
-  if collision.objectsAreTouching(p1,lball) then
-   -- TODO: Player death (unless invinc/shield)
-   --lball:die()
-   print("dead!!")
+  -- check player collisions
+  -- lava balls
+  for index, lball in ipairs(lavaBalls) do
+   if collision.objectsAreTouching(p1,lball)
+    and p1.timeAlive>1 then
+    -- TODO: Player death (unless invinc/shield)
+    p1:die()
+    print("dead!!")
+   end
   end
- end
- -- target balls
- for index, tball in ipairs(targetBalls) do
-  if collision.objectsAreTouching(p1,tball) then
-   tball:die()
+  -- target balls
+  for index, tball in ipairs(targetBalls) do
+   if collision.objectsAreTouching(p1,tball) then
+    tball:die()
+   end
+  end 
+ else
+  -- Player died
+  p1.deathCount = p1.deathCount-1
+  if p1.deathCount <= 0 then
+   -- Restart Game
+   -- (TODO: proper death, etc.)
+   load()
   end
  end
 
@@ -148,7 +159,11 @@ local function draw()
  -- Draw background
  draw_background()
 
- p1:draw()
+ if p1.isAlive then
+  p1:draw()
+ else
+  -- todo: draw death
+ end
 
  -- local col, row
  -- for col = -2, math.ceil(constants.GAME_WIDTH / 40) + 2 do

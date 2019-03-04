@@ -43,6 +43,10 @@ draw = function(self)
  SPRITESHEET:drawCentered(sprite, self.x, self.y, nil, nil, nil, self.size, self.size)
 
 end,
+onDeath = function(self) 
+ self.deathCount = 100
+end,
+
 })
 
 return Player
