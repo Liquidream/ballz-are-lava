@@ -8,21 +8,9 @@ local GAME_BOTTOM = GAME_HEIGHT
 local GAME_MIDDLE_X = GAME_WIDTH / 2
 local GAME_MIDDLE_Y = GAME_HEIGHT / 2
 
--- Screen dimensions are hardware-based (what's the size of the display device)
-local width, height = love.graphics.getDimensions()
-local SCREEN_WIDTH = width
-local SCREEN_HEIGHT = height
-
--- Render dimenisions reflect how the game should be drawn to the canvas
---local RENDER_SCALE = 2
-local RENDER_SCALE = math.floor(math.min(SCREEN_WIDTH / GAME_WIDTH, SCREEN_HEIGHT / GAME_HEIGHT))
-local RENDER_WIDTH = RENDER_SCALE * GAME_WIDTH
-local RENDER_HEIGHT = RENDER_SCALE * GAME_HEIGHT
-local RENDER_X = (SCREEN_WIDTH - RENDER_WIDTH) / 2
-local RENDER_Y = (SCREEN_HEIGHT - RENDER_HEIGHT) / 2
-
 local BALL_TYPES = { LAVA=0, TARGET=1 }
---local BALL_TYPES = { 'LAVABALL', 'TARGET' }
+
+
 
 return {
  GAME_WIDTH = GAME_WIDTH,
@@ -33,12 +21,6 @@ return {
  GAME_BOTTOM = GAME_BOTTOM,
  GAME_MIDDLE_X = GAME_MIDDLE_X,
  GAME_MIDDLE_Y = GAME_MIDDLE_Y,
- SCREEN_WIDTH = SCREEN_WIDTH,
- SCREEN_HEIGHT = SCREEN_HEIGHT,
- RENDER_SCALE = RENDER_SCALE,
- RENDER_WIDTH = RENDER_WIDTH,
- RENDER_HEIGHT = RENDER_HEIGHT,
- RENDER_X = RENDER_X,
- RENDER_Y = RENDER_Y,
+ 
  BALL_TYPES = BALL_TYPES,
 }

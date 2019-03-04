@@ -17,6 +17,7 @@ if CASTLE_PREFETCH then
 end
 
 local constants = require 'src/constants'
+local graphics = require 'src/util/graphics'
 local game = require 'src/game'
 local colour = require 'src/util/colour'
 
@@ -24,6 +25,7 @@ local translateScreenToCenterDx = 0
 local translateScreenToCenterDy = 0
 
 function love.load()
+ graphics:updateDisplay()
  print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
  local win_w,win_h=love.graphics.getDimensions()
  print("window size: "..win_w..","..win_h)
@@ -41,15 +43,15 @@ end
 function love.draw()
  -- Center everything within Castle window
  love.graphics.push()
- translateScreenToCenterDx = 0.5 * (love.graphics.getWidth() - constants.SCREEN_WIDTH)
- translateScreenToCenterDy = 0.5 * (love.graphics.getHeight() - constants.SCREEN_HEIGHT)
+ translateScreenToCenterDx = 0.5 * (love.graphics.getWidth() - graphics.SCREEN_WIDTH)
+ translateScreenToCenterDy = 0.5 * (love.graphics.getHeight() - graphics.SCREEN_HEIGHT)
  love.graphics.translate(translateScreenToCenterDx, translateScreenToCenterDy)
  -- Set Filter
  love.graphics.setDefaultFilter('nearest', 'nearest')
  -- Apply camera transformations
- love.graphics.translate(constants.RENDER_X, constants.RENDER_Y)
+ love.graphics.translate(graphics.RENDER_X, graphics.RENDER_Y)
  --love.graphics.scale(3, 3)
- love.graphics.scale(constants.RENDER_SCALE, constants.RENDER_SCALE)
+ love.graphics.scale(graphics.RENDER_SCALE, graphics.RENDER_SCALE)
 
  game.draw()
 
@@ -73,6 +75,12 @@ love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_BOTTO
 -- love.graphics.setColor(0, 1, 0, 1)
 -- love.graphics.rectangle('line', 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
 
+end
+
+-- Force recalc of render dimensions on resize
+-- (especially on Fullscreen switch)
+function love.resize(w,h)
+ graphics:updateDisplay()
 end
 
 

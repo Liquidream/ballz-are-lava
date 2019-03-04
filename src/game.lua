@@ -1,4 +1,5 @@
 local constants = require 'src/constants'
+local graphics = require 'src/util/graphics'
 local Entity = require 'src/entity/Entity'
 local listHelpers = require 'src/util/list'
 local Player = require 'src/entity/Player'
@@ -87,8 +88,8 @@ local function update(dt)
  -- get the position of the mouse
  mouseX, mouseY = love.mouse.getPosition()
  -- adjust mouse position for scale
- mouseX = (mouseX-constants.RENDER_X) / constants.RENDER_SCALE
- mouseY = (mouseY-constants.RENDER_Y) / constants.RENDER_SCALE
+ mouseX = (mouseX-graphics.RENDER_X) / graphics.RENDER_SCALE
+ mouseY = (mouseY-graphics.RENDER_Y) / graphics.RENDER_SCALE
 
  -- Update all entities
  local index, entity
