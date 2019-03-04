@@ -3,6 +3,7 @@ local createClass = require 'src/util/createClass'
 
 -- This is the base class for all game entities
 -- (orig by bridgs - https://github.com/bridgs/quickdraw-blackjack)
+
 local Entity = createClass({
  isAlive = true,
  x = 0,
