@@ -1,5 +1,5 @@
 local constants = require 'src/constants'
-local graphics = require 'src/util/graphics'
+local gfx = require 'src/util/gfx'
 local Entity = require 'src/entity/Entity'
 local listHelpers = require 'src/util/list'
 local Player = require 'src/entity/Player'
@@ -88,8 +88,8 @@ local function update(dt)
  -- get the position of the mouse
  mouseX, mouseY = love.mouse.getPosition()
  -- adjust mouse position for scale
- mouseX = (mouseX-graphics.RENDER_X) / graphics.RENDER_SCALE
- mouseY = (mouseY-graphics.RENDER_Y) / graphics.RENDER_SCALE
+ mouseX = (mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE
+ mouseY = (mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE
 
  -- Update all entities
  local index, entity
@@ -110,6 +110,7 @@ local function update(dt)
    if collision.objectsAreTouching(p1,lball)
     and p1.timeAlive>1 then
     -- TODO: Player death (unless invinc/shield)
+    --p1.timeToDeath=100
     p1:die()
     print("dead!!")
    end
@@ -130,6 +131,9 @@ local function update(dt)
   end
  end
 
+ -- update particles
+ gfx.updateParticles(dt)
+
  -- Remove dead entities
  entities = removeDeadEntities(entities)
  -- Sort entities for rendering
@@ -138,7 +142,7 @@ local function update(dt)
  end)
 end
 
-local function draw_background()
+local function drawBackground()
  local gridSize=16
  -- navy
  love.graphics.clear(colour[26])
@@ -160,7 +164,7 @@ end
 
 local function draw()
  -- Draw background
- draw_background()
+ drawBackground()
 
  if p1.isAlive then
   p1:draw()
@@ -188,6 +192,8 @@ local function draw()
    entity:draw()
  end
 
+ -- draw particles
+ gfx.drawParticles()
 
  -- Draw game boundary
  -- love.graphics.setColor(colour[27])
@@ -201,6 +207,6 @@ return {
  load = load,
  update = update,
  draw = draw,
- draw_background = draw_background,
+ --drawBackground = drawBackground,
  --onMousePressed = onMousePressed
 }

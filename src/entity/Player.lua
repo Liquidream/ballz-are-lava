@@ -2,6 +2,8 @@
 local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
+local gfx = require 'src/util/gfx'
+
 
 local SPRITESHEET = SpriteSheet.new('img/player.png', {
   BASE = { 0, 0, 32, 32 },
@@ -70,6 +72,8 @@ draw = function(self)
 end,
 onDeath = function(self) 
  self.deathCount = 100
+ -- create "death" explosion particles
+ gfx.boom(self.x, self.y, 500, constants.PLAYER_DEATH_COLS)
 end,
 
 })

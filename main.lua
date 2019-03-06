@@ -8,16 +8,23 @@ if CASTLE_PREFETCH then
  CASTLE_PREFETCH({
    'main.lua',
    'src/game.lua',
+   'src/generateLevel.lua',
    'src/constants.lua',
    'src/entity/Entity.lua',
+   'src/entity/Player.lua',
+   'src/entity/Ball.lua',
    'src/util/createClass.lua',
    'src/util/colour.lua',
+   'src/util/collision.lua',
+   'src/util/gfx.lua',
+   'src/util/list.lua',
+   'src/util/SpriteSheet.lua',
    'img/player.png',
  })
 end
 
 local constants = require 'src/constants'
-local graphics = require 'src/util/graphics'
+local gfx = require 'src/util/gfx'
 local game = require 'src/game'
 local colour = require 'src/util/colour'
 
@@ -25,7 +32,7 @@ local translateScreenToCenterDx = 0
 local translateScreenToCenterDy = 0
 
 function love.load()
- graphics:updateDisplay()
+ gfx:updateDisplay()
  print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
  local win_w,win_h=love.graphics.getDimensions()
  print("window size: "..win_w..","..win_h)
@@ -43,15 +50,15 @@ end
 function love.draw()
  -- Center everything within Castle window
  love.graphics.push()
- translateScreenToCenterDx = 0.5 * (love.graphics.getWidth() - graphics.SCREEN_WIDTH)
- translateScreenToCenterDy = 0.5 * (love.graphics.getHeight() - graphics.SCREEN_HEIGHT)
+ translateScreenToCenterDx = 0.5 * (love.graphics.getWidth() - gfx.SCREEN_WIDTH)
+ translateScreenToCenterDy = 0.5 * (love.graphics.getHeight() - gfx.SCREEN_HEIGHT)
  love.graphics.translate(translateScreenToCenterDx, translateScreenToCenterDy)
  -- Set Filter
  love.graphics.setDefaultFilter('nearest', 'nearest')
  -- Apply camera transformations
- love.graphics.translate(graphics.RENDER_X, graphics.RENDER_Y)
+ love.graphics.translate(gfx.RENDER_X, gfx.RENDER_Y)
  --love.graphics.scale(3, 3)
- love.graphics.scale(graphics.RENDER_SCALE, graphics.RENDER_SCALE)
+ love.graphics.scale(gfx.RENDER_SCALE, gfx.RENDER_SCALE)
 
  game.draw()
 
@@ -80,7 +87,7 @@ end
 -- Force recalc of render dimensions on resize
 -- (especially on Fullscreen switch)
 function love.resize(w,h)
- graphics:updateDisplay()
+ gfx:updateDisplay()
 end
 
 
