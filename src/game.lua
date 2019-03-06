@@ -145,11 +145,11 @@ end
 local function drawBackground()
  local gridSize=16
  -- navy
+ -- love.graphics.clear(colour[26])
+ -- love.graphics.setColor(colour[24])
+ -- "black"
  love.graphics.clear(colour[26])
  love.graphics.setColor(colour[24])
- -- red
- -- love.graphics.clear(colour[26])
- -- love.graphics.setColor(colour[6])
  --
  for x=0, constants.GAME_WIDTH, gridSize do
    love.graphics.line(x,0,x,constants.GAME_HEIGHT)

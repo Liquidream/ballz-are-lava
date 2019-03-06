@@ -129,6 +129,7 @@ return {
  updateDisplay = updateDisplay,
 
  boom = boom,
+ spawnParticle = spawnParticle,
  updateParticles = updateParticles,
  drawParticles = drawParticles,
 }
