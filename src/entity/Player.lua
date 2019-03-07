@@ -11,10 +11,11 @@ local SPRITESHEET = SpriteSheet.new('img/player.png', {
 })
 
 local Player = Entity.extend({
+ lives = 3,
  size = 0.25, -- 0..1 (scale)
  radius = 18, --15
  renderLayer=7,
- deathCount=-1,
+ deathCooldown=-1,
  -- width = constants.CARD_WIDTH,
  -- height = constants.CARD_HEIGHT,
 
@@ -25,6 +26,13 @@ constructor = function(self)
 end,
 update = function(self, dt)
 
+ -- Should player be able to move?
+ if game_state~=constants.GAME_STATE.LVL_PLAY 
+ and game_state~=constants.GAME_STATE.LVL_INTRO then
+  -- bail out now
+  return
+ end
+ 
  -- keyboard controls override mouse
  local speed = 75
  if love.keyboard.isDown("right") then
@@ -72,9 +80,10 @@ draw = function(self)
 
 end,
 onDeath = function(self) 
- self.deathCount = 100
- -- create "death" explosion particles
- gfx.boom(self.x, self.y, 500, constants.PLAYER_DEATH_COLS)
+ self.lives = self.lives - 1
+ self.deathCooldown = 100
+ -- -- create "death" explosion particles
+ -- gfx.boom(self.x, self.y, 500, constants.PLAYER_DEATH_COLS)
 end,
 
 })

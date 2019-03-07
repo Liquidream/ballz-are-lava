@@ -2,6 +2,7 @@ local constants = require 'src/constants'
 local gfx = require 'src/util/gfx'
 local Entity = require 'src/entity/Entity'
 local listHelpers = require 'src/util/list'
+local Promise = require 'src/util/Promise'
 local Player = require 'src/entity/Player'
 local Ball = require 'src/entity/Ball'
 local colour = require 'src/util/colour'
@@ -29,7 +30,49 @@ end
 mouseX=nil
 mouseY=nil
 
+-- state variable(s)
+game_state=constants.GAME_STATE.LVL_PLAY
 
+
+
+local function initLevel(levelNum)
+
+ -- kill all existing balls
+ for index, tball in ipairs(targetBalls) do
+  tball:die()
+ end
+ for index, lball in ipairs(lavaBalls) do
+  lball:die()
+ end
+
+ -- Generate a new level
+ local level = generateLevel(levelNum)
+
+ -- Create lava balls
+ for i=1,level.numLavaBalls do
+  table.insert(lavaBalls, Ball:spawn({
+   -- optional overloads
+  }))
+ end
+
+ -- Create target balls
+ for i=1,level.numTargetBalls do
+  table.insert(targetBalls, Ball:spawn({
+   -- optional overloads
+   ball_type=constants.BALL_TYPES.TARGET,
+  }))
+ end
+
+ -- reset player state (start small, etc.)
+ if not p1.isAlive then
+  table.insert(entities, p1)
+  p1.isAlive = true
+  p1.timeAlive = 0
+  p1.size = 0.25
+ end
+
+ game_state=constants.GAME_STATE.LVL_PLAY
+end
 
 -- Main methods
 local function load()
@@ -48,8 +91,10 @@ local function load()
  entities = {}
  lavaBalls = {}
  targetBalls = {}
+ levelNum=1
  -- -- Start at the title screen
  -- initTitleScreen(true)
+
 
  -- Create player
  p1 = Player:spawn({
@@ -57,32 +102,14 @@ local function load()
    y = constants.GAME_HEIGHT/2,
  })
 
- -- Generate a new level
- local level = generateLevel(1)
-
- -- Create lava balls
- for i=1,level.numLavaBalls do
-  table.insert(lavaBalls, Ball:spawn({
-   -- optional overloads
-  }))
- end
-
-  -- Create target balls
-  for i=1,level.numTargetBalls do
-   table.insert(targetBalls, Ball:spawn({
-    -- optional overloads
-    ball_type=constants.BALL_TYPES.TARGET,
-   }))
-  end
-
-
+ initLevel(levelNum)
 end
 
+
 local function update(dt)
- -- backgroundCycleX = (backgroundCycleX + dt) % 12.0
- -- backgroundCycleY = (backgroundCycleY + dt) % 16.0
- -- -- Update all promises
- -- Promise.updateActivePromises(dt)
+
+ -- Update all promises
+ Promise.updateActivePromises(dt)
  
  -- Update mouse position
  -- get the position of the mouse
@@ -109,31 +136,66 @@ local function update(dt)
   for index, lball in ipairs(lavaBalls) do
    if collision.objectsAreTouching(p1,lball)
     and p1.timeAlive>1 then
-    -- TODO: Player death (unless invinc/shield)
-    p1:die()
-    print("dead!!")
+     -- TODO: Player death (unless invinc/shield)
+     
+     p1:die()
+     -- create "death" explosion particles
+     gfx.boom(p1.x, p1.y, 500, constants.PLAYER_DEATH_COLS)
+     print("dead!!")
+     -- lose life
+     game_state=constants.GAME_STATE.LOSE_LIFE
+     Promise.newActive(2.5)
+      :andThen(function()
+       if p1.lives>0 then
+        initLevel(levelNum)
+       else
+        -- game over
+        print("game over!!!")
+       end
+      end)
    end
   end
   -- target balls
+  --print("#targetBalls="..#targetBalls)
   for index, tball in ipairs(targetBalls) do
    if collision.objectsAreTouching(p1,tball) then
     tball:die()
+    if #targetBalls-1 == 0 then
+     -- level complete
+     print("level complete!!")
+     game_state=constants.GAME_STATE.LVL_END
+
+      -- (TODO: Show score, etc.)
+
+      -- Next level (after delay)
+      -- TODO: Probably not using Promise, 
+      --       as will be after scores have tallied!
+      Promise.newActive(2.5)
+      :andThen(function()
+      print(">>>level up!!!")
+      levelNum = levelNum+1
+      initLevel(levelNum)
+     end)
+
+    end 
    end
-  end 
+  end
  else
   -- Player died
-  p1.deathCount = p1.deathCount-1
-  if p1.deathCount <= 0 then
-   -- Restart Game
-   -- (TODO: proper death, etc.)
-   load()
-  end
+  p1.deathCooldown = p1.deathCooldown-1
+  -- if p1.deathCooldown <= 0 then
+  --  -- Restart level
+  --  -- (TODO: reduce lives, etc.)
+  --  initLevel(levelNum)
+  -- end
  end
 
  -- update particles
  gfx.updateParticles(dt)
 
  -- Remove dead entities
+ targetBalls = removeDeadEntities(targetBalls)
+ lavaBalls = removeDeadEntities(lavaBalls)
  entities = removeDeadEntities(entities)
  -- Sort entities for rendering
  table.sort(entities, function(a, b)
@@ -201,7 +263,7 @@ local function draw()
  -- draw ui
 
  -- draw other effects
- if p1.deathCount > 96 then
+ if p1.deathCooldown > 96 then
   love.graphics.clear(colour[25])
  end
 

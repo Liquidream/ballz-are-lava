@@ -4,9 +4,16 @@ local listHelpers = require 'src/util/list'
 
 
 local function generateLevelDifficulty(levelNumber)
+ -- set the rnd gen seed for level
+ love.math.setRandomSeed(levelNumber)
+
  local allowAces = levelNumber >= 9
- local numLavaBalls = 16 --8
- local numTargetBalls = 10
+  -- calculate target + enemys
+ local numLavaBalls = math.floor((levelNumber+1)*1.5)  -- increase enemies by constant factor
+ local numTargetBalls = (levelNumber < 7) and math.floor(1.5*(levelNumber+1)) or 10 -- cap # targets to 10
+ local numPowerups = math.floor(levelNumber*.5)
+ -- local numLavaBalls = 16
+ -- local numTargetBalls = 10
  local lavaBallsSpeed = 5
 
  return {
