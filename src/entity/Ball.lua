@@ -3,7 +3,7 @@ local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
 
-local SPRITESHEET = SpriteSheet.new('img/ball.png', {
+local SPRITESHEET = SpriteSheet.new('assets/img/ball.png', {
   LAVABALL = { 0, 0, 16, 16 },
   TARGET = { 16, 0, 16, 16 },
 })

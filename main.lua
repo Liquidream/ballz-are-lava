@@ -19,7 +19,9 @@ if CASTLE_PREFETCH then
    'src/util/gfx.lua',
    'src/util/list.lua',
    'src/util/SpriteSheet.lua',
-   'img/player.png',
+   'assets/img/player.png',
+   'assets/img/ball.png',
+   'assets/saxmono.ttf',
  })
 end
 
@@ -32,6 +34,8 @@ local translateScreenToCenterDx = 0
 local translateScreenToCenterDy = 0
 
 function love.load()
+ -- initialise and update the gfx display
+ gfx:init()
  gfx:updateDisplay()
  print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
  local win_w,win_h=love.graphics.getDimensions()

@@ -261,6 +261,13 @@ local function draw()
  -- love.graphics.rectangle("line", 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT )
  
  -- draw ui
+ 
+ -- timer
+ love.graphics.setColor(colour[19])
+ love.graphics.printf('TIME:60',constants.GAME_WIDTH/2-80/2,1,80,"center")
+ -- score
+ love.graphics.setColor(colour[18])
+ love.graphics.printf('0000011',360,1,150,"right")
 
  -- draw other effects
  if p1.deathCooldown > 96 then

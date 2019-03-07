@@ -15,6 +15,14 @@ local RENDER_Y
 
 local particles={}
 
+local font
+
+local function init(self)
+ font = love.graphics.newFont("assets/saxmono.ttf",18)
+ font:setFilter("nearest", "nearest", 0 )
+ love.graphics.setFont(font)
+end
+
 -- Recalibrate the render display, based on current display dimensions
 -- (e.g. after change to/from Fullscreen)
 local function updateDisplay(self)
@@ -28,6 +36,8 @@ local function updateDisplay(self)
  self.RENDER_X = (self.SCREEN_WIDTH - self.RENDER_WIDTH) / 2
  self.RENDER_Y = (self.SCREEN_HEIGHT - self.RENDER_HEIGHT) / 2
 end
+
+
 
 --
 -- Special effects functions
@@ -128,7 +138,11 @@ return {
  RENDER_HEIGHT = RENDER_HEIGHT,
  RENDER_X = RENDER_X,
  RENDER_Y = RENDER_Y,
+
+ font = font,
+
  -- functions
+ init = init,
  updateDisplay = updateDisplay,
 
  boom = boom,

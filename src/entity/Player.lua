@@ -5,9 +5,9 @@ local SpriteSheet = require 'src/util/SpriteSheet'
 local gfx = require 'src/util/gfx'
 
 
-local SPRITESHEET = SpriteSheet.new('img/player.png', {
+local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
   BASE = { 0, 0, 32, 32 },
-  --EMPTY_HEART = { 133, 101, 11, 10 }
+  EMPTY_HEART = { 0, 32, 16, 16 }
 })
 
 local Player = Entity.extend({
@@ -78,6 +78,10 @@ draw = function(self)
  local sprite = 'BASE'
  SPRITESHEET:drawCentered(sprite, self.x, self.y, nil, nil, nil, self.size, self.size)
 
+ -- draw lives
+ for i=1,3 do
+  SPRITESHEET:drawCentered('EMPTY_HEART',i*18-8, 9, nil, nil, nil, 1, 1)
+ end
 end,
 onDeath = function(self) 
  self.lives = self.lives - 1
