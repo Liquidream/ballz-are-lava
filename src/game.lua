@@ -110,7 +110,6 @@ local function update(dt)
    if collision.objectsAreTouching(p1,lball)
     and p1.timeAlive>1 then
     -- TODO: Player death (unless invinc/shield)
-    --p1.timeToDeath=100
     p1:die()
     print("dead!!")
    end
@@ -199,6 +198,13 @@ local function draw()
  -- love.graphics.setColor(colour[27])
  -- love.graphics.rectangle("line", 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT )
  
+ -- draw ui
+
+ -- draw other effects
+ if p1.deathCount > 96 then
+  love.graphics.clear(colour[25])
+ end
+
 end
 
 

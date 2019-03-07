@@ -33,6 +33,9 @@ end
 -- Special effects functions
 --
 
+-- screen shake
+
+
 -- Particles code
 -- (based on https://www.lexaloffle.com/bbs/?tid=28260)
 
@@ -43,7 +46,7 @@ local function spawnParticle(_x,_y,_cols)
  -- generate a random angle
  -- and speed
  local angle = love.math.random() * (2*math.pi)    -- rnd()
- local speed = .25+love.math.random()*150 -- rnd(2)
+ local speed = 50+love.math.random()*150 -- rnd(2)
  
  new.x=_x --set start position
  new.y=_y --set start position
@@ -54,7 +57,7 @@ local function spawnParticle(_x,_y,_cols)
  
  --add a random starting age
  --to add more variety
- new.age=math.floor(math.random(25))
+ new.age=math.floor(math.random(25))--25
   
  -- give each particle it's own color life
  new.cols = _cols
@@ -76,7 +79,7 @@ function updateParticles(dt)
   --delete old particles
   --or if particle left 
   --the screen 
-  if p.age > 50 
+  if p.age > 75 
    or p.y > constants.GAME_HEIGHT
    or p.y < 0
    or p.x > constants.GAME_WIDTH
@@ -99,9 +102,9 @@ function drawParticles()
  local col
  for index, p in ipairs(particles) do
   --change color depending on age
-  if p.age > 30 then col=p.cols[4]
-  elseif p.age > 20 then col=p.cols[3]
-  elseif p.age > 10 then col=p.cols[2]  
+  if p.age > 60 then col=p.cols[4]
+  elseif p.age > 40 then col=p.cols[3]
+  elseif p.age > 20 then col=p.cols[2]  
   else col=p.cols[1]--7 
   end
   --actually draw particle

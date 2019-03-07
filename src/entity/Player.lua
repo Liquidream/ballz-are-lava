@@ -14,6 +14,7 @@ local Player = Entity.extend({
  size = 0.25, -- 0..1 (scale)
  radius = 18, --15
  renderLayer=7,
+ deathCount=-1,
  -- width = constants.CARD_WIDTH,
  -- height = constants.CARD_HEIGHT,
 

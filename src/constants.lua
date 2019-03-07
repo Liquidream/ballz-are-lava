@@ -10,7 +10,7 @@ local GAME_MIDDLE_Y = GAME_HEIGHT / 2
 
 local BALL_TYPES = { LAVA=0, TARGET=1 }
 
-local PLAYER_DEATH_COLS = {12,12,14,15} --{19,12,13,14,15}
+local PLAYER_DEATH_COLS = {19,12,14,15} --{19,12,13,14,15}
 local LAVA_DEATH_COLS = {7,10,9,8}
 
 return {
