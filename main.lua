@@ -21,6 +21,7 @@ if CASTLE_PREFETCH then
    'src/util/sounds.lua',
    'src/util/sound.lua',
    'src/util/SpriteSheet.lua',
+   'assets/img/game-ui.png',
    'assets/img/player.png',
    'assets/img/ball.png',
    'assets/saxmono.ttf',

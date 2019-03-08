@@ -11,15 +11,35 @@ local collision = require 'src/util/collision'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local Sounds = require 'src/util/sounds'
 
+--
+-- global vars
+--
+mouseX=nil  -- mouse pos (in game co-ordinates)
+mouseY=nil
+-- state variable(s)
+game_state=constants.GAME_STATE.LVL_PLAY
 
-local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
- EMPTY_HEART = { 0, 32, 16, 16 }
+--
+-- local vars
+--
+local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
+ EMPTY_HEART = { 0, 0, 16, 15 },
+ INTRO_3 = { 0, 16, 32, 48 },
+ INTRO_2 = { 32, 16, 32, 48 },
+ INTRO_1 = { 64, 16, 32, 48 },
+ INTRO_0 = { 96, 16, 80, 48 },
 })
 
--- Entity vars
-local entities
-
+-- Initialize game vars
+local entities = {}
+local lavaBalls = {}
+local targetBalls = {}
+local levelNum = 10
+local delayCounter = 0
+local txtSize = 0
 local currLevel = nil
+
+
 
 
 -- Entity methods
@@ -35,12 +55,6 @@ local function removeDeadEntities(list)
  end)
 end
 
--- mouse pos (in game co-ordinates)
-mouseX=nil
-mouseY=nil
-
--- state variable(s)
-game_state=constants.GAME_STATE.LVL_PLAY
 
 -- Initialize all sounds
 local function initSounds()
@@ -96,32 +110,21 @@ local function initLevel(levelNum)
   p1.timeAlive = 0
   p1.size = 0.25
  end
-
- game_state=constants.GAME_STATE.LVL_PLAY
+ 
+ game_state=constants.GAME_STATE.LVL_INTRO
+ delayCounter = 3
+ --game_state=constants.GAME_STATE.LVL_PLAY
  Sounds.ballzMoving:play()
 end
 
 -- Main methods
 local function load()
- -- Load save data
- -- local saveData = saveFile.load('quickdraw-blackjack.dat')
 
- -- Init vars
- scene = nil
- -- mostRoundsEncountered = saveData.best and tonumber(saveData.best) or 0
- -- hasSeenTutorial = saveData.hasSeenTutorial == 'true'
- 
  -- Init sounds
  initSounds()
 
- -- Initialize game vars
- entities = {}
- lavaBalls = {}
- targetBalls = {}
- levelNum=10
  -- -- Start at the title screen
  -- initTitleScreen(true)
-
 
  -- Create player
  p1 = Player:spawn({
@@ -131,6 +134,8 @@ local function load()
 
  initLevel(levelNum)
 end
+
+
 
 local function update(dt)
 
@@ -153,6 +158,17 @@ local function update(dt)
    entity:countDownToDeath(dt)
   end
  end
+
+ if game_state == constants.GAME_STATE.LVL_INTRO then
+  txtSize = txtSize + .07
+  if txtSize > 3 then 
+   txtSize = 0
+   delayCounter = delayCounter - 1
+   if delayCounter < 0 then
+    game_state = constants.GAME_STATE.LVL_PLAY
+   end
+  end
+ else
  
  -- Update player (if alive)
  if p1.isAlive then
@@ -227,6 +243,8 @@ local function update(dt)
   -- end
  end
 
+end -- if gamestate
+
  -- update particles
  gfx.updateParticles(dt)
 
@@ -239,6 +257,8 @@ local function update(dt)
    return a.renderLayer < b.renderLayer
  end)
 end
+
+
 
 local function drawBackground()
  local gridSize=16
@@ -302,6 +322,14 @@ local function draw()
  -- lives
  for i=1,3 do
   SPRITESHEET:drawCentered('EMPTY_HEART',i*18-8, 9, nil, nil, nil, 1, 1)
+ end
+
+ -- state-dependent overlays
+ if game_state == constants.GAME_STATE.LVL_INTRO then
+  -- intro countdown
+  SPRITESHEET:drawCentered('INTRO_'..delayCounter,
+                            constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
+                            nil, nil, nil, txtSize, txtSize)
  end
  -- timer
  love.graphics.setColor(colour[19])
