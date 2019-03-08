@@ -13,9 +13,12 @@ local SpriteSheet = require 'src/util/SpriteSheet'
 local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
  EMPTY_HEART = { 0, 32, 16, 16 }
 })
+local Sounds = require 'src/sounds'
 
 -- Entity vars
 local entities
+
+local currLevel = nil
 
 
 -- Entity methods
@@ -38,7 +41,24 @@ mouseY=nil
 -- state variable(s)
 game_state=constants.GAME_STATE.LVL_PLAY
 
+-- Initialize all sounds
+local function initSounds()
+  Sounds.bounce = Sound:new('bounce.mp3', 16)
+  Sounds.bounce:setVolume(0.1)
 
+  Sounds.collect = Sound:new('collect.mp3', 4)
+  Sounds.collect:setVolume(0.5)
+
+  Sounds.loseLife = Sound:new('lose_life.mp3', 4)
+  Sounds.loseLife:setVolume(0.5)
+
+  Sounds.ballzMoving = Sound:new('ballz_moving.mp3', 1)
+  Sounds.ballzMoving:setVolume(0.2)
+  Sounds.ballzMoving:setLooping(true)
+
+  Sounds.beatLevel = Sound:new('beat_level.mp3', 1)
+  Sounds.beatLevel:setVolume(0.5)
+end
 
 local function initLevel(levelNum)
 
@@ -51,17 +71,17 @@ local function initLevel(levelNum)
  end
 
  -- Generate a new level
- local level = generateLevel(levelNum)
+ currLevel = generateLevel(levelNum)
 
  -- Create lava balls
- for i=1,level.numLavaBalls do
+ for i=1,currLevel.numLavaBalls do
   table.insert(lavaBalls, Ball:spawn({
    -- optional overloads
   }))
  end
 
  -- Create target balls
- for i=1,level.numTargetBalls do
+ for i=1,currLevel.numTargetBalls do
   table.insert(targetBalls, Ball:spawn({
    -- optional overloads
    ball_type=constants.BALL_TYPES.TARGET,
@@ -77,6 +97,7 @@ local function initLevel(levelNum)
  end
 
  game_state=constants.GAME_STATE.LVL_PLAY
+ Sounds.ballzMoving:play()
 end
 
 -- Main methods
@@ -89,8 +110,8 @@ local function load()
  -- mostRoundsEncountered = saveData.best and tonumber(saveData.best) or 0
  -- hasSeenTutorial = saveData.hasSeenTutorial == 'true'
  
- -- -- Init sounds
- -- initSounds()
+ -- Init sounds
+ initSounds()
 
  -- Initialize game vars
  entities = {}
@@ -109,7 +130,6 @@ local function load()
 
  initLevel(levelNum)
 end
-
 
 local function update(dt)
 
@@ -149,6 +169,8 @@ local function update(dt)
      print("dead!!")
      -- lose life
      game_state=constants.GAME_STATE.LOSE_LIFE
+     Sounds.loseLife:play()
+     Sounds.ballzMoving:stop()
      Promise.newActive(2.5)
       :andThen(function()
        if p1.lives>0 then
@@ -165,9 +187,18 @@ local function update(dt)
   for index, tball in ipairs(targetBalls) do
    if collision.objectsAreTouching(p1,tball) then
     tball:die()
-    if #targetBalls-1 == 0 then
+    collectedLastBall = (#targetBalls-1 == 0)
+
+    if not collectedLastBall then
+      levelProgress = ((currLevel.numTargetBalls - #targetBalls + 1) / currLevel.numTargetBalls)
+      Sounds.collect:playWithPitch(1.0 + levelProgress)
+    end
+
+    if collectedLastBall then
      -- level complete
      print("level complete!!")
+     Sounds.ballzMoving:stop()
+     Sounds.beatLevel:play()
      game_state=constants.GAME_STATE.LVL_END
 
       -- (TODO: Show score, etc.)

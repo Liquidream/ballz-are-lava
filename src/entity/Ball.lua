@@ -2,6 +2,7 @@
 local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
+local Sounds = require 'src/sounds'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ball.png', {
   LAVABALL = { 0, 0, 16, 16 },
@@ -33,15 +34,23 @@ update = function(self, dt)
    -- (tho maybe better to have a factor, so can slow/speedup!)
    Entity.update(self, dt)
   end
+  
+  local ballDidBounce = false
   -- Check ball bounds
   if self.x<=0 or self.x>constants.GAME_WIDTH then
    self.vx = self.vx * -1 
    -- move away from boundary
    self.x = self.x + self.vx * dt
+   ballDidBounce = true
   elseif self.y<=0 or self.y>constants.GAME_HEIGHT then
    self.vy = self.vy * -1 
    -- move away from boundary
    self.y = self.y + self.vy * dt
+   ballDidBounce = true
+  end
+
+  if ballDidBounce then
+    Sounds.bounce:playWithPitch(1.0 + math.random())
   end
   
   -- -- Rotate
