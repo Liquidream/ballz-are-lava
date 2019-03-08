@@ -8,6 +8,11 @@ local Ball = require 'src/entity/Ball'
 local colour = require 'src/util/colour'
 local generateLevel = require 'src/generateLevel'
 local collision = require 'src/util/collision'
+local SpriteSheet = require 'src/util/SpriteSheet'
+
+local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
+ EMPTY_HEART = { 0, 32, 16, 16 }
+})
 
 -- Entity vars
 local entities
@@ -91,7 +96,7 @@ local function load()
  entities = {}
  lavaBalls = {}
  targetBalls = {}
- levelNum=1
+ levelNum=10
  -- -- Start at the title screen
  -- initTitleScreen(true)
 
@@ -261,13 +266,17 @@ local function draw()
  -- love.graphics.rectangle("line", 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT )
  
  -- draw ui
- 
+ love.graphics.setColor(1, 1, 1)
+ -- lives
+ for i=1,3 do
+  SPRITESHEET:drawCentered('EMPTY_HEART',i*18-8, 9, nil, nil, nil, 1, 1)
+ end
  -- timer
  love.graphics.setColor(colour[19])
  love.graphics.printf('TIME:60',constants.GAME_WIDTH/2-80/2,1,80,"center")
  -- score
  love.graphics.setColor(colour[18])
- love.graphics.printf('0000011',360,1,150,"right")
+ love.graphics.printf('000000',360,1,150,"right")
 
  -- draw other effects
  if p1.deathCooldown > 96 then

@@ -78,10 +78,6 @@ draw = function(self)
  local sprite = 'BASE'
  SPRITESHEET:drawCentered(sprite, self.x, self.y, nil, nil, nil, self.size, self.size)
 
- -- draw lives
- for i=1,3 do
-  SPRITESHEET:drawCentered('EMPTY_HEART',i*18-8, 9, nil, nil, nil, 1, 1)
- end
 end,
 onDeath = function(self) 
  self.lives = self.lives - 1
