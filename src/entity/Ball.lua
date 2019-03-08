@@ -2,7 +2,7 @@
 local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
-local Sounds = require 'src/sounds'
+local Sounds = require 'src/util/sounds'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ball.png', {
   LAVABALL = { 0, 0, 16, 16 },
@@ -49,9 +49,10 @@ update = function(self, dt)
    ballDidBounce = true
   end
 
-  if ballDidBounce then
-    Sounds.bounce:playWithPitch(1.0 + math.random())
-  end
+  -- (Temp disabled until can tie in more visually?)
+  -- if ballDidBounce then
+  --   Sounds.bounce:playWithPitch(1.0 + math.random())
+  -- end
   
   -- -- Rotate
   -- if not self:animationsInclude('rotation') then

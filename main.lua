@@ -18,6 +18,8 @@ if CASTLE_PREFETCH then
    'src/util/collision.lua',
    'src/util/gfx.lua',
    'src/util/list.lua',
+   'src/util/sounds.lua',
+   'src/util/sound.lua',
    'src/util/SpriteSheet.lua',
    'assets/img/player.png',
    'assets/img/ball.png',

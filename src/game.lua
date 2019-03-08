@@ -9,11 +9,12 @@ local colour = require 'src/util/colour'
 local generateLevel = require 'src/generateLevel'
 local collision = require 'src/util/collision'
 local SpriteSheet = require 'src/util/SpriteSheet'
+local Sounds = require 'src/util/sounds'
+
 
 local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
  EMPTY_HEART = { 0, 32, 16, 16 }
 })
-local Sounds = require 'src/sounds'
 
 -- Entity vars
 local entities
