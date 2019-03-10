@@ -66,8 +66,8 @@ update = function(self, dt)
   self.size = math.min(self.size+0.01, 1) --0.75)--1
 end,
 draw = function(self)
- local x = self.x
- local y = self.y
+ local x = self.x + gfx.shakeX
+ local y = self.y + gfx.shakeY
  -- local w = self.width / 2
  -- local h = self.height / 2
  
@@ -76,7 +76,7 @@ draw = function(self)
 
  love.graphics.setColor(1, 1, 1)
  local sprite = 'BASE'
- SPRITESHEET:drawCentered(sprite, self.x, self.y, nil, nil, nil, self.size, self.size)
+ SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
 
 end,
 onDeath = function(self) 

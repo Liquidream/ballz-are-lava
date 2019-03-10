@@ -12,6 +12,10 @@ local RENDER_WIDTH
 local RENDER_HEIGHT
 local RENDER_X
 local RENDER_Y
+-- Camera shake-related
+local shakeAmount = 0 -- how much to shake the screen (will stablise over time)
+local shakeX = 0
+local shakeY = 0
 
 local particles={}
 
@@ -44,6 +48,29 @@ end
 --
 
 -- screen shake
+local function shake(self, amount)
+  shakeAmount = amount
+end
+
+local function updateShake(self)
+  -- Based on https://www.lexaloffle.com/bbs/?tid=28306
+  --
+  -- this function does the shaking
+  -- first we generate two random numbers between -16 and +16
+  self.shakeX=16-love.math.random()*32
+  self.shakeY=16-love.math.random()*32
+  
+  
+  -- then we apply the shake strength
+  self.shakeX = self.shakeX * shakeAmount
+  self.shakeY = self.shakeY * shakeAmount
+      
+  -- finally, fade out the shake reset to 0 when very low
+  shakeAmount = shakeAmount * 0.95
+  if (shakeAmount < 0.05) then 
+    shakeAmount = 0 
+  end
+ end
 
 
 -- Particles code
@@ -107,7 +134,7 @@ function updateParticles(dt)
  end
 end
 
-function drawParticles() 
+function drawParticles(self) 
  --iterate trough all particles
  local col
  for index, p in ipairs(particles) do
@@ -119,7 +146,10 @@ function drawParticles()
   end
   --actually draw particle
   love.graphics.setColor(colour[col])
-  love.graphics.rectangle("fill", p.x, p.y, 1, 1 )
+  love.graphics.rectangle("fill", 
+    p.x + self.shakeX, 
+    p.y + self.shakeY, 
+    1, 1 )
   --pset(p.x,p.y,col)
  end
 end
@@ -149,4 +179,9 @@ return {
  spawnParticle = spawnParticle,
  updateParticles = updateParticles,
  drawParticles = drawParticles,
+
+ shake = shake, --function
+ shakeX = shakeX,
+ shakeY = shakeY,
+ updateShake = updateShake,
 }

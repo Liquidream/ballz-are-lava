@@ -3,6 +3,7 @@ local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local Sounds = require 'src/util/sounds'
+local gfx = require 'src/util/gfx'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ball.png', {
   LAVABALL = { 0, 0, 16, 16 },
@@ -68,13 +69,8 @@ update = function(self, dt)
 end,
 
 draw = function(self)
- local x = self.x
- local y = self.y
- -- local w = self.width / 2
- -- local h = self.height / 2
- 
- -- love.graphics.setColor(255, 0, 0)
- -- love.graphics.circle("fill", self.x, self.y, 25)
+ local x = self.x + gfx.shakeX
+ local y = self.y + gfx.shakeY
 
  local sprite = (self.ball_type==constants.BALL_TYPES.LAVA) and "LAVABALL" or "TARGET"
  if sprite == "LAVABALL" then
@@ -83,7 +79,7 @@ draw = function(self)
  else
   love.graphics.setColor(1, 1, 1)
  end
- SPRITESHEET:drawCentered(sprite, self.x, self.y, nil, nil, nil, self.size, self.size)
+ SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
 
 end,
 })
