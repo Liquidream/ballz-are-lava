@@ -12,7 +12,7 @@ local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
 })
 
 local Player = Entity.extend({
-  lives = 0,--3,
+  lives = 3,
   size = 0.25, -- 0..1 (scale)
   radius = 18,
   renderLayer=7,
