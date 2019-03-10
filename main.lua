@@ -65,8 +65,10 @@ function love.draw()
  translateScreenToCenterDx = 0.5 * (love.graphics.getWidth() - gfx.SCREEN_WIDTH)
  translateScreenToCenterDy = 0.5 * (love.graphics.getHeight() - gfx.SCREEN_HEIGHT)
  love.graphics.translate(translateScreenToCenterDx, translateScreenToCenterDy)
- -- Set Filter
- love.graphics.setDefaultFilter('nearest', 'nearest')
+ -- Set "Point/Non-AA" Filters for...
+ love.graphics.setDefaultFilter('nearest', 'nearest') -- Sprites (Quads)
+ love.graphics.setLineStyle("rough")                  -- Shapes (Circles, Lines...)
+ love.graphics.setPointSize(gfx.RENDER_SCALE)         -- Single dots
  -- Apply camera transformations
  love.graphics.translate(gfx.RENDER_X, gfx.RENDER_Y)
  --love.graphics.scale(3, 3)
@@ -101,39 +103,3 @@ end
 function love.resize(w,h)
  gfx:updateDisplay()
 end
-
-
--- ------------------------------------------------
-
--- Constants
--- local GAME_WIDTH = 320  -- 16:9 aspect
--- local GAME_HEIGHT = 180
--- local RENDER_SCALE = 3
-
--- Game vars
-local total_time_elapsed = 0
-
--- helper function
--- function fromRGB(red, green, blue) -- alpha?
---  return {red/255, green/255, blue/255}
--- end
-
-
--- function love.load()
---  -- force "point" scaling
---  love.graphics.setDefaultFilter('nearest', 'nearest', 0)
-  
---  -- make default mouse invisible
---  love.mouse.setVisible(false)
--- end
-
--- function love.draw()
---   local y_offset = 8 * math.sin(total_time_elapsed * 3)
---   love.graphics.print('Edit main.lua to get started!', 400, 300 + y_offset)
---   love.graphics.print('Press Cmd/Ctrl + R to reload.', 400, 316 + y_offset)
--- end
-
--- function love.update(dt)
---   total_time_elapsed = total_time_elapsed + dt
--- end
-

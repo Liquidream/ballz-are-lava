@@ -28,6 +28,7 @@ local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
  INTRO_2 = { 32, 16, 32, 48 },
  INTRO_1 = { 64, 16, 32, 48 },
  INTRO_0 = { 96, 16, 80, 48 },
+ GAME_OVER = { 0, 64, 138, 100 },
 })
 
 -- Initialize game vars
@@ -35,6 +36,7 @@ local entities = {}
 local lavaBalls = {}
 local targetBalls = {}
 local levelNum = 10
+local gameTimer = 60
 local delayCounter = 0
 local txtSize = 0
 local currLevel = nil
@@ -109,13 +111,21 @@ local function initLevel(levelNum)
   }))
  end
 
- -- reset player state (start small, etc.)
+  -- calc level time
+  gameTimer = currLevel.numTargetBalls+10+0.9
+
+ -- revive player player state (start small, etc.)
  if not p1.isAlive then
   table.insert(entities, p1)
   p1.isAlive = true
   p1.timeAlive = 0
   p1.size = 0.25
  end
+
+ -- Start player with invincibility
+ p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
+ p1.powerupTimer = 5
+ p1.powerupFrame = 1
  
  -- Intro (3 sec countdown)
  game_state=constants.GAME_STATE.LVL_INTRO
@@ -130,24 +140,34 @@ end
 -- Update code
 -- -----------------------------------------------------------
 
+local function loseLife()
+  print("dead!!")
+  p1:die()
+  -- create "death" explosion particles
+  gfx.boom(p1.x, p1.y, 750, constants.PLAYER_DEATH_COLS)
+  gfx:shake(1)
+  -- lose life
+  game_state = constants.GAME_STATE.LOSE_LIFE
+  Sounds.loseLife:play()
+  Sounds.ballzMoving:stop()
+end
+
+
 local function updatePlayerCollisions()
   -- lava balls 
   for index, lball in ipairs(lavaBalls) do
-    if collision.objectsAreTouching(p1,lball)
-     and p1.timeAlive>1 then
-      -- TODO: Player death (unless invinc/shield)
-      print("dead!!")
-      p1:die()
-      -- create "death" explosion particles
-      gfx.boom(p1.x, p1.y, 500, constants.PLAYER_DEATH_COLS)
-      gfx:shake(1)
-      -- lose life
-      game_state=constants.GAME_STATE.LOSE_LIFE
-      Sounds.loseLife:play()
-      Sounds.ballzMoving:stop()
+    if collision.objectsAreTouching(p1,lball) then
+      -- Player death (unless invinc/shield)
+      if p1.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
+        -- do nothing      
+      elseif p1.powerup == constants.POWERUP_TYPES.SHIELD then
+        print("TODO: LOSE SHIELD! >>>>")
+        p1.powerup = constants.POWERUP_TYPES.NONE
+      else
+        loseLife()
+      end
     end
- end
-
+  end
   -- target balls
   --print("#targetBalls="..#targetBalls)
   for index, tball in ipairs(targetBalls) do
@@ -216,7 +236,7 @@ end
 local function drawUI()
   love.graphics.setColor(1, 1, 1)
   -- lives
-  for i=1,3 do
+  for i=1,p1.lives do
     SPRITESHEET:drawCentered('EMPTY_HEART',
       i*18-8 + gfx.shakeX, 9 + gfx.shakeY, 
       nil, nil, nil, 1, 1)
@@ -228,10 +248,15 @@ local function drawUI()
     SPRITESHEET:drawCentered('INTRO_'..delayCounter,
                               constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
                               nil, nil, nil, txtSize, txtSize)
+  elseif game_state == constants.GAME_STATE.GAME_OVER then
+    -- Game Over!
+    SPRITESHEET:drawCentered('GAME_OVER',
+                              constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
+                              nil, nil, nil, txtSize, txtSize)
   end
   -- timer
   love.graphics.setColor(colour[19])
-  love.graphics.printf('TIME:60',
+  love.graphics.printf('TIME:'..string.format("%02d", math.floor(gameTimer)),
     constants.GAME_WIDTH/2-80/2 + gfx.shakeX,
     1 + gfx.shakeY,
     80,"center")
@@ -240,6 +265,7 @@ local function drawUI()
   love.graphics.setColor(colour[18])
   love.graphics.printf('000000',360 + gfx.shakeX,1 + gfx.shakeY,150,"right")
 end
+
 
 -- -----------------------------------------------------------
 -- Main functions
@@ -275,6 +301,8 @@ local function update(dt)
   mouseX = (mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE
   mouseY = (mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE
 
+
+
   -- Update all entities
   local index, entity
   for index, entity in ipairs(entities) do
@@ -296,8 +324,10 @@ local function update(dt)
       end
     end
 
-  -- play?
-  else
+  -- Game play
+  elseif game_state == constants.GAME_STATE.LVL_PLAY 
+   or game_state == constants.GAME_STATE.LOSE_LIFE then
+
     -- Update player (if alive)
     if p1.isAlive then
       p1:update(dt)
@@ -308,16 +338,46 @@ local function update(dt)
       p1.deathCooldown = p1.deathCooldown-1
       if p1.deathCooldown <= 0 then
         -- Restart level?
-        if p1.lives>0 then
+        if p1.lives >= 0 then
           initLevel(levelNum)
         else
           -- game over
+          game_state = constants.GAME_STATE.GAME_OVER
           print("game over!!!")
+          txtSize = 0
         end
       end
     end
 
+  -- Game over
+  elseif game_state == constants.GAME_STATE.GAME_OVER then
+    -- text
+    txtSize = txtSize + .03
+    txtSize = math.min(txtSize, 2)
+    -- fireworks!
+    if love.math.random(15)==1 and #lavaBalls > 0 then 
+      -- kill lavaball
+      gfx.boom(lavaBalls[1].x, lavaBalls[1].y, 200, constants.LAVA_DEATH_COLS)
+      --boom(lavaBalls[1].x, lavaBalls[1].y, 25, lava_death_cols)
+      lavaBalls[1]:die()
+      --del(lava_balls, lava_balls[1])
+    end
+    if love.math.random(15)==1 and #targetBalls > 0 then 
+      -- kill target
+      gfx.boom(targetBalls[1].x, targetBalls[1].y, 150, constants.PLAYER_DEATH_COLS)
+      targetBalls[1]:die()
+      --del(targets, targets[1])
+    end
   end -- if gamestate
+
+  -- Decrease game timer
+  if game_state == constants.GAME_STATE.LVL_PLAY then
+    gameTimer = gameTimer - 0.016
+    if gameTimer < 1 then
+      gameTimer = 0 
+      loseLife()
+    end
+  end
 
   -- update particles
   gfx.updateParticles(dt)

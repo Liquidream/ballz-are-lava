@@ -22,7 +22,7 @@ local particles={}
 local font
 
 local function init(self)
- font = love.graphics.newFont("assets/saxmono.ttf",18)
+ font = love.graphics.newFont("assets/saxmono.ttf",17)
  font:setFilter("nearest", "nearest", 0 )
  love.graphics.setFont(font)
 end
@@ -134,7 +134,7 @@ function updateParticles(dt)
  end
 end
 
-function drawParticles(self) 
+function drawParticles(self)
  --iterate trough all particles
  local col
  for index, p in ipairs(particles) do
@@ -146,15 +146,9 @@ function drawParticles(self)
   end
   --actually draw particle
   love.graphics.setColor(colour[col])
-  love.graphics.rectangle("fill", 
-    p.x + self.shakeX, 
-    p.y + self.shakeY, 
-    1, 1 )
-  --pset(p.x,p.y,col)
+  love.graphics.points(p.x + self.shakeX, p.y + self.shakeY)
  end
 end
-
-
 
 
 

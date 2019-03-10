@@ -2,6 +2,7 @@
 local constants = require 'src/constants'
 local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
+local colour = require 'src/util/colour'
 local gfx = require 'src/util/gfx'
 
 
@@ -11,18 +12,18 @@ local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
 })
 
 local Player = Entity.extend({
- lives = 3,
- size = 0.25, -- 0..1 (scale)
- radius = 18, --15
- renderLayer=7,
- deathCooldown=-1,
- -- width = constants.CARD_WIDTH,
- -- height = constants.CARD_HEIGHT,
+  lives = 0,--3,
+  size = 0.25, -- 0..1 (scale)
+  radius = 18,
+  renderLayer=7,
+  deathCooldown=-1,
+  powerup = nil,
+  powerupTimer = 3,
+  powerupFrame = 1,
 
 constructor = function(self)
   Entity.constructor(self)
-  -- self.colorIndex = self.suitIndex < 3 and 1 or 2
-  -- self.shape = love.physics.newRectangleShape(self.width, self.height)
+  -- self.property = value
 end,
 update = function(self, dt)
 
@@ -32,6 +33,15 @@ update = function(self, dt)
   -- bail out now
   return
  end
+
+ -- Power-ups (duration)
+ if self.powerup then
+  self.powerupTimer = self.powerupTimer  - 0.016
+  if self.powerupTimer <= 0 then
+    -- Power-up over
+    self.powerup = constants.POWERUP_TYPES.NONE
+  end
+end
  
  -- keyboard controls override mouse
  local speed = 75
@@ -77,6 +87,13 @@ draw = function(self)
  love.graphics.setColor(1, 1, 1)
  local sprite = 'BASE'
  SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
+
+ -- Power-up layers
+ if self.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
+ -- and love.math.random(3)==1 then
+  love.graphics.setColor(colour[8+love.math.random(3)])
+  love.graphics.circle("line", self.x, self.y, self.size*20+love.math.random(4))
+ end
 
 end,
 onDeath = function(self) 
