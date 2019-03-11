@@ -64,7 +64,7 @@ end
     self.x = mouseX -- mouse xpos
   end
   if (mouseY ~= lastMouseY) then 
-   self.y = mouseY -- mouse ypos
+    self.y = mouseY -- mouse ypos
   end
   --self.x, self.y = mouseX, mouseY
   
@@ -76,8 +76,8 @@ end
   self.size = math.min(self.size+0.01, 1) --0.75)--1
 end,
 draw = function(self)
-  local x = self.x + gfx.shakeX
-  local y = self.y + gfx.shakeY
+  local x = self.x
+  local y = self.y
 
   -- (Draw shape method)
   --  love.graphics.setColor(colour[14])
@@ -87,6 +87,8 @@ draw = function(self)
   love.graphics.setColor(1, 1, 1)
   local sprite = 'BASE'
   SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
+
+  print("player pos="..x..","..y.." (size="..self.size..")")
 
   -- Power-up layers
   if self.powerup == constants.POWERUP_TYPES.INVINCIBILITY then

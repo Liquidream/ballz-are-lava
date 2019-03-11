@@ -16,10 +16,9 @@ local RENDER_Y
 local shakeAmount = 0 -- how much to shake the screen (will stablise over time)
 local shakeX = 0
 local shakeY = 0
-
 local particles={}
-
 local font
+local RENDER_CANVAS
 
 local function init(self)
  font = love.graphics.newFont("assets/saxmono.ttf",17)
@@ -30,15 +29,24 @@ end
 -- Recalibrate the render display, based on current display dimensions
 -- (e.g. after change to/from Fullscreen)
 local function updateDisplay(self)
- -- Screen dimensions are hardware-based (what's the size of the display device)
- local width, height = love.graphics.getDimensions()
- self.SCREEN_WIDTH = width
- self.SCREEN_HEIGHT = height
- self.RENDER_SCALE = math.floor(math.min(self.SCREEN_WIDTH / constants.GAME_WIDTH, self.SCREEN_HEIGHT / constants.GAME_HEIGHT))
- self.RENDER_WIDTH = self.RENDER_SCALE * constants.GAME_WIDTH
- self.RENDER_HEIGHT = self.RENDER_SCALE * constants.GAME_HEIGHT
- self.RENDER_X = (self.SCREEN_WIDTH - self.RENDER_WIDTH) / 2
- self.RENDER_Y = (self.SCREEN_HEIGHT - self.RENDER_HEIGHT) / 2
+  -- Screen dimensions are hardware-based (what's the size of the display device)
+  local width, height = love.graphics.getDimensions()
+  self.SCREEN_WIDTH = width
+  self.SCREEN_HEIGHT = height
+
+  -- Create new canvas for drawing on
+  self.RENDER_CANVAS = love.graphics.newCanvas(constants.GAME_WIDTH, constants.GAME_HEIGHT)
+  self.RENDER_CANVAS:setFilter("nearest", "nearest")
+
+  self.RENDER_SCALE = math.floor(math.min(self.SCREEN_WIDTH / constants.GAME_WIDTH, self.SCREEN_HEIGHT / constants.GAME_HEIGHT))
+  self.RENDER_WIDTH = self.RENDER_SCALE * constants.GAME_WIDTH
+  self.RENDER_HEIGHT = self.RENDER_SCALE * constants.GAME_HEIGHT
+  -- print("RENDER_SCALE="..self.RENDER_SCALE)
+  -- print("RENDER_WIDTH="..self.RENDER_WIDTH)
+  -- print("RENDER_HEIGHT="..self.RENDER_HEIGHT)
+
+  self.RENDER_X = math.floor((self.SCREEN_WIDTH - self.RENDER_WIDTH) / 2)
+  self.RENDER_Y = math.floor((self.SCREEN_HEIGHT - self.RENDER_HEIGHT) / 2)
 end
 
 
@@ -162,6 +170,7 @@ return {
  RENDER_HEIGHT = RENDER_HEIGHT,
  RENDER_X = RENDER_X,
  RENDER_Y = RENDER_Y,
+ RENDER_CANVAS = RENDER_CANVAS,
 
  font = font,
 

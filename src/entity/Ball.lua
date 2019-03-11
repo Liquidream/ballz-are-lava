@@ -69,8 +69,8 @@ update = function(self, dt)
 end,
 
 draw = function(self)
- local x = self.x + gfx.shakeX
- local y = self.y + gfx.shakeY
+ local x = self.x 
+ local y = self.y 
 
  local sprite = (self.ball_type==constants.BALL_TYPES.LAVA) and "LAVABALL" or "TARGET"
  if sprite == "LAVABALL" then
@@ -79,7 +79,7 @@ draw = function(self)
  else
   love.graphics.setColor(1, 1, 1)
  end
- SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
+ SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
 
 end,
 })

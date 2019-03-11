@@ -23,7 +23,7 @@ game_state=constants.GAME_STATE.LVL_PLAY
 -- local vars
 --
 local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
- EMPTY_HEART = { 0, 0, 16, 15 },
+ EMPTY_HEART = { 0, 0, 16, 16 },
  INTRO_3 = { 0, 16, 32, 48 },
  INTRO_2 = { 32, 16, 32, 48 },
  INTRO_1 = { 64, 16, 32, 48 },
@@ -220,13 +220,13 @@ local function drawBackground()
  --
  for x=0, constants.GAME_WIDTH, gridSize do
     love.graphics.line(
-      x+gfx.shakeX,0+gfx.shakeY,
-      x+gfx.shakeX,constants.GAME_HEIGHT+gfx.shakeY)
+      x,0,
+      x,constants.GAME_HEIGHT)
  end
  for y=0, constants.GAME_HEIGHT, gridSize do
     love.graphics.line(
-      0+gfx.shakeX,y+gfx.shakeY,
-      constants.GAME_WIDTH+gfx.shakeX,y+gfx.shakeY)
+      0,y,
+      constants.GAME_WIDTH,y)
  end
 
  -- remember values
@@ -238,7 +238,7 @@ local function drawUI()
   -- lives
   for i=1,p1.lives do
     SPRITESHEET:drawCentered('EMPTY_HEART',
-      i*18-8 + gfx.shakeX, 9 + gfx.shakeY, 
+      i*18-8 , 9 , 
       nil, nil, nil, 1, 1)
   end
 
@@ -257,13 +257,13 @@ local function drawUI()
   -- timer
   love.graphics.setColor(colour[19])
   love.graphics.printf('TIME:'..string.format("%02d", math.floor(gameTimer)),
-    constants.GAME_WIDTH/2-80/2 + gfx.shakeX,
-    1 + gfx.shakeY,
+    constants.GAME_WIDTH/2-80/2 ,
+    1 ,
     80,"center")
     
   -- score
   love.graphics.setColor(colour[18])
-  love.graphics.printf('000000',360 + gfx.shakeX,1 + gfx.shakeY,150,"right")
+  love.graphics.printf('000000',360 ,1 ,150,"right")
 end
 
 
@@ -298,8 +298,8 @@ local function update(dt)
   -- get the position of the mouse
   mouseX, mouseY = love.mouse.getPosition()
   -- adjust mouse position for scale
-  mouseX = (mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE
-  mouseY = (mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE
+  mouseX = math.floor((mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE)
+  mouseY = math.floor((mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE)
 
 
 

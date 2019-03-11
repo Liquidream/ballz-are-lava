@@ -60,41 +60,46 @@ function love.update(dt)
 end
 
 function love.draw()
- -- Center everything within Castle window
- love.graphics.push()
- translateScreenToCenterDx = 0.5 * (love.graphics.getWidth() - gfx.SCREEN_WIDTH)
- translateScreenToCenterDy = 0.5 * (love.graphics.getHeight() - gfx.SCREEN_HEIGHT)
- love.graphics.translate(translateScreenToCenterDx, translateScreenToCenterDy)
- -- Set "Point/Non-AA" Filters for...
- love.graphics.setDefaultFilter('nearest', 'nearest') -- Sprites (Quads)
- love.graphics.setLineStyle("rough")                  -- Shapes (Circles, Lines...)
- love.graphics.setPointSize(gfx.RENDER_SCALE)         -- Single dots
- -- Apply camera transformations
- love.graphics.translate(gfx.RENDER_X, gfx.RENDER_Y)
- --love.graphics.scale(3, 3)
- love.graphics.scale(gfx.RENDER_SCALE, gfx.RENDER_SCALE)
+  --This sets the draw target to the canvas
+  love.graphics.setCanvas(gfx.RENDER_CANVAS)
 
- game.draw()
+  -- Camera translatons (Shake)
+  love.graphics.push()
+  
+    -- Set "Point/Non-AA" Filters for...
+    love.graphics.setDefaultFilter('nearest', 'nearest') -- Sprites (Quads)
+    love.graphics.setLineStyle("rough")                  -- Shapes (Circles, Lines...)
 
--- Draw blinders
-love.graphics.setColor(0, 0, 0, 1)
-love.graphics.rectangle('fill', constants.GAME_RIGHT, constants.GAME_TOP - 1000, 1000, constants.GAME_HEIGHT + 2000)
-love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_TOP - 1000, 1000, constants.GAME_HEIGHT + 2000)
-love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_TOP - 1000, constants.GAME_WIDTH + 2000, 1000)
-love.graphics.rectangle('fill', constants.GAME_LEFT - 1000, constants.GAME_BOTTOM, constants.GAME_WIDTH + 2000, 1000)
+    -- Apply camera transformations
+    love.graphics.translate(gfx.shakeX, gfx.shakeY)
 
--- Draw game bounds
--- love.graphics.setColor(colour[17])
--- love.graphics.rectangle('line', 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT)
+    game.draw()
 
+    -- Draw game bounds
+    -- love.graphics.setColor(colour[17])
+    -- love.graphics.rectangle('line', 0, 0, constants.GAME_WIDTH, constants.GAME_HEIGHT)
 
- -- Pop centering within Castle window 
- -- (and restore 100% scale state)
- love.graphics.pop()
+  -- Pop camera translations (Shake)
+  love.graphics.pop()
 
- -- Draw screen bounds
--- love.graphics.setColor(0, 1, 0, 1)
--- love.graphics.rectangle('line', 0, 0, constants.SCREEN_WIDTH, constants.SCREEN_HEIGHT)
+  -- Draw the canvas, scaled, to screen
+  love.graphics.setCanvas() --This sets the target back to the screen
+
+  -- Center everything within Castle window
+  love.graphics.push()
+    
+    -- Apply "Center to Window" transformations
+    love.graphics.translate(gfx.RENDER_X, gfx.RENDER_Y)
+
+    love.graphics.setColor(1, 1, 1, 1)
+    love.graphics.draw(gfx.RENDER_CANVAS, 0, 0, 0, gfx.RENDER_SCALE, gfx.RENDER_SCALE)
+
+  -- Pop centering within Castle window
+  love.graphics.pop()
+
+  -- Draw screen bounds
+  -- love.graphics.setColor(0, 1, 0, 1)
+  -- love.graphics.rectangle('line', 0, 0, gfx.SCREEN_WIDTH, gfx.SCREEN_HEIGHT)
 
 end
 
