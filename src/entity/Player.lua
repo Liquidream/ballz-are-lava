@@ -76,24 +76,24 @@ end
   self.size = math.min(self.size+0.01, 1) --0.75)--1
 end,
 draw = function(self)
- local x = self.x + gfx.shakeX
- local y = self.y + gfx.shakeY
- -- local w = self.width / 2
- -- local h = self.height / 2
- 
- -- love.graphics.setColor(255, 0, 0)
- -- love.graphics.circle("fill", self.x, self.y, 25)
+  local x = self.x + gfx.shakeX
+  local y = self.y + gfx.shakeY
 
- love.graphics.setColor(1, 1, 1)
- local sprite = 'BASE'
- SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
+  -- (Draw shape method)
+  --  love.graphics.setColor(colour[14])
+  --  love.graphics.circle("fill", self.x, self.y, self.size*18)
 
- -- Power-up layers
- if self.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
- -- and love.math.random(3)==1 then
-  love.graphics.setColor(colour[8+love.math.random(3)])
-  love.graphics.circle("line", self.x, self.y, self.size*20+love.math.random(4))
- end
+  -- (Sprite method)
+  love.graphics.setColor(1, 1, 1)
+  local sprite = 'BASE'
+  SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
+
+  -- Power-up layers
+  if self.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
+    -- and love.math.random(3)==1 then
+    love.graphics.setColor(colour[8+love.math.random(3)])
+    love.graphics.circle("line", self.x, self.y, self.size*20+love.math.random(4))
+  end
 
 end,
 onDeath = function(self) 

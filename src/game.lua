@@ -28,7 +28,7 @@ local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
  INTRO_2 = { 32, 16, 32, 48 },
  INTRO_1 = { 64, 16, 32, 48 },
  INTRO_0 = { 96, 16, 80, 48 },
- GAME_OVER = { 0, 64, 138, 100 },
+ GAME_OVER = { 0, 64, 138, 112 },
 })
 
 -- Initialize game vars
@@ -338,7 +338,7 @@ local function update(dt)
       p1.deathCooldown = p1.deathCooldown-1
       if p1.deathCooldown <= 0 then
         -- Restart level?
-        if p1.lives >= 0 then
+        if p1.lives > 0 then
           initLevel(levelNum)
         else
           -- game over
@@ -353,7 +353,7 @@ local function update(dt)
   elseif game_state == constants.GAME_STATE.GAME_OVER then
     -- text
     txtSize = txtSize + .03
-    txtSize = math.min(txtSize, 2)
+    txtSize = math.min(txtSize, 1.75)
     -- fireworks!
     if love.math.random(15)==1 and #lavaBalls > 0 then 
       -- kill lavaball
