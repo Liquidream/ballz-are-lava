@@ -4,6 +4,7 @@ local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local Sounds = require 'src/util/sounds'
 local gfx = require 'src/util/gfx'
+local colour = require 'src/util/colour'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ball.png', {
   LAVABALL = { 0, 0, 16, 16 },
@@ -12,7 +13,7 @@ local SPRITESHEET = SpriteSheet.new('assets/img/ball.png', {
 
 local Ball = Entity.extend({
  size = 1, -- 0..1 (scale)
- radius = 1,
+ radius = 5,
  ball_type = constants.BALL_TYPES.LAVA,
  speed = 100,
  
@@ -81,6 +82,11 @@ draw = function(self)
  end
  SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
 
+  -- Debug collisions, etc.
+  if constants.DEBUG_MODE then
+    love.graphics.setColor(colour[25])
+    love.graphics.circle("line", self.x, self.y, self.radius)
+  end
 end,
 })
 

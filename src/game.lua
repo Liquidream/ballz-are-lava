@@ -119,9 +119,9 @@ local function initLevel(levelNum)
   table.insert(entities, p1)
   p1.isAlive = true
   p1.timeAlive = 0
-  p1.size = 0.25
  end
-
+ p1:resetState()
+ 
  -- Start player with invincibility
  p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
  p1.powerupTimer = 5
@@ -173,6 +173,7 @@ local function updatePlayerCollisions()
   for index, tball in ipairs(targetBalls) do
     if collision.objectsAreTouching(p1,tball) then
       tball:die()
+      p1.targetsCollected = p1.targetsCollected + 1
       collectedLastBall = (#targetBalls-1 == 0)
 
       if not collectedLastBall then
