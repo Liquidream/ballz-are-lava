@@ -24,11 +24,11 @@ game_state=constants.GAME_STATE.LVL_PLAY
 --
 local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
  EMPTY_HEART = { 0, 0, 16, 16 },
- INTRO_3 = { 0, 16, 32, 48 },
- INTRO_2 = { 32, 16, 32, 48 },
- INTRO_1 = { 64, 16, 32, 48 },
- INTRO_0 = { 96, 16, 80, 48 },
- GAME_OVER = { 0, 64, 138, 112 },
+ INTRO_3 = { 0, 16, 24, 40 },
+ INTRO_2 = { 32, 16, 24, 40 },
+ INTRO_1 = { 64, 16, 24, 40 },
+ INTRO_0 = { 96, 16, 56, 40 },
+ GAME_OVER = { 0, 64, 120, 104 },
 })
 
 -- Initialize game vars
@@ -121,7 +121,7 @@ local function initLevel(levelNum)
   p1.timeAlive = 0
  end
  p1:resetState()
- 
+
  -- Start player with invincibility
  p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
  p1.powerupTimer = 5
@@ -246,6 +246,7 @@ local function drawUI()
   -- state-dependent overlays
   if game_state == constants.GAME_STATE.LVL_INTRO then
     -- intro countdown
+    love.graphics.setColor(1, 1, 1, 6-txtSize)
     SPRITESHEET:drawCentered('INTRO_'..delayCounter,
                               constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
                               nil, nil, nil, txtSize, txtSize)
@@ -255,6 +256,9 @@ local function drawUI()
                               constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
                               nil, nil, nil, txtSize, txtSize)
   end
+  -- Restore default colour
+  love.graphics.setColor(1, 1, 1)
+  
   -- timer
   love.graphics.setColor(colour[19])
   love.graphics.printf('TIME:'..string.format("%02d", math.floor(gameTimer)),
@@ -316,8 +320,8 @@ local function update(dt)
 
   -- Level Intro
   if game_state == constants.GAME_STATE.LVL_INTRO then
-    txtSize = txtSize + .07
-    if txtSize > 3 then 
+    txtSize = txtSize + .14
+    if txtSize > 6 then 
       txtSize = 0
       delayCounter = delayCounter - 1
       if delayCounter < 0 then
@@ -353,8 +357,8 @@ local function update(dt)
   -- Game over
   elseif game_state == constants.GAME_STATE.GAME_OVER then
     -- text
-    txtSize = txtSize + .03
-    txtSize = math.min(txtSize, 1.75)
+    txtSize = txtSize + .02
+    txtSize = math.min(txtSize, 2)
     -- fireworks!
     if love.math.random(15)==1 and #lavaBalls > 0 then 
       -- kill lavaball
