@@ -13,6 +13,7 @@ if CASTLE_PREFETCH then
    'src/entity/Entity.lua',
    'src/entity/Player.lua',
    'src/entity/Ball.lua',
+   'src/entity/PowerUp.lua',
    'src/util/createClass.lua',
    'src/util/colour.lua',
    'src/util/collision.lua',

@@ -5,6 +5,7 @@ local listHelpers = require 'src/util/list'
 local Promise = require 'src/util/Promise'
 local Player = require 'src/entity/Player'
 local Ball = require 'src/entity/Ball'
+local PowerUp = require 'src/entity/PowerUp'
 local colour = require 'src/util/colour'
 local generateLevel = require 'src/generateLevel'
 local collision = require 'src/util/collision'
@@ -23,17 +24,18 @@ game_state=constants.GAME_STATE.LVL_PLAY
 -- local vars
 --
 local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
- EMPTY_HEART = { 0, 0, 16, 16 },
- INTRO_3 = { 0, 16, 24, 40 },
- INTRO_2 = { 32, 16, 24, 40 },
- INTRO_1 = { 64, 16, 24, 40 },
- INTRO_0 = { 96, 16, 56, 40 },
- GAME_OVER = { 0, 64, 120, 104 },
+  EMPTY_HEART = { 0, 0, 16, 16 },
+  INTRO_3 = { 0, 16, 24, 40 },
+  INTRO_2 = { 32, 16, 24, 40 },
+  INTRO_1 = { 64, 16, 24, 40 },
+  INTRO_0 = { 96, 16, 56, 40 },
+  GAME_OVER = { 0, 64, 120, 104 },
 })
 
 -- Initialize game vars
 local entities = {}
 local lavaBalls = {}
+local powerUps = {}
 local targetBalls = {}
 local levelNum = 10
 local gameTimer = 60
@@ -85,55 +87,64 @@ end
 -- Init level (either for first time or after restart)
 local function initLevel(levelNum)
 
- -- Remove any existing balls
- for index, tball in ipairs(targetBalls) do
-  tball:die()
- end
- for index, lball in ipairs(lavaBalls) do
-  lball:die()
- end
+  -- Remove any existing balls
+  for index, tball in ipairs(targetBalls) do
+    tball:die()
+  end
+  for index, lball in ipairs(lavaBalls) do
+    lball:die()
+  end
 
- -- Generate a new level
- currLevel = generateLevel(levelNum)
+  -- Generate a new level properies (num balls, etc.)
+  currLevel = generateLevel(levelNum)
 
- -- Create lava balls
- for i=1,currLevel.numLavaBalls do
-  table.insert(lavaBalls, Ball:spawn({
-   -- optional overloads
-  }))
- end
+  -- Create lava balls
+  for i=1,currLevel.numLavaBalls do
+    table.insert(lavaBalls, Ball:spawn({
+      -- optional overloads
+    }))
+  end
 
- -- Create target balls
- for i=1,currLevel.numTargetBalls do
-  table.insert(targetBalls, Ball:spawn({
-   -- optional overloads
-   ball_type=constants.BALL_TYPES.TARGET,
-  }))
- end
+  -- Create target balls
+  for i=1,currLevel.numTargetBalls do
+    table.insert(targetBalls, Ball:spawn({
+      -- optional overloads
+      ball_type=constants.BALL_TYPES.TARGET,
+    }))
+  end
+
+  -- Create Power-Ups
+  for i=1,currLevel.numPowerUps do
+    table.insert(powerUps, PowerUp:spawn({
+      -- optional overloads
+      start_time = love.math.random(currLevel.numTargetBalls+5+0.9)+5,
+
+    }))
+  end
 
   -- calc level time
   gameTimer = currLevel.numTargetBalls+10+0.9
 
- -- revive player player state (start small, etc.)
- if not p1.isAlive then
-  table.insert(entities, p1)
-  p1.isAlive = true
-  p1.timeAlive = 0
- end
- p1:resetState()
+  -- revive player player state (start small, etc.)
+  if not p1.isAlive then
+    table.insert(entities, p1)
+    p1.isAlive = true
+    p1.timeAlive = 0
+  end
+  p1:resetState()
 
- -- Start player with invincibility
- p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
- p1.powerupTimer = 5
- p1.powerupFrame = 1
- 
- -- Intro (3 sec countdown)
- game_state=constants.GAME_STATE.LVL_INTRO
- delayCounter = 3
+  -- Start player with invincibility
+  p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
+  p1.powerupTimer = 5
+  p1.powerupFrame = 1
 
- --game_state=constants.GAME_STATE.LVL_PLAY
+  -- Intro (3 sec countdown)
+  game_state=constants.GAME_STATE.LVL_INTRO
+  delayCounter = 3
 
- Sounds.ballzMoving:play()
+  --game_state=constants.GAME_STATE.LVL_PLAY
+
+  Sounds.ballzMoving:play()
 end
 
 -- -----------------------------------------------------------

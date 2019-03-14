@@ -11,7 +11,7 @@ local function generateLevelDifficulty(levelNumber)
   -- calculate target + enemys
  local numLavaBalls = math.floor((levelNumber+1)*1.5)  -- increase enemies by constant factor
  local numTargetBalls = (levelNumber < 7) and math.floor(1.5*(levelNumber+1)) or 10 -- cap # targets to 10
- local numPowerups = math.floor(levelNumber*.5)
+ local numPowerUps = math.floor(levelNumber*.5)
  -- local numLavaBalls = 16
  -- local numTargetBalls = 10
  local lavaBallsSpeed = 5
@@ -20,6 +20,7 @@ local function generateLevelDifficulty(levelNumber)
   numLavaBalls = numLavaBalls,
   lavaBallsSpeed = lavaBallsSpeed,
   numTargetBalls = numTargetBalls,
+  numPowerUps = numPowerUps,
   enablePowerUpShield = enablePowerUpShield,
   enablePowerUpFreeze = enablePowerUpFreeze,
   enablePowerUpLavabomb = enablePowerUpLavabomb,
@@ -39,15 +40,18 @@ generateLevel = function(levelNumber)
   local numLavaBalls = difficulty.numLavaBalls
   local numTargetBalls = difficulty.numTargetBalls
   local lavaBallsSpeed = difficulty.lavaBallsSpeed
+  local numPowerUps = difficulty.numPowerUps
   print('  numLavaBalls = '..numLavaBalls)
   print('  numTargetBalls = '..numTargetBalls)
   print('  lavaBallsSpeed = '..lavaBallsSpeed)
-  print('  enablePowerUpShield = '..(enablePowerUpShield and 'true' or 'false'))
+  print('  numPowerUps = '..numPowerUps)
+  --print('  enablePowerUpShield = '..(enablePowerUpShield and 'true' or 'false'))
 
   return {
    numLavaBalls = numLavaBalls,
    lavaBallsSpeed = lavaBallsSpeed,
    numTargetBalls = numTargetBalls,
+   numPowerUps = numPowerUps,
   }
 end
 
