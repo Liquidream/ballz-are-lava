@@ -45,8 +45,8 @@ update = function(self, dt)
   end
 
   -- Should player be able to move?
-  if game_state~=constants.GAME_STATE.LVL_PLAY 
-   and game_state~=constants.GAME_STATE.LVL_INTRO then
+  if gameState~=constants.GAME_STATE.LVL_PLAY 
+   and gameState~=constants.GAME_STATE.LVL_INTRO then
     -- bail out now
     return
   end

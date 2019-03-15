@@ -31,7 +31,7 @@ update = function(self, dt)
   -- Change ball speed?
   --self.vx = 
 
-  if game_state==constants.GAME_STATE.LVL_PLAY then
+  if gameState==constants.GAME_STATE.LVL_PLAY then
    -- TODO: also include PAUSE power-up
    -- (tho maybe better to have a factor, so can slow/speedup!)
    Entity.update(self, dt)

@@ -18,7 +18,8 @@ local Sounds = require 'src/util/sounds'
 mouseX=nil  -- mouse pos (in game co-ordinates)
 mouseY=nil
 -- state variable(s)
-game_state=constants.GAME_STATE.LVL_PLAY
+gameState=constants.GAME_STATE.LVL_PLAY
+gameTimer = 60
 
 --
 -- local vars
@@ -38,7 +39,7 @@ local lavaBalls = {}
 local powerUps = {}
 local targetBalls = {}
 local levelNum = 10
-local gameTimer = 60
+-- local gameTimer = 60 -- (Made Global so Power-ups can read it)
 local delayCounter = 0
 local txtSize = 0
 local currLevel = nil
@@ -87,12 +88,15 @@ end
 -- Init level (either for first time or after restart)
 local function initLevel(levelNum)
 
-  -- Remove any existing balls
+  -- Remove any existing content
   for index, tball in ipairs(targetBalls) do
     tball:die()
   end
   for index, lball in ipairs(lavaBalls) do
     lball:die()
+  end
+  for index, pUp in ipairs(powerUps) do
+    pUp:die()
   end
 
   -- Generate a new level properies (num balls, etc.)
@@ -117,7 +121,7 @@ local function initLevel(levelNum)
   for i=1,currLevel.numPowerUps do
     table.insert(powerUps, PowerUp:spawn({
       -- optional overloads
-      start_time = love.math.random(currLevel.numTargetBalls+5+0.9)+5,
+      startTime = love.math.random(currLevel.numTargetBalls+5+0.9)+5,
 
     }))
   end
@@ -139,10 +143,10 @@ local function initLevel(levelNum)
   p1.powerupFrame = 1
 
   -- Intro (3 sec countdown)
-  game_state=constants.GAME_STATE.LVL_INTRO
+  gameState=constants.GAME_STATE.LVL_INTRO
   delayCounter = 3
 
-  --game_state=constants.GAME_STATE.LVL_PLAY
+  --gameState=constants.GAME_STATE.LVL_PLAY
 
   Sounds.ballzMoving:play()
 end
@@ -158,14 +162,14 @@ local function loseLife()
   gfx.boom(p1.x, p1.y, 750, constants.PLAYER_DEATH_COLS)
   gfx:shake(1)
   -- lose life
-  game_state = constants.GAME_STATE.LOSE_LIFE
+  gameState = constants.GAME_STATE.LOSE_LIFE
   Sounds.loseLife:play()
   Sounds.ballzMoving:stop()
 end
 
 
 local function updatePlayerCollisions()
-  -- lava balls 
+  -- Lava balls 
   for index, lball in ipairs(lavaBalls) do
     if collision.objectsAreTouching(p1,lball) then
       -- Player death (unless invinc/shield)
@@ -179,7 +183,7 @@ local function updatePlayerCollisions()
       end
     end
   end
-  -- target balls
+  -- Target balls
   --print("#targetBalls="..#targetBalls)
   for index, tball in ipairs(targetBalls) do
     if collision.objectsAreTouching(p1,tball) then
@@ -197,7 +201,7 @@ local function updatePlayerCollisions()
         print("level complete!!")
         Sounds.ballzMoving:stop()
         Sounds.beatLevel:play()
-        game_state=constants.GAME_STATE.LVL_END
+        gameState=constants.GAME_STATE.LVL_END
 
         -- (TODO: Show score, etc.)
 
@@ -211,6 +215,12 @@ local function updatePlayerCollisions()
           initLevel(levelNum)
         end)
       end 
+    end
+  end
+  -- Power-Ups
+  for index, pUp in ipairs(powerUps) do
+    if collision.objectsAreTouching(p1,pUp) then
+      pUp:activate(p1)
     end
   end
 end
@@ -255,13 +265,13 @@ local function drawUI()
   end
 
   -- state-dependent overlays
-  if game_state == constants.GAME_STATE.LVL_INTRO then
+  if gameState == constants.GAME_STATE.LVL_INTRO then
     -- intro countdown
     love.graphics.setColor(1, 1, 1, 6-txtSize)
     SPRITESHEET:drawCentered('INTRO_'..delayCounter,
                               constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
                               nil, nil, nil, txtSize, txtSize)
-  elseif game_state == constants.GAME_STATE.GAME_OVER then
+  elseif gameState == constants.GAME_STATE.GAME_OVER then
     -- Game Over!
     SPRITESHEET:drawCentered('GAME_OVER',
                               constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
@@ -330,19 +340,19 @@ local function update(dt)
   end
 
   -- Level Intro
-  if game_state == constants.GAME_STATE.LVL_INTRO then
+  if gameState == constants.GAME_STATE.LVL_INTRO then
     txtSize = txtSize + .14
     if txtSize > 6 then 
       txtSize = 0
       delayCounter = delayCounter - 1
       if delayCounter < 0 then
-        game_state = constants.GAME_STATE.LVL_PLAY
+        gameState = constants.GAME_STATE.LVL_PLAY
       end
     end
 
   -- Game play
-  elseif game_state == constants.GAME_STATE.LVL_PLAY 
-   or game_state == constants.GAME_STATE.LOSE_LIFE then
+  elseif gameState == constants.GAME_STATE.LVL_PLAY 
+   or gameState == constants.GAME_STATE.LOSE_LIFE then
 
     -- Update player (if alive)
     if p1.isAlive then
@@ -358,7 +368,7 @@ local function update(dt)
           initLevel(levelNum)
         else
           -- game over
-          game_state = constants.GAME_STATE.GAME_OVER
+          gameState = constants.GAME_STATE.GAME_OVER
           print("game over!!!")
           txtSize = 0
         end
@@ -366,7 +376,7 @@ local function update(dt)
     end
 
   -- Game over
-  elseif game_state == constants.GAME_STATE.GAME_OVER then
+  elseif gameState == constants.GAME_STATE.GAME_OVER then
     -- text
     txtSize = txtSize + .02
     txtSize = math.min(txtSize, 2)
@@ -387,7 +397,7 @@ local function update(dt)
   end -- if gamestate
 
   -- Decrease game timer
-  if game_state == constants.GAME_STATE.LVL_PLAY then
+  if gameState == constants.GAME_STATE.LVL_PLAY then
     gameTimer = gameTimer - 0.016
     if gameTimer < 1 then
       gameTimer = 0 
