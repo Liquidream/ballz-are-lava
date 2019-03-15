@@ -30,9 +30,6 @@ local Player = Entity.extend({
     self.shrinkTimer = 0
     self.renderLayer=7
     self.deathCooldown=-1
-    self.powerup = nil
-    self.powerupTimer = 3
-    self.powerupFrame = 1
   end,
 
 update = function(self, dt)
@@ -58,6 +55,8 @@ update = function(self, dt)
       -- Power-up over
       self.powerup = constants.POWERUP_TYPES.NONE
     end
+    -- update animation frame
+    self.powerupFrame = (self.powerupFrame+self.powerupFrameSpeed)%self.powerupFrameMax
   end
 
   -- keyboard controls override mouse
@@ -124,8 +123,9 @@ draw = function(self)
   -- Power-up layers
   if self.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
     -- and love.math.random(3)==1 then
-    love.graphics.setColor(colour[8+love.math.random(3)])
-    love.graphics.circle("line", self.x, self.y, drawScale+2+love.math.random(4))
+      local colIndex=constants.POWERUP_INVINC_COLS[math.floor(self.powerupFrame)]
+    love.graphics.setColor(colour[colIndex])
+    love.graphics.circle("line", self.x, self.y, drawScale+2)--+love.math.random(4))
   end
 
   -- Debug collisions, etc.

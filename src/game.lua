@@ -83,6 +83,9 @@ local function initSounds()
 
   Sounds.beatLevel = Sound:new('beat_level.mp3', 1)
   Sounds.beatLevel:setVolume(0.5)
+
+  Sounds.collectPowerUp = Sound:new('collect.mp3', 4)
+  Sounds.collectPowerUp:setVolume(0.5)
 end
 
 -- Init level (either for first time or after restart)
@@ -139,8 +142,10 @@ local function initLevel(levelNum)
 
   -- Start player with invincibility
   p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
-  p1.powerupTimer = 5
+  p1.powerupTimer = 3
   p1.powerupFrame = 1
+  p1.powerupFrameSpeed = 0.5
+  p1.powerupFrameMax = 4
 
   -- Intro (3 sec countdown)
   gameState=constants.GAME_STATE.LVL_INTRO
@@ -220,7 +225,24 @@ local function updatePlayerCollisions()
   -- Power-Ups
   for index, pUp in ipairs(powerUps) do
     if collision.objectsAreTouching(p1,pUp) then
+      -- Collected power-up
+      table.remove(powerUps,index)
+      p1.powerup = pUp.powerup_type
+      Sounds.collectPowerUp:play()
       pUp:activate(p1)
+
+      -- Special power-ups
+      if p1.powerup_type == constants.POWERUP_TYPES.LAVABOMB then
+        local n=love.math.random(#lavaBalls/4)+1
+        local c = 0
+        for k = 1,n do
+          local b = lavaBalls[k]
+          -- kill lavaball
+          gfx.boom(lavaBalls[1].x, lavaBalls[1].y, 200, constants.LAVA_DEATH_COLS)
+          lavaBalls[1]:die()
+        end
+      end
+
     end
   end
 end

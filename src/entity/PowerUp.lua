@@ -33,7 +33,29 @@ local PowerUp = Entity.extend({
 activate = function(self, player)
   -- Activate the Power-up, depending on the type
   if self.powerup_type == constants.POWERUP_TYPES.SHIELD then
- 
+    player.powerupTimer = 6
+    player.powerupFrame = 1
+    player.powerupFrameSpeed = 0.5
+    player.powerupFrameMax = 4
+  
+  elseif self.powerup_type == constants.POWERUP_TYPES.FREEZE then
+    player.powerupTimer = 3
+    player.powerupFrame = 1
+
+  elseif self.powerup_type == constants.POWERUP_TYPES.EXTRA_LIFE then
+    -- TODO: play sound!
+    player.lives = player.lives + 1
+
+  elseif self.powerup_type == constants.POWERUP_TYPES.TIME_EXTEND then
+    -- TODO: play sound!
+    gameTimer = gameTimers + 10
+
+  elseif self.powerup_type == constants.POWERUP_TYPES.INVINCIBILITY then
+    player.powerupTimer = 3
+    player.powerupFrame = 1
+    player.powerupFrameSpeed = 0.5
+    player.powerupFrameMax = 4
+
   else
     -- shouldn't be possible
   end
