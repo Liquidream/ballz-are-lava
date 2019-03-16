@@ -7,11 +7,11 @@ local gfx = require 'src/util/gfx'
 local colour = require 'src/util/colour'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/powerup.png', {
-  P_1 = { 16, 0, 16, 16 }, -- SHIELD
-  P_2 = { 32, 0, 16, 16 }, -- FREEZE
-  P_3 = { 48, 0, 16, 16 }, -- LAVABOMB
-  P_4 = { 64, 0, 16, 16 }, -- EXTRA_LIFE
-  P_5 = { 72, 0, 16, 16 }, -- TIME_EXTEND
+  P_1 = { 0, 0, 16, 16 }, -- SHIELD
+  P_2 = { 16, 0, 16, 16 }, -- FREEZE
+  P_3 = { 32, 0, 16, 16 }, -- LAVABOMB
+  P_4 = { 48, 0, 16, 16 }, -- EXTRA_LIFE
+  P_5 = { 64, 0, 16, 16 }, -- TIME_EXTEND
   P_6 = { 80, 0, 16, 16 }, -- INVINCIBILITY
 })
 
@@ -31,6 +31,7 @@ local PowerUp = Entity.extend({
  end,
  
 activate = function(self, player)
+  print("powerup_type:"..self.powerup_type)
   -- Activate the Power-up, depending on the type
   if self.powerup_type == constants.POWERUP_TYPES.SHIELD then
     player.powerupTimer = 6
@@ -48,7 +49,8 @@ activate = function(self, player)
 
   elseif self.powerup_type == constants.POWERUP_TYPES.TIME_EXTEND then
     -- TODO: play sound!
-    gameTimer = gameTimers + 10
+    print("extend time:")
+    gameTimer = gameTimer + 10
 
   elseif self.powerup_type == constants.POWERUP_TYPES.INVINCIBILITY then
     player.powerupTimer = 3

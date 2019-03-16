@@ -129,6 +129,12 @@ local function initLevel(levelNum)
     }))
   end
 
+  -- debug!!!!
+  print("# Powerups:"..#powerUps)
+  for index, pUp in ipairs(powerUps) do
+    print(">> Type: "..pUp.powerup_type.." @ "..pUp.x..","..pUp.y)
+  end
+
   -- calc level time
   gameTimer = currLevel.numTargetBalls+10+0.9
 
@@ -224,8 +230,11 @@ local function updatePlayerCollisions()
   end
   -- Power-Ups
   for index, pUp in ipairs(powerUps) do
-    if collision.objectsAreTouching(p1,pUp) then
+    if collision.objectsAreTouching(p1,pUp)
+     and pUp.state == constants.POWERUP_STATE.VISIBLE then
       -- Collected power-up
+      print("removing powerup at index:"..index)
+      print("# powerups:"..#powerUps)
       table.remove(powerUps,index)
       p1.powerup = pUp.powerup_type
       Sounds.collectPowerUp:play()
@@ -242,7 +251,10 @@ local function updatePlayerCollisions()
           lavaBalls[1]:die()
         end
       end
-
+      
+      -- skip other power-ups this cycle
+      -- (shouldn't be any more - save cpu)
+      return
     end
   end
 end
