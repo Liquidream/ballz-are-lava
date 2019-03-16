@@ -32,13 +32,18 @@ local Player = Entity.extend({
     self.shrinkTimer = 0
     self.renderLayer=7
     self.deathCooldown=-1
+    self.flashCount=0
   end,
 
 update = function(self, dt)
+
+  -- Call "base" draw() function
+  Entity.update(self, dt)
+
   -- Size (based on # of targets collected)
-  local smallestRadius = 8
+  local smallestRadius = 10
   if not self.shrinked then
-    self.radius = (self.targetsCollected*0.5)+smallestRadius
+    self.radius = (self.targetsCollected*1)+smallestRadius
   else
     self.radius = smallestRadius -- (starting size)
   end
@@ -92,44 +97,61 @@ update = function(self, dt)
 
   -- increase player shrink size from start
   self.shrinkPower = math.min(self.shrinkPower+0.01, 1)
-  --self.size = math.min(self.size+0.01, 1)
-  --self.radius = self.size*18
+  
+  -- Update alternating flashing
+  self.flashCount = (self.flashCount + 1) % 4
 end,
+
 draw = function(self)
   local x = self.x
   local y = self.y
 
   -- Call "base" draw() function
   Entity.draw(self)
-  
+
   -- (Sprite method)
   -- love.graphics.setColor(1, 1, 1)
   -- local sprite = 'BASE'
   -- SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, self.size, self.size)
-  
-  -- (Draw shape method)
   local drawScale=self.radius+1
-  love.graphics.setColor(colour[15])
-  love.graphics.circle("fill", self.x, self.y, drawScale)
-  -- love.graphics.setColor(colour[14])
-  -- love.graphics.circle("fill", self.x, self.y, drawScale-1)
-  love.graphics.setColor(colour[13])
-  love.graphics.circle("fill", self.x, self.y, drawScale-1)
-  love.graphics.setColor(colour[12])
-  love.graphics.circle("fill", self.x, self.y, drawScale-3)
-  -- Shrink power
-  local shrinkDrawScale=(self.radius-4)*self.shrinkPower
-  love.graphics.setColor(colour[18])
-  love.graphics.circle("fill", self.x, self.y, shrinkDrawScale)
-  love.graphics.setColor(colour[19])
-  love.graphics.circle("fill", self.x, self.y, shrinkDrawScale-1)
+
+  --print("self.timeAlive="..self.timeAlive)
 
   -- Power-up layers
-  if self.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
-    -- and love.math.random(3)==1 then
+  if self.powerup == constants.POWERUP_TYPES.SHIELD
+   and self.flashCount == 0 then
+    -- fading?
+    if self.powerupTimer>1 or love.math.random(3)==1 then
+      local colIndex=constants.POWERUP_SHIELD_COLS[math.floor(self.powerupFrame)]
+      love.graphics.setColor(colour[colIndex])
+      love.graphics.circle("fill", self.x, self.y, drawScale+1)--+love.math.random(4))
+    end
+  elseif self.powerup == constants.POWERUP_TYPES.INVINCIBILITY
+   and self.flashCount == 0 then
+    -- fading?
+    if self.powerupTimer>1 then
       local colIndex=constants.POWERUP_INVINC_COLS[math.floor(self.powerupFrame)]
-    love.graphics.setColor(colour[colIndex])
-    love.graphics.circle("line", self.x, self.y, drawScale+2)--+love.math.random(4))
+      love.graphics.setColor(colour[colIndex])
+      love.graphics.circle("fill", self.x, self.y, drawScale+1)--+love.math.random(4))  
+    end
+  end
+  
+  -- Draw player?
+  if self.powerup ~= constants.POWERUP_TYPES.INVINCIBILITY
+     or self.flashCount == 0 then
+    -- (Draw shape method)
+    love.graphics.setColor(colour[15])
+    love.graphics.circle("fill", self.x, self.y, drawScale)
+    love.graphics.setColor(colour[13])
+    love.graphics.circle("fill", self.x, self.y, drawScale-1)
+    love.graphics.setColor(colour[12])
+    love.graphics.circle("fill", self.x, self.y, drawScale-3)
+    -- Shrink power
+    local shrinkDrawScale=(self.radius-4)*self.shrinkPower
+    love.graphics.setColor(colour[18])
+    love.graphics.circle("fill", self.x, self.y, shrinkDrawScale)
+    love.graphics.setColor(colour[19])
+    love.graphics.circle("fill", self.x, self.y, shrinkDrawScale-1)
   end
 
   -- Debug collisions, etc.

@@ -18,8 +18,11 @@ local Sounds = require 'src/util/sounds'
 mouseX=nil  -- mouse pos (in game co-ordinates)
 mouseY=nil
 -- state variable(s)
-gameState=constants.GAME_STATE.LVL_PLAY
+gameState = constants.GAME_STATE.LVL_PLAY
 gameTimer = 60  -- (Made Global so Power-ups can read it)
+gamePowerUp = 0       -- for Freeze powerup
+gamePowerUpTimer = 0  -- 
+gamePowerUpFrame = 0
 
 --
 -- local vars
@@ -77,15 +80,6 @@ local function initLevel(levelNum)
   targetBalls={}
   lavaBalls={}
   powerUps={}
-  -- for index, tball in ipairs(targetBalls) do
-  --   tball:die()
-  -- end
-  -- for index, lball in ipairs(lavaBalls) do
-  --   lball:die()
-  -- end
-  -- for index, pUp in ipairs(powerUps) do
-  --   pUp:die()
-  -- end
 
   -- Generate a new level properies (num balls, etc.)
   currLevel = generateLevel(levelNum)
@@ -110,15 +104,14 @@ local function initLevel(levelNum)
     table.insert(powerUps, PowerUp.new({
       -- optional overloads
       startTime = love.math.random(currLevel.numTargetBalls+5+0.9)+5,
-
     }))
   end
 
   -- debug!!!!
-  print("# Powerups:"..#powerUps)
-  for index, pUp in ipairs(powerUps) do
-    print(">> Type: "..pUp.powerup_type.." @ "..pUp.x..","..pUp.y)
-  end
+  -- print("# Powerups:"..#powerUps)
+  -- for index, pUp in ipairs(powerUps) do
+  --   print(">> Type: "..pUp.powerupType.." @ "..pUp.x..","..pUp.y)
+  -- end
 
   -- calc level time
   gameTimer = currLevel.numTargetBalls+10+0.9
@@ -130,14 +123,16 @@ local function initLevel(levelNum)
   p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
   p1.powerupTimer = 3
   p1.powerupFrame = 1
-  p1.powerupFrameSpeed = 0.5
+  p1.powerupFrameSpeed = 0.25
   p1.powerupFrameMax = 4
+
+  -- Game PowerUps
+  gamePowerUp = 0
+  gamePowerUpTimer = 0
 
   -- Intro (3 sec countdown)
   gameState=constants.GAME_STATE.LVL_INTRO
   delayCounter = 3
-
-  --gameState=constants.GAME_STATE.LVL_PLAY
 
   Sounds.ballzMoving:play()
 end
@@ -167,15 +162,18 @@ local function updatePlayerCollisions()
       if p1.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
         -- do nothing      
       elseif p1.powerup == constants.POWERUP_TYPES.SHIELD then
-        print("TODO: LOSE SHIELD! >>>>")
-        p1.powerup = constants.POWERUP_TYPES.NONE
+        -- Lose shield!
+        gfx:shake(0.5)
+        -- Temp invincibility
+        p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
+        p1.powerupTimer = 1 
+        --p1.powerup = constants.POWERUP_TYPES.NONE
       else
         loseLife()
       end
     end
   end
   -- Target balls
-  --print("#targetBalls="..#targetBalls)
   for index, tball in ipairs(targetBalls) do
     if collision.objectsAreTouching(p1,tball) then
       tball:die()
@@ -214,17 +212,16 @@ local function updatePlayerCollisions()
     if collision.objectsAreTouching(p1,pUp)
      and pUp.state == constants.POWERUP_STATE.VISIBLE then
       -- Collected power-up
-      print("removing powerup at index:"..index)
-      print("# powerups:"..#powerUps)
       table.remove(powerUps,index)
-      p1.powerup = pUp.powerup_type
+      p1.powerup = pUp.powerupType
+      -- TODO: different SFX?
       Sounds.collectPowerUp:play()
       pUp:activate(p1)
 
       -- Special power-ups
-      if p1.powerup_type == constants.POWERUP_TYPES.LAVABOMB then
+      -- BOOM!
+      if p1.powerup == constants.POWERUP_TYPES.LAVABOMB then
         local n=love.math.random(#lavaBalls/4)+1
-        local c = 0
         for k = 1,n do
           local b = lavaBalls[1]
           -- kill lavaball
@@ -233,7 +230,13 @@ local function updatePlayerCollisions()
           table.remove(lavaBalls, 1)
         end
       end
-      
+      -- FREEZE
+      if p1.powerup == constants.POWERUP_TYPES.FREEZE then
+        gamePowerUp = pUp.powerupType
+        gamePowerUpTimer = 3
+        gamePowerUpFrame = 1
+      end
+
       -- skip other power-ups this cycle
       -- (shouldn't be any more - save cpu)
       return
@@ -250,9 +253,6 @@ end
 local function drawBackground()
  local gridSize=16
  -- navy
- -- love.graphics.clear(colour[26])
- -- love.graphics.setColor(colour[24])
- -- "black"
  love.graphics.clear(colour[26])
  love.graphics.setColor(colour[24])
  --
@@ -345,17 +345,36 @@ local function update(dt)
 
   -- Update Player
   p1:update(dt)
+
   -- Update Target Balls
   for index, tball in ipairs(targetBalls) do
     tball:update(dt)
+    if gameState == constants.GAME_STATE.LVL_PLAY 
+     and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
+      tball:applyVelocity(dt)
+    end
   end
   -- Update Lava Balls
   for index, lball in ipairs(lavaBalls) do
     lball:update(dt)
+    if gameState==constants.GAME_STATE.LVL_PLAY 
+     and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
+      lball:applyVelocity(dt)
+    end
   end
+
   -- Update Power-ups
   for index, pUp in ipairs(powerUps) do
     pUp:update(dt)
+  end
+  -- Game PowerUps
+  if gamePowerUp then
+    gamePowerUpTimer = gamePowerUpTimer - 0.016
+    if gamePowerUpTimer <= 0 then
+      -- PowerUp over
+      gamePowerUp = 0
+    end
+    gamePowerUpFrame = (gamePowerUpFrame+1)%4
   end
 
   -- Level Intro
@@ -403,17 +422,14 @@ local function update(dt)
     if love.math.random(15)==1 and #lavaBalls > 0 then 
       -- kill lavaball
       gfx.boom(lavaBalls[1].x, lavaBalls[1].y, 200, constants.LAVA_DEATH_COLS)
-      --boom(lavaBalls[1].x, lavaBalls[1].y, 25, lava_death_cols)
       lavaBalls[1]:die()
       table.remove(lavaBalls, 1)
-      --del(lava_balls, lava_balls[1])
     end
     if love.math.random(15)==1 and #targetBalls > 0 then 
       -- kill target
       gfx.boom(targetBalls[1].x, targetBalls[1].y, 150, constants.PLAYER_DEATH_COLS)
       targetBalls[1]:die()
       table.remove(targetBalls, 1)
-      --del(targets, targets[1])
     end
   end -- if gamestate
 
@@ -447,7 +463,10 @@ local function draw()
   end
   -- Draw Lava Balls
   for index, lball in ipairs(lavaBalls) do
-    lball:draw()
+    if gamePowerUp ~= 2 
+     or (gamePowerUpTimer > 0.5 or gamePowerUpFrame == 0) then
+      lball:draw()
+    end
   end
   -- Draw Power-ups
   for index, pUp in ipairs(powerUps) do

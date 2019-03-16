@@ -28,14 +28,9 @@ local Ball = Entity.extend({
  end,
 
 update = function(self, dt)
-  -- Change ball speed?
-  --self.vx = 
 
-  if gameState==constants.GAME_STATE.LVL_PLAY then
-   -- TODO: also include PAUSE power-up
-   -- (tho maybe better to have a factor, so can slow/speedup!)
-   Entity.update(self, dt)
-  end
+  -- Call "base" update()
+  Entity.update(self, dt)
   
   local ballDidBounce = false
   -- Check ball bounds

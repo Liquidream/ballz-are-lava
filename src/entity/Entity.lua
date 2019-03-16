@@ -5,57 +5,52 @@ local createClass = require 'src/util/createClass'
 -- (orig by bridgs - https://github.com/bridgs/quickdraw-blackjack)
 
 local Entity = createClass({
- isAlive = true,
- x = 0,
- y = 0,
- vx = 0,
- vy = 0,
- vxPrev = nil,
- vyPrev = nil,
- frameRateIndependent = false,
- timeToDeath = 0,
- timeAlive = 0,
- renderLayer = 5,
- constructor = function(self)
-   self.animations = {}
-   self.renderLayer = self.renderLayer + math.random()
- end,
- update = function(self, dt)
-   self:applyVelocity(dt)
-   --self:applyAnimations(dt)
- end,
- draw = function(self)
-  love.graphics.setColor(1, 1, 1)
-end,
- setVelocity = function(self, vx, y)
-   self.vx = vx
-   self.vy = vy
-   self.vxPrev = vx
-   self.vyPrev = vy
- end,
- applyVelocity = function(self, dt)
-  -- if not self:animationsInclude('x') and not self:animationsInclude('y') then
-  --   if self.frameRateIndependent and self.vxPrev ~= nil and self.vyPrev ~= nil then
-  --     self.x = self.x + (self.vx + self.vxPrev) / 2 * dt
-  --     self.y = self.y + (self.vy + self.vyPrev) / 2 * dt
-  --   else
-      self.x = self.x + self.vx * dt
-      self.y = self.y + self.vy * dt
-  --   end
-  --end
-  self.vxPrev = self.vx
-  self.vyPrev = self.vy
- end,
- countDownToDeath = function(self, dt)
-  if self.timeToDeath > 0 then
-    self.timeToDeath = self.timeToDeath - dt
-    if self.timeToDeath <= 0 then
-      self:die()
-      return true
+  isAlive = true,
+  x = 0,
+  y = 0,
+  vx = 0,
+  vy = 0,
+  vxPrev = nil,
+  vyPrev = nil,
+  frameRateIndependent = false,
+  timeToDeath = 0,
+  timeAlive = 0,
+  renderLayer = 5,
+  constructor = function(self)
+    self.animations = {}
+    self.renderLayer = self.renderLayer + math.random()
+  end,
+  update = function(self, dt)
+    self.timeAlive = self.timeAlive + dt
+    --self:applyVelocity(dt)
+    --self:applyAnimations(dt)
+  end,
+  draw = function(self)
+    love.graphics.setColor(1, 1, 1)
+  end,
+  setVelocity = function(self, vx, y)
+    self.vx = vx
+    self.vy = vy
+    self.vxPrev = vx
+    self.vyPrev = vy
+  end,
+  applyVelocity = function(self, dt)
+    self.x = self.x + self.vx * dt
+    self.y = self.y + self.vy * dt
+
+    self.vxPrev = self.vx
+    self.vyPrev = self.vy
+  end,
+  countDownToDeath = function(self, dt)
+    if self.timeToDeath > 0 then
+      self.timeToDeath = self.timeToDeath - dt
+      if self.timeToDeath <= 0 then
+        self:die()
+        return true
+      end
     end
-  end
-  return false
- end,
+    return false
+  end,
  die = function(self)
    if self.isAlive then
      self.isAlive = false
@@ -64,22 +59,7 @@ end,
  end,
  onDeath = function(self) end,
  onMousePressed = function(self, x, y) end,
- -- checkScene = function(self, scene)
- --   if self.scenes then
- --     local isInValidScene = false
- --     local index, scene2
- --     for index, scene2 in ipairs(self.scenes) do
- --       if scene2 == scene then
- --         isInValidScene = true
- --       end
- --     end
- --     if not isInValidScene then
- --       self:die()
- --       return false
- --     end
- --   end
- --   return true
- -- end,
+
 })
 
 return Entity

@@ -24,38 +24,38 @@ local PowerUp = Entity.extend({
   
   self.x = love.math.random(constants.GAME_WIDTH-20)+10
   self.y = love.math.random(constants.GAME_HEIGHT-20)+10
-  self.powerup_type = love.math.random(6)
+  self.powerupType = love.math.random(6)
   self.state = constants.POWERUP_STATE.HIDING -- HIDING
   self.frame = 1
   self.frame_delay = 0
  end,
  
 activate = function(self, player)
-  print("powerup_type:"..self.powerup_type)
+  print("powerupType:"..self.powerupType)
   -- Activate the Power-up, depending on the type
-  if self.powerup_type == constants.POWERUP_TYPES.SHIELD then
+  if self.powerupType == constants.POWERUP_TYPES.SHIELD then
     player.powerupTimer = 6
     player.powerupFrame = 1
-    player.powerupFrameSpeed = 0.5
+    player.powerupFrameSpeed = 0.25
     player.powerupFrameMax = 4
   
-  elseif self.powerup_type == constants.POWERUP_TYPES.FREEZE then
+  elseif self.powerupType == constants.POWERUP_TYPES.FREEZE then
     player.powerupTimer = 3
     player.powerupFrame = 1
 
-  elseif self.powerup_type == constants.POWERUP_TYPES.EXTRA_LIFE then
+  elseif self.powerupType == constants.POWERUP_TYPES.EXTRA_LIFE then
     -- TODO: play sound!
     player.lives = player.lives + 1
 
-  elseif self.powerup_type == constants.POWERUP_TYPES.TIME_EXTEND then
+  elseif self.powerupType == constants.POWERUP_TYPES.TIME_EXTEND then
     -- TODO: play sound!
     print("extend time:")
     gameTimer = gameTimer + 10
 
-  elseif self.powerup_type == constants.POWERUP_TYPES.INVINCIBILITY then
+  elseif self.powerupType == constants.POWERUP_TYPES.INVINCIBILITY then
     player.powerupTimer = 3
     player.powerupFrame = 1
-    player.powerupFrameSpeed = 0.5
+    player.powerupFrameSpeed = 0.25
     player.powerupFrameMax = 4
 
   else
@@ -92,7 +92,7 @@ draw = function(self)
 
   -- Should we draw the Power-up?
   if self.state == constants.POWERUP_STATE.VISIBLE then
-    local sprite = "P_"..self.powerup_type
+    local sprite = "P_"..self.powerupType
     love.graphics.setColor(1, 1, 1)
     SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
 
