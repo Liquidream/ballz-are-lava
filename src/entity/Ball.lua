@@ -70,17 +70,20 @@ update = function(self, dt)
 end,
 
 draw = function(self)
- local x = self.x 
- local y = self.y 
+  local x = self.x 
+  local y = self.y 
 
- local sprite = (self.ball_type==constants.BALL_TYPES.LAVA) and "LAVABALL" or "TARGET"
- if sprite == "LAVABALL" then
-  local offset = math.abs(math.sin(self.timeAlive * 8))
-  love.graphics.setColor(0.5+math.max(0.25,offset), math.max(0.25,offset), math.max(0.25,offset))
- else
-  love.graphics.setColor(1, 1, 1)
- end
- SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
+  -- Call "base" draw() function
+  Entity.draw(self)
+
+  local sprite = (self.ball_type==constants.BALL_TYPES.LAVA) and "LAVABALL" or "TARGET"
+  if sprite == "LAVABALL" then
+    local offset = math.abs(math.sin(self.timeAlive * 8))
+    love.graphics.setColor(0.5+math.max(0.25,offset), math.max(0.25,offset), math.max(0.25,offset))
+  else
+    love.graphics.setColor(1, 1, 1)
+  end
+  SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
 
   -- Debug collisions, etc.
   if constants.DEBUG_MODE then

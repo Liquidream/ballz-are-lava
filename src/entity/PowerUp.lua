@@ -84,14 +84,17 @@ update = function(self, dt)
 end,
 
 draw = function(self)
- local x = self.x 
- local y = self.y 
+  local x = self.x 
+  local y = self.y 
 
- -- Should we draw the Power-up?
- if self.state == constants.POWERUP_STATE.VISIBLE then
-  local sprite = "P_"..self.powerup_type
-  love.graphics.setColor(1, 1, 1)
-  SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
+  -- Call "base" draw() function
+  Entity.draw(self)
+
+  -- Should we draw the Power-up?
+  if self.state == constants.POWERUP_STATE.VISIBLE then
+    local sprite = "P_"..self.powerup_type
+    love.graphics.setColor(1, 1, 1)
+    SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
 
     -- Debug collisions, etc.
     if constants.DEBUG_MODE then

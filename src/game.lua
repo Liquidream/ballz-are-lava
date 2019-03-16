@@ -19,7 +19,7 @@ mouseX=nil  -- mouse pos (in game co-ordinates)
 mouseY=nil
 -- state variable(s)
 gameState=constants.GAME_STATE.LVL_PLAY
-gameTimer = 60
+gameTimer = 60  -- (Made Global so Power-ups can read it)
 
 --
 -- local vars
@@ -34,31 +34,13 @@ local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
 })
 
 -- Initialize game vars
-local entities = {}
 local lavaBalls = {}
 local powerUps = {}
 local targetBalls = {}
 local levelNum = 10
--- local gameTimer = 60 -- (Made Global so Power-ups can read it)
 local delayCounter = 0
 local txtSize = 0
 local currLevel = nil
-
-
--- 
--- Entity code
--- 
-Entity.spawn = function(class, args)
- local entity = class.new(args)
- table.insert(entities, entity)
- return entity
-end
-
-local function removeDeadEntities(list)
- return listHelpers.filter(list, function(entity)
-   return entity.isAlive
- end)
-end
 
 
 
@@ -92,29 +74,32 @@ end
 local function initLevel(levelNum)
 
   -- Remove any existing content
-  for index, tball in ipairs(targetBalls) do
-    tball:die()
-  end
-  for index, lball in ipairs(lavaBalls) do
-    lball:die()
-  end
-  for index, pUp in ipairs(powerUps) do
-    pUp:die()
-  end
+  targetBalls={}
+  lavaBalls={}
+  powerUps={}
+  -- for index, tball in ipairs(targetBalls) do
+  --   tball:die()
+  -- end
+  -- for index, lball in ipairs(lavaBalls) do
+  --   lball:die()
+  -- end
+  -- for index, pUp in ipairs(powerUps) do
+  --   pUp:die()
+  -- end
 
   -- Generate a new level properies (num balls, etc.)
   currLevel = generateLevel(levelNum)
 
   -- Create lava balls
   for i=1,currLevel.numLavaBalls do
-    table.insert(lavaBalls, Ball:spawn({
+    table.insert(lavaBalls, Ball.new({
       -- optional overloads
     }))
   end
 
   -- Create target balls
   for i=1,currLevel.numTargetBalls do
-    table.insert(targetBalls, Ball:spawn({
+    table.insert(targetBalls, Ball.new({
       -- optional overloads
       ball_type=constants.BALL_TYPES.TARGET,
     }))
@@ -122,7 +107,7 @@ local function initLevel(levelNum)
 
   -- Create Power-Ups
   for i=1,currLevel.numPowerUps do
-    table.insert(powerUps, PowerUp:spawn({
+    table.insert(powerUps, PowerUp.new({
       -- optional overloads
       startTime = love.math.random(currLevel.numTargetBalls+5+0.9)+5,
 
@@ -139,11 +124,6 @@ local function initLevel(levelNum)
   gameTimer = currLevel.numTargetBalls+10+0.9
 
   -- revive player player state (start small, etc.)
-  if not p1.isAlive then
-    table.insert(entities, p1)
-    p1.isAlive = true
-    p1.timeAlive = 0
-  end
   p1:resetState()
 
   -- Start player with invincibility
@@ -199,8 +179,9 @@ local function updatePlayerCollisions()
   for index, tball in ipairs(targetBalls) do
     if collision.objectsAreTouching(p1,tball) then
       tball:die()
+      table.remove(targetBalls, index)
       p1.targetsCollected = p1.targetsCollected + 1
-      collectedLastBall = (#targetBalls-1 == 0)
+      collectedLastBall = (#targetBalls == 0)
 
       if not collectedLastBall then
         levelProgress = ((currLevel.numTargetBalls - #targetBalls + 1) / currLevel.numTargetBalls)
@@ -245,10 +226,11 @@ local function updatePlayerCollisions()
         local n=love.math.random(#lavaBalls/4)+1
         local c = 0
         for k = 1,n do
-          local b = lavaBalls[k]
+          local b = lavaBalls[1]
           -- kill lavaball
           gfx.boom(lavaBalls[1].x, lavaBalls[1].y, 200, constants.LAVA_DEATH_COLS)
           lavaBalls[1]:die()
+          table.remove(lavaBalls, 1)
         end
       end
       
@@ -340,7 +322,7 @@ local function load()
  -- initTitleScreen(true)
 
  -- Create player
- p1 = Player:spawn({
+ p1 = Player.new({
    x = constants.GAME_WIDTH/2,
    y = constants.GAME_HEIGHT/2,
  })
@@ -361,16 +343,19 @@ local function update(dt)
   mouseX = math.floor((mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE)
   mouseY = math.floor((mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE)
 
-
-
-  -- Update all entities
-  local index, entity
-  for index, entity in ipairs(entities) do
-    if entity.isAlive then
-      entity.timeAlive = entity.timeAlive + dt
-      entity:update(dt)
-      entity:countDownToDeath(dt)
-    end
+  -- Update Player
+  p1:update(dt)
+  -- Update Target Balls
+  for index, tball in ipairs(targetBalls) do
+    tball:update(dt)
+  end
+  -- Update Lava Balls
+  for index, lball in ipairs(lavaBalls) do
+    lball:update(dt)
+  end
+  -- Update Power-ups
+  for index, pUp in ipairs(powerUps) do
+    pUp:update(dt)
   end
 
   -- Level Intro
@@ -420,12 +405,14 @@ local function update(dt)
       gfx.boom(lavaBalls[1].x, lavaBalls[1].y, 200, constants.LAVA_DEATH_COLS)
       --boom(lavaBalls[1].x, lavaBalls[1].y, 25, lava_death_cols)
       lavaBalls[1]:die()
+      table.remove(lavaBalls, 1)
       --del(lava_balls, lava_balls[1])
     end
     if love.math.random(15)==1 and #targetBalls > 0 then 
       -- kill target
       gfx.boom(targetBalls[1].x, targetBalls[1].y, 150, constants.PLAYER_DEATH_COLS)
       targetBalls[1]:die()
+      table.remove(targetBalls, 1)
       --del(targets, targets[1])
     end
   end -- if gamestate
@@ -441,15 +428,6 @@ local function update(dt)
 
   -- update particles
   gfx.updateParticles(dt)
-
-  -- Remove dead entities
-  targetBalls = removeDeadEntities(targetBalls)
-  lavaBalls = removeDeadEntities(lavaBalls)
-  entities = removeDeadEntities(entities)
-  -- Sort entities for rendering
-  table.sort(entities, function(a, b)
-    return a.renderLayer < b.renderLayer
-  end)
 end
 
 
@@ -463,10 +441,21 @@ local function draw()
   -- Draw background
   drawBackground()
 
-  -- Draw all entities (inc. player)
-  for index, entity in ipairs(entities) do
-    love.graphics.setColor(1, 1, 1)
-    entity:draw()
+  -- Draw Target Balls
+  for index, tball in ipairs(targetBalls) do
+    tball:draw()
+  end
+  -- Draw Lava Balls
+  for index, lball in ipairs(lavaBalls) do
+    lball:draw()
+  end
+  -- Draw Power-ups
+  for index, pUp in ipairs(powerUps) do
+    pUp:draw()
+  end
+  -- Draw Player
+  if p1.isAlive then
+    p1:draw()
   end
 
   -- draw particles

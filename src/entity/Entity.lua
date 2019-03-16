@@ -24,7 +24,9 @@ local Entity = createClass({
    self:applyVelocity(dt)
    --self:applyAnimations(dt)
  end,
- draw = function(self) end,
+ draw = function(self)
+  love.graphics.setColor(1, 1, 1)
+end,
  setVelocity = function(self, vx, y)
    self.vx = vx
    self.vy = vy

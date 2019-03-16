@@ -22,6 +22,8 @@ local Player = Entity.extend({
   end,
   
   resetState = function(self)
+    self.isAlive = true
+    self.timeAlive = 0
     self.size = 0.25      -- 0..1 (scale)
     self.radius = 8      -- For drawing/collisions (18 max)
     self.targetsCollected = 0
@@ -97,6 +99,8 @@ draw = function(self)
   local x = self.x
   local y = self.y
 
+  -- Call "base" draw() function
+  Entity.draw(self)
   
   -- (Sprite method)
   -- love.graphics.setColor(1, 1, 1)
