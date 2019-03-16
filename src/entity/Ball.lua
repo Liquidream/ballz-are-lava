@@ -8,7 +8,8 @@ local colour = require 'src/util/colour'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ball.png', {
   LAVABALL = { 0, 0, 16, 16 },
-  TARGET = { 16, 0, 16, 16 },
+  TARGET = { 16, 0, 15, 15 },
+  KILLBALL = { 0, 16, 16, 16 },
 })
 
 local Ball = Entity.extend({
@@ -16,6 +17,9 @@ local Ball = Entity.extend({
  radius = 5,
  ball_type = constants.BALL_TYPES.LAVA,
  speed = 100,
+ id=0,
+ flashCount=0,
+ startKill=6,
  
  constructor = function(self)
   Entity.constructor(self)
@@ -46,6 +50,9 @@ update = function(self, dt)
    ballDidBounce = true
   end
 
+  -- Update alternating flashing
+  self.flashCount = (self.flashCount + 1) % 4
+
   -- (Temp disabled until can tie in more visually?)
   -- if ballDidBounce then
   --   Sounds.bounce:playWithPitch(1.0 + math.random())
@@ -72,14 +79,38 @@ draw = function(self)
   Entity.draw(self)
 
   local sprite = (self.ball_type==constants.BALL_TYPES.LAVA) and "LAVABALL" or "TARGET"
+  
+  local killBall = false
+  gameDeathLines[self.id] = nil
+  if self.ball_type==constants.BALL_TYPES.LAVA 
+   and self.id<=3 then 
+    killBall=true
+    if self.timeAlive > self.startKill and self.timeAlive <= self.startKill+2 then
+      if self.flashCount == 0 then 
+        sprite="KILLBALL" 
+        gameDeathLines[self.id] = {x=self.x, y=self.y, state=0}
+      end
+    elseif self.timeAlive > self.startKill+2 then
+      sprite="KILLBALL"
+      gameDeathLines[self.id] = {x=self.x, y=self.y, state=self.flashCount}
+    else 
+      -- lavaball 
+    end
+  end
+
   if sprite == "LAVABALL" then
     local offset = math.abs(math.sin(self.timeAlive * 8))
     love.graphics.setColor(0.5+math.max(0.25,offset), math.max(0.25,offset), math.max(0.25,offset))
   else
     love.graphics.setColor(1, 1, 1)
   end
-  SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
-
+  -- if not killBall 
+  --  or self.timeAlive < 4 
+  --  or self.timeAlive > 6 
+  --  or self.flashCount == 0 
+  -- then
+    SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
+  --end
   -- Debug collisions, etc.
   if constants.DEBUG_MODE then
     love.graphics.setColor(colour[25])

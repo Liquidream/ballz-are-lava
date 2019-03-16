@@ -23,7 +23,8 @@ gameTimer = 60  -- (Made Global so Power-ups can read it)
 gamePowerUp = 0       -- for Freeze powerup
 gamePowerUpTimer = 0  -- 
 gamePowerUpFrame = 0
-
+gameDeathLines = {}   -- Death lines for Death Balls!
+levelNum = 3--12
 --
 -- local vars
 --
@@ -40,7 +41,6 @@ local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
 local lavaBalls = {}
 local powerUps = {}
 local targetBalls = {}
-local levelNum = 10
 local delayCounter = 0
 local txtSize = 0
 local currLevel = nil
@@ -88,6 +88,7 @@ local function initLevel(levelNum)
   for i=1,currLevel.numLavaBalls do
     table.insert(lavaBalls, Ball.new({
       -- optional overloads
+      id=i
     }))
   end
 
@@ -154,7 +155,18 @@ local function loseLife()
 end
 
 
+
+
 local function updatePlayerCollisions()
+  -- Death lines (if present)
+  for index, src in ipairs(gameDeathLines) do
+    for index, trg in ipairs(gameDeathLines) do
+      if src.state>0 and collision.segmentVsCircle(src.x, src.y, trg.x, trg.y, p1.x, p1.y, p1.radius) then
+        loseLife()
+      end
+    end
+  end
+  
   -- Lava balls 
   for index, lball in ipairs(lavaBalls) do
     if collision.objectsAreTouching(p1,lball) then
@@ -457,6 +469,14 @@ local function draw()
   -- Draw background
   drawBackground()
 
+  -- Draw "death" lines
+  for index, src in ipairs(gameDeathLines) do
+    for index, trg in ipairs(gameDeathLines) do
+      love.graphics.setColor((src.state<2) and colour[25] or colour[11])
+      love.graphics.line(src.x,src.y,trg.x,trg.y)
+    end
+  end
+  
   -- Draw Target Balls
   for index, tball in ipairs(targetBalls) do
     tball:draw()
