@@ -240,7 +240,7 @@ local function updatePlayerCollisions()
 
       -- Special power-ups
       -- BOOM!
-      if p1.powerup == constants.POWERUP_TYPES.LAVABOMB then
+      if pUp.powerupType == constants.POWERUP_TYPES.LAVABOMB then
         local n=love.math.random(#lavaBalls/4)+1
         for k = 1,n do
           local boomBall = table.remove(lavaBalls)
@@ -250,7 +250,7 @@ local function updatePlayerCollisions()
         end
       end
       -- FREEZE
-      if p1.powerup == constants.POWERUP_TYPES.FREEZE then
+      if pUp.powerupType == constants.POWERUP_TYPES.FREEZE then
         gamePowerUp = pUp.powerupType
         gamePowerUpTimer = 3
         gamePowerUpFrame = 1
