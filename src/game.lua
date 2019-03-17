@@ -12,6 +12,10 @@ local collision = require 'src/util/collision'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local Sounds = require 'src/util/sounds'
 
+require 'src/util/controller'
+--local controller = require 'src/util/controller'
+
+
 --
 -- global vars
 --
@@ -325,6 +329,8 @@ local function drawUI()
   -- score
   love.graphics.setColor(colour[18])
   love.graphics.printf('000000',360 ,1 ,150,"right")
+
+  if (constants.DEBUG_MODE) then drawControllersDebug() end
 end
 
 
@@ -354,6 +360,11 @@ local function update(dt)
 
   -- Update all promises
   Promise.updateActivePromises(dt)
+
+  -- Update game controller(s)
+  updateControllers(dt)
+
+  if (constants.DEBUG_MODE) then updateControllersDebug(dt) end
 
   -- Update mouse position
   -- get the position of the mouse
