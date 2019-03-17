@@ -82,8 +82,9 @@ draw = function(self)
   
   local killBall = false
   gameDeathLines[self.id] = nil
-  if self.ball_type==constants.BALL_TYPES.LAVA 
-   and self.id<=3 then 
+  if gameDeathLinesCount > 1
+   and self.ball_type==constants.BALL_TYPES.LAVA 
+   and self.id<=gameDeathLinesCount then 
     killBall=true
     if self.timeAlive > self.startKill and self.timeAlive <= self.startKill+2 then
       if self.flashCount == 0 then 
@@ -117,6 +118,13 @@ draw = function(self)
     love.graphics.circle("line", self.x, self.y, self.radius)
   end
 end,
+
+onDeath = function(self) 
+  -- clear the death line (if present)
+  gameDeathLines[self.id] = nil
+end,
+
+
 })
 
 return Ball

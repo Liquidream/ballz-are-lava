@@ -23,8 +23,9 @@ gameTimer = 60  -- (Made Global so Power-ups can read it)
 gamePowerUp = 0       -- for Freeze powerup
 gamePowerUpTimer = 0  -- 
 gamePowerUpFrame = 0
+gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
-levelNum = 3--12
+levelNum = 3--3--12
 --
 -- local vars
 --
@@ -108,6 +109,9 @@ local function initLevel(levelNum)
     }))
   end
 
+  -- Enable death lines?
+  gameDeathLinesCount = math.min(math.floor(levelNum/3), 3)
+
   -- debug!!!!
   -- print("# Powerups:"..#powerUps)
   -- for index, pUp in ipairs(powerUps) do
@@ -154,7 +158,22 @@ local function loseLife()
   Sounds.ballzMoving:stop()
 end
 
-
+local function playerDieUnlessProtected()
+  -- Player death (unless invinc/shield)
+  if p1.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
+    -- do nothing      
+  elseif p1.powerup == constants.POWERUP_TYPES.SHIELD then
+    -- Lose shield!
+    gfx:shake(0.5)
+    Sounds.loseLife:play()
+    -- Temp invincibility
+    p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
+    p1.powerupTimer = 1 
+    --p1.powerup = constants.POWERUP_TYPES.NONE
+  else
+    loseLife()
+  end
+end
 
 
 local function updatePlayerCollisions()
@@ -162,7 +181,8 @@ local function updatePlayerCollisions()
   for index, src in ipairs(gameDeathLines) do
     for index, trg in ipairs(gameDeathLines) do
       if src.state>0 and collision.segmentVsCircle(src.x, src.y, trg.x, trg.y, p1.x, p1.y, p1.radius) then
-        loseLife()
+        -- Player death (unless invinc/shield)
+        playerDieUnlessProtected()
       end
     end
   end
@@ -171,18 +191,7 @@ local function updatePlayerCollisions()
   for index, lball in ipairs(lavaBalls) do
     if collision.objectsAreTouching(p1,lball) then
       -- Player death (unless invinc/shield)
-      if p1.powerup == constants.POWERUP_TYPES.INVINCIBILITY then
-        -- do nothing      
-      elseif p1.powerup == constants.POWERUP_TYPES.SHIELD then
-        -- Lose shield!
-        gfx:shake(0.5)
-        -- Temp invincibility
-        p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
-        p1.powerupTimer = 1 
-        --p1.powerup = constants.POWERUP_TYPES.NONE
-      else
-        loseLife()
-      end
+      playerDieUnlessProtected()
     end
   end
   -- Target balls
@@ -225,7 +234,6 @@ local function updatePlayerCollisions()
      and pUp.state == constants.POWERUP_STATE.VISIBLE then
       -- Collected power-up
       table.remove(powerUps,index)
-      p1.powerup = pUp.powerupType
       -- TODO: different SFX?
       Sounds.collectPowerUp:play()
       pUp:activate(p1)
@@ -235,11 +243,10 @@ local function updatePlayerCollisions()
       if p1.powerup == constants.POWERUP_TYPES.LAVABOMB then
         local n=love.math.random(#lavaBalls/4)+1
         for k = 1,n do
-          local b = lavaBalls[1]
+          local boomBall = table.remove(lavaBalls)
           -- kill lavaball
-          gfx.boom(lavaBalls[1].x, lavaBalls[1].y, 200, constants.LAVA_DEATH_COLS)
-          lavaBalls[1]:die()
-          table.remove(lavaBalls, 1)
+          gfx.boom(boomBall.x, boomBall.y, 200, constants.LAVA_DEATH_COLS)
+          boomBall:die()
         end
       end
       -- FREEZE
@@ -288,7 +295,7 @@ local function drawUI()
   -- lives
   for i=1,p1.lives do
     SPRITESHEET:drawCentered('EMPTY_HEART',
-      i*18-8 , 9 , 
+      i*18-10 , 8 , 
       nil, nil, nil, 1, 1)
   end
 
@@ -309,7 +316,7 @@ local function drawUI()
   love.graphics.setColor(1, 1, 1)
   
   -- timer
-  love.graphics.setColor(colour[19])
+  love.graphics.setColor(gameTimer>10 and colour[19] or colour[25])
   love.graphics.printf('TIME:'..string.format("%02d", math.floor(gameTimer)),
     constants.GAME_WIDTH/2-80/2 ,
     1 ,

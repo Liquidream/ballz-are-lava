@@ -34,26 +34,27 @@ activate = function(self, player)
   print("powerupType:"..self.powerupType)
   -- Activate the Power-up, depending on the type
   if self.powerupType == constants.POWERUP_TYPES.SHIELD then
+    player.powerup = self.powerupType
     player.powerupTimer = 6
     player.powerupFrame = 1
     player.powerupFrameSpeed = 0.25
     player.powerupFrameMax = 4
   
   elseif self.powerupType == constants.POWERUP_TYPES.FREEZE then
-    player.powerupTimer = 3
+    player.powerup = self.powerupType
+    player.powerupTimer = 5
     player.powerupFrame = 1
 
   elseif self.powerupType == constants.POWERUP_TYPES.EXTRA_LIFE then
-    -- TODO: play sound!
     player.lives = player.lives + 1
 
   elseif self.powerupType == constants.POWERUP_TYPES.TIME_EXTEND then
     -- TODO: play sound!
-    print("extend time:")
     gameTimer = gameTimer + 10
 
   elseif self.powerupType == constants.POWERUP_TYPES.INVINCIBILITY then
-    player.powerupTimer = 3
+    player.powerup = self.powerupType
+    player.powerupTimer = 6
     player.powerupFrame = 1
     player.powerupFrameSpeed = 0.25
     player.powerupFrameMax = 4

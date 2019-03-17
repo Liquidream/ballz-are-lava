@@ -21,14 +21,12 @@ local function generateLevelDifficulty(levelNumber)
   lavaBallsSpeed = lavaBallsSpeed,
   numTargetBalls = numTargetBalls,
   numPowerUps = numPowerUps,
-  enablePowerUpShield = enablePowerUpShield,
-  enablePowerUpFreeze = enablePowerUpFreeze,
-  enablePowerUpLavabomb = enablePowerUpLavabomb,
-  enablePowerUp1up = enablePowerUp1up,
-  enablePowerUpTimeExtend = enablePowerUpTimeExtend,
-  enablePowerUpInvincibility = enablePowerUpInvincibility,
-  
-  
+  -- enablePowerUpShield = enablePowerUpShield,
+  -- enablePowerUpFreeze = enablePowerUpFreeze,
+  -- enablePowerUpLavabomb = enablePowerUpLavabomb,
+  -- enablePowerUp1up = enablePowerUp1up,
+  -- enablePowerUpTimeExtend = enablePowerUpTimeExtend,
+  -- enablePowerUpInvincibility = enablePowerUpInvincibility,
  }
 end
 
