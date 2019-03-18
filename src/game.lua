@@ -11,6 +11,7 @@ local generateLevel = require 'src/generateLevel'
 local collision = require 'src/util/collision'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local Sounds = require 'src/util/sounds'
+local Scenes = require 'src/Scenes'
 
 require 'src/util/controller'
 --local controller = require 'src/util/controller'
@@ -306,10 +307,10 @@ local function drawUI()
   -- state-dependent overlays
   if gameState == constants.GAME_STATE.LVL_INTRO then
     -- intro countdown
-    -- love.graphics.setColor(1, 1, 1, 6-txtSize)
-    -- SPRITESHEET:drawCentered('INTRO_'..delayCounter,
-    --                           constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
-    --                           nil, nil, nil, txtSize, txtSize)
+    love.graphics.setColor(1, 1, 1, 6-txtSize)
+    SPRITESHEET:drawCentered('INTRO_'..delayCounter,
+                              constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
+                              nil, nil, nil, txtSize, txtSize)
   elseif gameState == constants.GAME_STATE.GAME_OVER then
     -- Game Over!
     SPRITESHEET:drawCentered('GAME_OVER',
@@ -501,6 +502,8 @@ local function draw()
 
   -- Draw background
   drawBackground()
+
+  Scenes.drawTitle()
 
   -- Draw "death" lines
   for index, src in ipairs(gameDeathLines) do
