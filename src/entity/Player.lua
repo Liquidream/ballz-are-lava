@@ -65,9 +65,30 @@ update = function(self, dt)
     -- update animation frame
     self.powerupFrame = (self.powerupFrame+self.powerupFrameSpeed)%self.powerupFrameMax
   end
+  
 
-  -- keyboard controls override mouse
-  local speed = 75
+  -- set player to position of the mouse (in game coord)
+  if (mouseX ~= lastMouseX) then 
+    self.x = mouseX -- mouse xpos
+  end
+  if (mouseY ~= lastMouseY) then 
+    self.y = mouseY -- mouse ypos
+  end
+
+  -- gamepad controls override mouse/keyboard
+
+  -- Remember to check: gamepads[1] ~= nil
+  local pad1_axis1 = controllerAxisPair(gamepads[1], 1)
+  if pad1_axis1 ~= nil then
+    --print("L-Axis: "..pad1_axis1.x..","..pad1_axis1.y)
+    self.x = self.x + (constants.PLAYER_MAX_SPEED * pad1_axis1.x) * dt
+    self.y = self.y + (constants.PLAYER_MAX_SPEED * pad1_axis1.y) * dt
+  
+  --print("L-Axis: "..controllerAxisVal(gamepads[1], "axis1_left"))
+  end
+
+  -- keyboard controls override both
+  local speed = constants.PLAYER_MAX_SPEED * 0.75
   if love.keyboard.isDown("right") then
     self.x = self.x + speed * dt
   end
@@ -81,15 +102,6 @@ update = function(self, dt)
   if love.keyboard.isDown("down") then
     self.y = self.y + speed * dt
   end
-
-  -- set player to position of the mouse (in game coord)
-  if (mouseX ~= lastMouseX) then 
-    self.x = mouseX -- mouse xpos
-  end
-  if (mouseY ~= lastMouseY) then 
-    self.y = mouseY -- mouse ypos
-  end
-  --self.x, self.y = mouseX, mouseY
 
   -- keep player within screen bounds
   self.x = math.max(0, math.min(constants.GAME_WIDTH,self.x))

@@ -35,10 +35,10 @@ local CONTROL_MAP = {
   { name = "thirdB", sources = {"button:b"} },
   { name = "fourthY", sources = {"button:y"} },
   
-  { name = "axis_left", sources = {"axis:leftx-"} },
-  { name = "axis_right", sources = {"axis:leftx+"} },
-  { name = "axis_up", sources = {"axis:lefty-"} },
-  { name = "axis_down", sources = {"axis:lefty+"} },
+  { name = "axis1_left", sources = {"axis:leftx-"} },
+  { name = "axis1_right", sources = {"axis:leftx+"} },
+  { name = "axis1_up", sources = {"axis:lefty-"} },
+  { name = "axis1_down", sources = {"axis:lefty+"} },
   
   { name = "dleft", sources = {"button:dpleft"} },
   { name = "dright", sources = {"button:dpright"} },
@@ -66,11 +66,18 @@ local CONTROL_MAP = {
 
 
 ---------------------------------------|
+--- Globals
+--
+---------------------------------------|
+-- Made global, so can use these routines externally
+gamepads                      = {}
+
+---------------------------------------|
 --- Locals
 --
 ---------------------------------------|
 
-local gamepads                         = {}
+--local gamepads                         = {}
 local mainGamepad                      = nil
 
 local history                          = {}
@@ -94,6 +101,26 @@ local outputSpeed2                     = 5.0
 --- Functions
 --
 ---------------------------------------|
+
+--
+function controllerAxisPair(controller, axisNumber)
+  local fineDeadzone = 0.1
+  local v = controller.buttonControls["axis"..axisNumber.."_left"].value
+  local xl = (v > fineDeadzone and v) or 0
+  local v = controller.buttonControls["axis"..axisNumber.."_right"].value
+  local xr = (v > fineDeadzone and v) or 0
+  local v = controller.buttonControls["axis"..axisNumber.."_up"].value
+  local yu = (v > fineDeadzone and v) or 0
+  local v = controller.buttonControls["axis"..axisNumber.."_down"].value
+  local yd = (v > fineDeadzone and v) or 0
+
+  local x = -xl + xr
+  local y = -yu + yd
+
+  return { x = x, y = y }
+end
+
+
 
 ---
 --
@@ -357,23 +384,23 @@ function drawControllersDebug()
     -- Axis 1 dot as input
     x, y = mainX, mainY
     setNormalisedColour(230, 40, 80, 240)
-    x = x + boxSize2 * controllerAxisVal(mainGamepad, "axis_right")
-    x = x - boxSize2 * controllerAxisVal(mainGamepad, "axis_left")
-    y = y + boxSize2 * controllerAxisVal(mainGamepad, "axis_down")
-    y = y - boxSize2 * controllerAxisVal(mainGamepad, "axis_up")
+    x = x + boxSize2 * controllerAxisVal(mainGamepad, "axis1_right")
+    x = x - boxSize2 * controllerAxisVal(mainGamepad, "axis1_left")
+    y = y + boxSize2 * controllerAxisVal(mainGamepad, "axis1_down")
+    y = y - boxSize2 * controllerAxisVal(mainGamepad, "axis1_up")
     if controllerIsDown(mainGamepad, "leftstick") then
       circle("fill", x, y, 16)
     else
       circle("line", x, y, 8)
     end
     
-    -- Axis 2 dot as raw
+    -- Axis 1 dot as raw
     x, y = mainX, mainY
     setNormalisedColour(230, 40, 80, 150)
-    x = x + boxSize2 * controllerAxisRaw(mainGamepad, "axis_right")
-    x = x - boxSize2 * controllerAxisRaw(mainGamepad, "axis_left")
-    y = y + boxSize2 * controllerAxisRaw(mainGamepad, "axis_down")
-    y = y - boxSize2 * controllerAxisRaw(mainGamepad, "axis_up")
+    x = x + boxSize2 * controllerAxisRaw(mainGamepad, "axis1_right")
+    x = x - boxSize2 * controllerAxisRaw(mainGamepad, "axis1_left")
+    y = y + boxSize2 * controllerAxisRaw(mainGamepad, "axis1_down")
+    y = y - boxSize2 * controllerAxisRaw(mainGamepad, "axis1_up")
     if controllerIsDown(mainGamepad, "leftstick") then
       circle("fill", x, y, 16)
     else

@@ -306,10 +306,10 @@ local function drawUI()
   -- state-dependent overlays
   if gameState == constants.GAME_STATE.LVL_INTRO then
     -- intro countdown
-    love.graphics.setColor(1, 1, 1, 6-txtSize)
-    SPRITESHEET:drawCentered('INTRO_'..delayCounter,
-                              constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
-                              nil, nil, nil, txtSize, txtSize)
+    -- love.graphics.setColor(1, 1, 1, 6-txtSize)
+    -- SPRITESHEET:drawCentered('INTRO_'..delayCounter,
+    --                           constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
+    --                           nil, nil, nil, txtSize, txtSize)
   elseif gameState == constants.GAME_STATE.GAME_OVER then
     -- Game Over!
     SPRITESHEET:drawCentered('GAME_OVER',
@@ -334,47 +334,28 @@ local function drawUI()
 end
 
 
--- -----------------------------------------------------------
--- Main functions
--- -----------------------------------------------------------
+local function updateGame(dt)
 
-local function load()
-
- -- Init sounds
- initSounds()
-
- -- -- Start at the title screen
- -- initTitleScreen(true)
-
- -- Create player
- p1 = Player.new({
-   x = constants.GAME_WIDTH/2,
-   y = constants.GAME_HEIGHT/2,
- })
-
- initLevel(levelNum)
-end
-
-
-local function update(dt)
-
-  -- Update all promises
-  Promise.updateActivePromises(dt)
-
-  -- Update game controller(s)
-  updateControllers(dt)
-
-  if (constants.DEBUG_MODE) then updateControllersDebug(dt) end
-
-  -- Update mouse position
-  -- get the position of the mouse
-  mouseX, mouseY = love.mouse.getPosition()
-  -- adjust mouse position for scale
-  mouseX = math.floor((mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE)
-  mouseY = math.floor((mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE)
-
-  -- Update Player
-  p1:update(dt)
+  -- Update player (if alive)
+  if p1.isAlive then
+    p1:update(dt)
+    -- check player collisions
+    updatePlayerCollisions()
+  else
+    -- Player died
+    p1.deathCooldown = p1.deathCooldown-1
+    if p1.deathCooldown <= 0 then
+      -- Restart level?
+      if p1.lives > 0 then
+        initLevel(levelNum)
+      else
+        -- game over
+        gameState = constants.GAME_STATE.GAME_OVER
+        print("game over!!!")
+        txtSize = 0
+      end
+    end
+  end
 
   -- Update Target Balls
   for index, tball in ipairs(targetBalls) do
@@ -406,9 +387,60 @@ local function update(dt)
     end
     gamePowerUpFrame = (gamePowerUpFrame+1)%4
   end
+end
+
+
+
+-- -----------------------------------------------------------
+-- Main functions
+-- -----------------------------------------------------------
+
+local function load()
+
+ -- Init sounds
+ initSounds()
+
+ -- -- Start at the title screen
+ -- initTitleScreen(true)
+
+ -- Create player
+ p1 = Player.new({
+   x = constants.GAME_WIDTH/2,
+   y = constants.GAME_HEIGHT/2,
+ })
+
+ initLevel(levelNum)
+
+ -- Joystick/pad related
+ print("joystick count="..love.joystick.getJoystickCount())
+ checkControllers()
+end
+
+
+local function update(dt)
+
+  -- Update all promises
+  Promise.updateActivePromises(dt)
+
+  -- Update game controller(s)
+  updateControllers(dt)
+
+  if (constants.DEBUG_MODE) then updateControllersDebug(dt) end
+
+  -- Update mouse position
+  -- get the position of the mouse
+  mouseX, mouseY = love.mouse.getPosition()
+  -- adjust mouse position for scale
+  mouseX = math.floor((mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE)
+  mouseY = math.floor((mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE)
+
 
   -- Level Intro
   if gameState == constants.GAME_STATE.LVL_INTRO then
+
+    -- allow player to move
+    p1:update(dt)
+
     txtSize = txtSize + .14
     if txtSize > 6 then 
       txtSize = 0
@@ -422,26 +454,8 @@ local function update(dt)
   elseif gameState == constants.GAME_STATE.LVL_PLAY 
    or gameState == constants.GAME_STATE.LOSE_LIFE then
 
-    -- Update player (if alive)
-    if p1.isAlive then
-      p1:update(dt)
-      -- check player collisions
-      updatePlayerCollisions()
-    else
-      -- Player died
-      p1.deathCooldown = p1.deathCooldown-1
-      if p1.deathCooldown <= 0 then
-        -- Restart level?
-        if p1.lives > 0 then
-          initLevel(levelNum)
-        else
-          -- game over
-          gameState = constants.GAME_STATE.GAME_OVER
-          print("game over!!!")
-          txtSize = 0
-        end
-      end
-    end
+    -- Game update routine
+    updateGame(dt)
 
   -- Game over
   elseif gameState == constants.GAME_STATE.GAME_OVER then
@@ -475,6 +489,7 @@ local function update(dt)
   -- update particles
   gfx.updateParticles(dt)
 end
+
 
 
 
