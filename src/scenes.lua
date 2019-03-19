@@ -1,5 +1,9 @@
 
+local constants = require 'src/constants'
+
+
 Scenes = {
+  -- Fields
   --Test = "hello"
 }
 
@@ -15,7 +19,13 @@ function Scenes:updateTitle(dt)
 end
 
 function Scenes:drawTitle()
-  --print("drawTitle()..."..Scenes.Test)
+  love.graphics.setColor(1, 1, 1)
+  local txtWidth = 450
+  local txtHeight = 50
+  love.graphics.printf('TODO: TITLE SCREEN', 
+    constants.GAME_WIDTH/2-(txtWidth/2) ,
+    constants.GAME_HEIGHT/2 ,
+    txtWidth,"center")
 end
 
 
@@ -31,7 +41,13 @@ function Scenes:updateInstructions(dt)
 end
 
 function Scenes:drawInstructions()
-  --print("drawTitle()..."..Scenes.Test)
+  love.graphics.setColor(1, 1, 1)
+  local txtWidth = 450
+  local txtHeight = 50
+  love.graphics.printf('TODO: INSTRUCTIONS SCREEN', 
+    constants.GAME_WIDTH/2-(txtWidth/2) ,
+    constants.GAME_HEIGHT/2 ,
+    txtWidth,"center")
 end
 
 
@@ -48,9 +64,36 @@ function Scenes:updateLevelEnd(dt)
 end
 
 function Scenes:drawLevelEnd()
+  love.graphics.setColor(1, 1, 1)
+  local txtWidth = 450
+  local txtHeight = 50
+  love.graphics.printf('TODO: LEVEL END SCREEN', 
+    constants.GAME_WIDTH/2-(txtWidth/2) ,
+    constants.GAME_HEIGHT/2 ,
+    txtWidth,"center")
+end
+
+--
+-- Game Over screen
+--
+function Scenes:initGameOver()
   --print("drawTitle()..."..Scenes.Test)
 end
 
+
+function Scenes:updateGameOver(dt)
+  --print("drawTitle()..."..Scenes.Test)
+end
+
+function Scenes:drawGameOver()
+  love.graphics.setColor(1, 1, 1)
+  local txtWidth = 450
+  local txtHeight = 50
+  love.graphics.printf('- PRESS ANY KEY -', 
+    constants.GAME_WIDTH/2-(txtWidth/2) ,
+    constants.GAME_HEIGHT/2 - 10,
+    txtWidth,"center")
+end
 
 
 return Scenes;

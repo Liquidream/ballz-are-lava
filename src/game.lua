@@ -20,17 +20,22 @@ require 'src/util/controller'
 --
 -- global vars
 --
-mouseX=nil  -- mouse pos (in game co-ordinates)
-mouseY=nil
+firstLoad = true
+mouseX = nil  -- mouse pos (in game co-ordinates)
+mouseY = nil
+lastMouseBtnDownState = false
+actionButtonPressed = false
 -- state variable(s)
-gameState = constants.GAME_STATE.LVL_PLAY
+-- gameState = constants.GAME_STATE.TITLE
+--gameState = constants.GAME_STATE.LVL_PLAY
+
 gameTimer = 60  -- (Made Global so Power-ups can read it)
 gamePowerUp = 0       -- for Freeze powerup
 gamePowerUpTimer = 0  -- 
 gamePowerUpFrame = 0
 gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
-levelNum = 3--3--12
+levelNum = 1--3--12
 --
 -- local vars
 --
@@ -220,6 +225,7 @@ local function updatePlayerCollisions()
         gameState=constants.GAME_STATE.LVL_END
 
         -- (TODO: Show score, etc.)
+        Scenes:initLevelEnd(p1)
 
         -- Next level (after delay)
         -- TODO: Probably not using Promise, 
@@ -352,6 +358,7 @@ local function updateGame(dt)
       else
         -- game over
         gameState = constants.GAME_STATE.GAME_OVER
+        Scenes:initGameOver()
         print("game over!!!")
         txtSize = 0
       end
@@ -388,6 +395,13 @@ local function updateGame(dt)
     end
     gamePowerUpFrame = (gamePowerUpFrame+1)%4
   end
+  
+  -- Decrease game timer
+  gameTimer = gameTimer - 0.016
+    if gameTimer < 1 then
+      gameTimer = 0 
+      loseLife()
+    end
 end
 
 
@@ -398,35 +412,51 @@ end
 
 local function load()
 
- -- Init sounds
- initSounds()
+  if firstLoad then
+    -- Init sounds
+    initSounds()
 
- -- -- Start at the title screen
- -- initTitleScreen(true)
+    -- Joystick/pad related
+    print("joystick count="..love.joystick.getJoystickCount())
+    checkControllers()
+    
+    firstLoad = false
+  end
 
- -- Create player
- p1 = Player.new({
-   x = constants.GAME_WIDTH/2,
-   y = constants.GAME_HEIGHT/2,
- })
+  -- -- Start at the title screen
+  gameState = constants.GAME_STATE.TITLE
 
- initLevel(levelNum)
+  -- Create player
+  p1 = Player.new({
+    x = constants.GAME_WIDTH/2,
+    y = constants.GAME_HEIGHT/2,
+  })
 
- -- Joystick/pad related
- print("joystick count="..love.joystick.getJoystickCount())
- checkControllers()
+  Scenes:initTitle()
+  --initLevel(levelNum)
+
+end
+
+function love.keypressed( key, scancode, isrepeat )
+  -- Debug switch
+  if key=="d" then
+    constants.DEBUG_MODE = not constants.DEBUG_MODE
+  end
+  if key=="space" then
+    actionButtonPressed = true
+  end
 end
 
 
 local function update(dt)
-
   -- Update all promises
   Promise.updateActivePromises(dt)
 
   -- Update game controller(s)
   updateControllers(dt)
-
   if (constants.DEBUG_MODE) then updateControllersDebug(dt) end
+
+
 
   -- Update mouse position
   -- get the position of the mouse
@@ -435,9 +465,39 @@ local function update(dt)
   mouseX = math.floor((mouseX-gfx.RENDER_X) / gfx.RENDER_SCALE)
   mouseY = math.floor((mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE)
 
+  -- Action button (Controller)
+  if controllerPressed(gamepads[1], "primaryA") then
+    -- Sticky press (don't clear current value)
+    actionButtonPressed = true
+  end
+
+  -- Action button (Mouse)
+  local mouseBtnDownState = love.mouse.isDown(1)
+  if mouseBtnDownState 
+  and not lastMouseBtnDownState
+  and not actionButtonPressed then
+    -- Sticky press (don't clear current value)
+    actionButtonPressed = true
+  end
 
   -- Level Intro
-  if gameState == constants.GAME_STATE.LVL_INTRO then
+  if gameState == constants.GAME_STATE.TITLE then
+
+    if actionButtonPressed then 
+      Scenes:initInstructions()
+      gameState = constants.GAME_STATE.INFO
+    end
+
+  -- Instructions
+  elseif gameState == constants.GAME_STATE.INFO then
+    -- Start game (level intro)
+    if actionButtonPressed then 
+      initLevel(levelNum)
+      gameState = constants.GAME_STATE.LVL_INTRO
+    end
+
+  -- Level Intro
+  elseif gameState == constants.GAME_STATE.LVL_INTRO then
 
     -- allow player to move
     p1:update(dt)
@@ -452,11 +512,33 @@ local function update(dt)
     end
 
   -- Game play
-  elseif gameState == constants.GAME_STATE.LVL_PLAY 
-   or gameState == constants.GAME_STATE.LOSE_LIFE then
+  elseif gameState == constants.GAME_STATE.LVL_PLAY then
 
     -- Game update routine
     updateGame(dt)
+
+  -- Level Complete
+  elseif gameState == constants.GAME_STATE.LVL_END then
+
+    -- Game update routine (in background)?
+    updateGame(dt)
+
+    -- Tally scores
+    Scenes:updateLevelEnd(p1)
+    
+    -- Allow skip score tally
+    if actionButtonPressed then 
+      -- Next level
+      -- levelNum = levelNum+1
+      -- initLevel(levelNum)
+      -- gameState = constants.GAME_STATE.LVL_INTRO
+    end
+
+  -- Lose Life
+  elseif gameState == constants.GAME_STATE.LOSE_LIFE then
+
+  -- Game update routine
+  updateGame(dt)
 
   -- Game over
   elseif gameState == constants.GAME_STATE.GAME_OVER then
@@ -476,34 +558,27 @@ local function update(dt)
       targetBalls[1]:die()
       table.remove(targetBalls, 1)
     end
+
+    Scenes:updateGameOver(dt)
+
+    if actionButtonPressed then 
+      -- Restart game
+      load()
+    end
+
   end -- if gamestate
 
-  -- Decrease game timer
-  if gameState == constants.GAME_STATE.LVL_PLAY then
-    gameTimer = gameTimer - 0.016
-    if gameTimer < 1 then
-      gameTimer = 0 
-      loseLife()
-    end
-  end
 
   -- update particles
   gfx.updateParticles(dt)
+
+  -- Reset state for current frame
+  actionButtonPressed = false
+  lastMouseBtnDownState = mouseBtnDownState
 end
 
 
-
-
-local function draw()
-
-  -- Adjust/update shack positioning first (if any)
-  gfx:updateShake()
-
-
-  -- Draw background
-  drawBackground()
-
-  Scenes.drawTitle()
+local function drawGame()
 
   -- Draw "death" lines
   for index, src in ipairs(gameDeathLines) do
@@ -547,6 +622,62 @@ local function draw()
   if p1.deathCooldown > 96 then
     love.graphics.clear(colour[25])
   end
+
+end
+
+
+local function draw()
+
+  -- Adjust/update shack positioning first (if any)
+  gfx:updateShake()
+
+
+  -- Draw background
+  drawBackground()
+
+  -- Level Intro
+  if gameState == constants.GAME_STATE.TITLE then
+
+    Scenes.drawTitle()
+
+    -- Instructions
+  elseif gameState == constants.GAME_STATE.INFO then
+
+    Scenes.drawInstructions()
+
+  -- Level Intro
+  elseif gameState == constants.GAME_STATE.LVL_INTRO then
+
+    -- Draw game elements (inc. UI)
+    drawGame()
+
+    -- Game play
+  elseif gameState == constants.GAME_STATE.LVL_PLAY then
+
+    -- Draw game elements (inc. UI)
+    drawGame()
+
+  elseif gameState == constants.GAME_STATE.LVL_END then
+
+    -- Draw game elements (inc. UI)
+    drawGame()
+    Scenes.drawLevelEnd()
+
+  -- Lose Life
+  elseif gameState == constants.GAME_STATE.LOSE_LIFE then
+
+    -- Draw game elements (inc. UI)
+    drawGame()
+
+  -- Game over
+  elseif gameState == constants.GAME_STATE.GAME_OVER then
+  
+    -- Draw game elements (inc. UI)
+    drawGame()
+    Scenes:drawGameOver()
+
+  end
+
 
 end
 
