@@ -11,7 +11,7 @@ local generateLevel = require 'src/generateLevel'
 local collision = require 'src/util/collision'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local Sounds = require 'src/util/sounds'
-local Scenes = require 'src/Scenes'
+local Scenes = require 'src/scenes'
 
 require 'src/util/controller'
 --local controller = require 'src/util/controller'
