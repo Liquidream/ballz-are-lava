@@ -67,7 +67,7 @@ function Scenes:drawLevelEnd()
   love.graphics.setColor(1, 1, 1)
   local txtWidth = 450
   local txtHeight = 50
-  love.graphics.printf('TODO: LEVEL END SCREEN', 
+  love.graphics.printf("- LEVEL "..(levelNum-2).." COMPLETE -", 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 ,
     txtWidth,"center")

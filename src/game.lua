@@ -35,7 +35,7 @@ gamePowerUpTimer = 0  --
 gamePowerUpFrame = 0
 gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
-levelNum = 1--3--12
+levelNum = 3--3--12
 --
 -- local vars
 --
@@ -282,9 +282,10 @@ end
 
 local function drawBackground()
  local gridSize=16
+ local lineCols={[0]=24, 6, 15}
  -- navy
  love.graphics.clear(colour[26])
- love.graphics.setColor(colour[24])
+ love.graphics.setColor(colour[lineCols[levelNum%3]])
  --
  for x=0, constants.GAME_WIDTH, gridSize do
     love.graphics.line(
