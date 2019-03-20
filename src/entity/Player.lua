@@ -76,15 +76,12 @@ update = function(self, dt)
   end
 
   -- gamepad controls override mouse/keyboard
-
-  -- Remember to check: gamepads[1] ~= nil
-  local pad1_axis1 = controllerAxisPair(gamepads[1], 1)
-  if pad1_axis1 ~= nil then
-    --print("L-Axis: "..pad1_axis1.x..","..pad1_axis1.y)
-    self.x = self.x + (constants.PLAYER_MAX_SPEED * pad1_axis1.x) * dt
-    self.y = self.y + (constants.PLAYER_MAX_SPEED * pad1_axis1.y) * dt
-  
-  --print("L-Axis: "..controllerAxisVal(gamepads[1], "axis1_left"))
+  if #gamepads > 0 then
+    local pad1_axis1 = controllerAxisPair(gamepads[1], 1)
+    if pad1_axis1 ~= nil then
+      self.x = self.x + (constants.PLAYER_MAX_SPEED * pad1_axis1.x) * dt
+      self.y = self.y + (constants.PLAYER_MAX_SPEED * pad1_axis1.y) * dt
+    end
   end
 
   -- keyboard controls override both

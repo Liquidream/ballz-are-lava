@@ -341,35 +341,34 @@ local function drawUI()
 end
 
 
-local function updateGame(dt)
+local function updatePlayerDeath(dt)
 
-  -- Update player (if alive)
-  if p1.isAlive then
-    p1:update(dt)
-    -- check player collisions
-    updatePlayerCollisions()
-  else
-    -- Player died
-    p1.deathCooldown = p1.deathCooldown-1
-    if p1.deathCooldown <= 0 then
-      -- Restart level?
-      if p1.lives > 0 then
-        initLevel(levelNum)
-      else
-        -- game over
-        gameState = constants.GAME_STATE.GAME_OVER
-        Scenes:initGameOver()
-        print("game over!!!")
-        txtSize = 0
-      end
+  --
+  -- Update player death?
+  --
+  -- Player died
+  p1.deathCooldown = p1.deathCooldown-1
+  if p1.deathCooldown <= 0 then
+    -- Restart level?
+    if p1.lives > 0 then
+      initLevel(levelNum)
+    else
+      -- game over
+      gameState = constants.GAME_STATE.GAME_OVER
+      Scenes:initGameOver()
+      print("game over!!!")
+      txtSize = 0
     end
   end
+end
+
+local function updateBalls(dt)
 
   -- Update Target Balls
   for index, tball in ipairs(targetBalls) do
     tball:update(dt)
     if gameState == constants.GAME_STATE.LVL_PLAY 
-     and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
+      and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
       tball:applyVelocity(dt)
     end
   end
@@ -377,10 +376,14 @@ local function updateGame(dt)
   for index, lball in ipairs(lavaBalls) do
     lball:update(dt)
     if gameState==constants.GAME_STATE.LVL_PLAY 
-     and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
+      and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
       lball:applyVelocity(dt)
     end
   end
+
+end
+
+local function updatePowerUps(dt)
 
   -- Update Power-ups
   for index, pUp in ipairs(powerUps) do
@@ -395,13 +398,7 @@ local function updateGame(dt)
     end
     gamePowerUpFrame = (gamePowerUpFrame+1)%4
   end
-  
-  -- Decrease game timer
-  gameTimer = gameTimer - 0.016
-    if gameTimer < 1 then
-      gameTimer = 0 
-      loseLife()
-    end
+
 end
 
 
@@ -466,7 +463,7 @@ local function update(dt)
   mouseY = math.floor((mouseY-gfx.RENDER_Y) / gfx.RENDER_SCALE)
 
   -- Action button (Controller)
-  if controllerPressed(gamepads[1], "primaryA") then
+  if #gamepads > 0 and controllerPressed(gamepads[1], "primaryA") then
     -- Sticky press (don't clear current value)
     actionButtonPressed = true
   end
@@ -499,8 +496,10 @@ local function update(dt)
   -- Level Intro
   elseif gameState == constants.GAME_STATE.LVL_INTRO then
 
-    -- allow player to move
+    -- Allow player to move
     p1:update(dt)
+    -- Update Lava + Target ballz (anim only)
+    updateBalls(dt)
 
     txtSize = txtSize + .14
     if txtSize > 6 then 
@@ -515,13 +514,29 @@ local function update(dt)
   elseif gameState == constants.GAME_STATE.LVL_PLAY then
 
     -- Game update routine
-    updateGame(dt)
+    p1:update(dt)
+    
+    -- check player collisions
+    updatePlayerCollisions()
+    
+    -- Update Lava + Target ballz
+    updateBalls(dt)
+
+    -- Update Power-ups (Player + game-level)
+    updatePowerUps(dt)
+    
+    -- Decrease game timer
+    gameTimer = gameTimer - 0.016
+    if gameTimer < 1 then
+      gameTimer = 0 
+      loseLife()
+    end
 
   -- Level Complete
   elseif gameState == constants.GAME_STATE.LVL_END then
 
-    -- Game update routine (in background)?
-    updateGame(dt)
+    -- Update Lava + Target ballz (anim only)
+    updateBalls(dt)
 
     -- Tally scores
     Scenes:updateLevelEnd(p1)
@@ -537,14 +552,20 @@ local function update(dt)
   -- Lose Life
   elseif gameState == constants.GAME_STATE.LOSE_LIFE then
 
-  -- Game update routine
-  updateGame(dt)
+    -- Countdown until restart/game-over
+    updatePlayerDeath(dt)
+    -- Update Lava + Target ballz (anim only)
+    updateBalls(dt)
 
   -- Game over
   elseif gameState == constants.GAME_STATE.GAME_OVER then
     -- text
     txtSize = txtSize + .02
     txtSize = math.min(txtSize, 2)
+    
+    -- Update Lava + Target ballz (anim only)
+    updateBalls(dt)
+
     -- fireworks!
     if love.math.random(15)==1 and #lavaBalls > 0 then 
       -- kill lavaball
