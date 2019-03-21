@@ -8,26 +8,29 @@ local colour = require 'src/util/colour'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/powerup.png', {
   P_1 = { 0, 0, 16, 16 }, -- SHIELD
-  P_2 = { 16, 0, 16, 16 }, -- FREEZE
+  P_2 = { 64, 0, 16, 16 }, -- TIME_EXTEND
   P_3 = { 32, 0, 16, 16 }, -- LAVABOMB
-  P_4 = { 48, 0, 16, 16 }, -- EXTRA_LIFE
-  P_5 = { 64, 0, 16, 16 }, -- TIME_EXTEND
-  P_6 = { 80, 0, 16, 16 }, -- INVINCIBILITY
+  P_4 = { 16, 0, 16, 16 }, -- FREEZE
+  P_5 = { 80, 0, 16, 16 }, -- INVINCIBILITY
+  P_6 = { 48, 0, 16, 16 }, -- EXTRA_LIFE
 })
 
 local PowerUp = Entity.extend({
   size = 1, -- 0..1 (scale)
   radius = 8,
- 
- constructor = function(self)
-  Entity.constructor(self)
   
-  self.x = love.math.random(constants.GAME_WIDTH-20)+10
-  self.y = love.math.random(constants.GAME_HEIGHT-20)+10
-  self.powerupType = love.math.random(6)
-  self.state = constants.POWERUP_STATE.HIDING -- HIDING
-  self.frame = 1
-  self.frame_delay = 0
+  constructor = function(self)
+    Entity.constructor(self)
+    
+    
+    print("max = "..self.maxPowerUpType)
+    self.x = love.math.random(constants.GAME_WIDTH-20)+10
+    self.y = love.math.random(constants.GAME_HEIGHT-20)+10
+    self.powerupType = love.math.random( math.min(self.maxPowerUpType,6) )
+    self.state = constants.POWERUP_STATE.HIDING -- HIDING
+    self.frame = 1
+    self.frame_delay = 0
+    self.maxPowerUpType = 0
  end,
  
 activate = function(self, player)

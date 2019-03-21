@@ -1,6 +1,6 @@
 
 local constants = require 'src/constants'
-
+local gfx = require 'src/util/gfx'
 
 Scenes = {
   -- Fields
@@ -19,10 +19,9 @@ function Scenes:updateTitle(dt)
 end
 
 function Scenes:drawTitle()
-  love.graphics.setColor(1, 1, 1)
   local txtWidth = 450
   local txtHeight = 50
-  love.graphics.printf('TODO: TITLE SCREEN', 
+  gfx.drawOutlineText('TODO: TITLE SCREEN', 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 ,
     txtWidth,"center")
@@ -41,10 +40,9 @@ function Scenes:updateInstructions(dt)
 end
 
 function Scenes:drawInstructions()
-  love.graphics.setColor(1, 1, 1)
   local txtWidth = 450
   local txtHeight = 50
-  love.graphics.printf('TODO: INSTRUCTIONS SCREEN', 
+  gfx.drawOutlineText('TODO: INSTRUCTIONS SCREEN', 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 ,
     txtWidth,"center")
@@ -64,10 +62,9 @@ function Scenes:updateLevelEnd(dt)
 end
 
 function Scenes:drawLevelEnd()
-  love.graphics.setColor(1, 1, 1)
   local txtWidth = 450
   local txtHeight = 50
-  love.graphics.printf("- LEVEL "..(levelNum-2).." COMPLETE -", 
+  gfx.drawOutlineText("- LEVEL "..(levelNum-2).." COMPLETE -", 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 ,
     txtWidth,"center")
@@ -86,10 +83,9 @@ function Scenes:updateGameOver(dt)
 end
 
 function Scenes:drawGameOver()
-  love.graphics.setColor(1, 1, 1)
   local txtWidth = 450
   local txtHeight = 50
-  love.graphics.printf('- PRESS ANY KEY -', 
+  gfx.drawOutlineText('- PRESS ANY KEY -', 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 - 10,
     txtWidth,"center")

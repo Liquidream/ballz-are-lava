@@ -49,7 +49,16 @@ local function updateDisplay(self)
   self.RENDER_Y = math.floor((self.SCREEN_HEIGHT - self.RENDER_HEIGHT) / 2)
 end
 
-
+local function drawOutlineText(text, x, y, limit, align, col, bgcol)
+  love.graphics.setColor(bgcol or colour[23])
+  for xx = -1, 1 do
+    for yy = -1, 1 do
+      love.graphics.printf(text,  x+xx, y+yy, limit, align)
+    end
+  end
+  love.graphics.setColor(col or colour[19])
+  love.graphics.printf(text, x ,y ,limit, align)
+end
 
 --
 -- Special effects functions
@@ -177,6 +186,7 @@ return {
  -- functions
  init = init,
  updateDisplay = updateDisplay,
+ drawOutlineText = drawOutlineText,
 
  boom = boom,
  spawnParticle = spawnParticle,

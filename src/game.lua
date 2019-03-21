@@ -116,6 +116,7 @@ local function initLevel(levelNum)
     table.insert(powerUps, PowerUp.new({
       -- optional overloads
       startTime = love.math.random(currLevel.numTargetBalls+5+0.9)+5,
+      maxPowerUpType = levelNum-2
     }))
   end
 
@@ -328,15 +329,14 @@ local function drawUI()
   love.graphics.setColor(1, 1, 1)
   
   -- timer
-  love.graphics.setColor(gameTimer>10 and colour[19] or colour[25])
-  love.graphics.printf('TIME:'..string.format("%02d", math.floor(gameTimer)),
+  gfx.drawOutlineText('TIME:'..string.format("%02d", math.floor(gameTimer)),
     constants.GAME_WIDTH/2-80/2 ,
     1 ,
-    80,"center")
+    80,"center",
+    gameTimer>10 and colour[19] or colour[25])
     
   -- score
-  love.graphics.setColor(colour[18])
-  love.graphics.printf('000000',360 ,1 ,150,"right")
+  gfx.drawOutlineText('000000',360 ,1 ,150,"right",colour[18])
 
   if (constants.DEBUG_MODE) then drawControllersDebug() end
 end
@@ -447,6 +447,7 @@ end
 
 
 local function update(dt)
+
   -- Update all promises
   Promise.updateActivePromises(dt)
 
