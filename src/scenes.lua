@@ -38,7 +38,7 @@ end
 -- Instructions screen
 --
 function Scenes:initInstructions()
-  --print("drawTitle()..."..Scenes.Test)
+  flashCount = 0
 end
 
 function Scenes:updateInstructions(dt)
@@ -140,6 +140,7 @@ function Scenes:updateLevelEnd(dt, player)
     if (gameTimer < 0.1 and levelScore <= 0) then
       levelNum = levelNum + 1
       game.initLevel(levelNum)
+      livesAtLevelStart = player.lives
     end
   end
 end
@@ -166,21 +167,28 @@ end
 -- Game Over screen
 --
 function Scenes:initGameOver()
-  --print("drawTitle()..."..Scenes.Test)
+  flashCount = 0
 end
 
 
 function Scenes:updateGameOver(dt)
-  --print("drawTitle()..."..Scenes.Test)
+  flashCount = flashCount + 1 * dt
 end
 
-function Scenes:drawGameOver()
+function Scenes:drawGameOver(player)
   local txtWidth = 450
   local txtHeight = 50
-  gfx.drawOutlineText('- PRESS ANY KEY -', 
+  gfx.drawOutlineText('FINAL SCORE: '..string.format("%08d", player.score), 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 - 10,
     txtWidth,"center")
+
+  if flashCount > 1 and math.floor(flashCount)%2 == 0 then
+    gfx.drawOutlineText('- PRESS ANY KEY TO RETRY -', 
+      constants.GAME_WIDTH/2-(txtWidth/2) ,
+      260,
+      txtWidth,"center",colour[11],colour[6])
+  end
 end
 
 

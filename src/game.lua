@@ -36,6 +36,7 @@ gamePowerUpFrame = 0
 gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
 levelNum = 3--3--12
+livesAtLevelStart = 0
 --
 -- local vars
 --
@@ -586,8 +587,11 @@ local function update(dt)
     Scenes:updateGameOver(dt)
 
     if actionButtonPressed then 
-      -- Restart game
-      load()
+      -- TODO: Have a countdown that if player lets reach 0, go to Title
+
+      -- Restart level
+      p1.lives = livesAtLevelStart
+      game.initLevel(levelNum)
     end
 
   end -- if gamestate
@@ -698,7 +702,7 @@ local function draw()
   
     -- Draw game elements (inc. UI)
     drawGame()
-    Scenes:drawGameOver()
+    Scenes:drawGameOver(p1)
 
   end
 
