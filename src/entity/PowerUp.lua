@@ -110,4 +110,6 @@ end,
 
 })
 
+PowerUp.SPRITESHEET = SPRITESHEET
+
 return PowerUp

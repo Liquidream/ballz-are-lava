@@ -481,7 +481,7 @@ local function update(dt)
 
   -- Level Intro
   if gameState == constants.GAME_STATE.TITLE then
-
+    Scenes:updateTitle(dt)
     if actionButtonPressed then 
       Scenes:initInstructions()
       gameState = constants.GAME_STATE.INFO
@@ -489,6 +489,7 @@ local function update(dt)
 
   -- Instructions
   elseif gameState == constants.GAME_STATE.INFO then
+    Scenes:updateInstructions(dt)
     -- Start game (level intro)
     if actionButtonPressed then 
       initLevel(levelNum)
