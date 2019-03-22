@@ -334,7 +334,7 @@ local function drawUI()
     constants.GAME_WIDTH/2-80/2 ,
     1 ,
     80,"center",
-    gameTimer>10 and colour[19] or colour[25])
+    (gameTimer<10 and gameState == constants.GAME_STATE.LVL_PLAY) and colour[25] or colour[19])
     
   -- score
   gfx.drawOutlineText(string.format("%08d", p1.score),360 ,1 ,150,"right",colour[18])

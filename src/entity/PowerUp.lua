@@ -7,12 +7,19 @@ local gfx = require 'src/util/gfx'
 local colour = require 'src/util/colour'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/powerup.png', {
-  P_1 = { 0, 0, 16, 16 }, -- SHIELD
+  P_1 = { 0,  0, 16, 16 }, -- SHIELD
   P_2 = { 64, 0, 16, 16 }, -- TIME_EXTEND
   P_3 = { 32, 0, 16, 16 }, -- LAVABOMB
   P_4 = { 16, 0, 16, 16 }, -- FREEZE
   P_5 = { 80, 0, 16, 16 }, -- INVINCIBILITY
   P_6 = { 48, 0, 16, 16 }, -- EXTRA_LIFE
+  -- Flash versions
+  P_1F = { 0,  16, 16, 16 }, -- SHIELD
+  P_2F = { 64, 16, 16, 16 }, -- TIME_EXTEND
+  P_3F = { 32, 16, 16, 16 }, -- LAVABOMB
+  P_4F = { 16, 16, 16, 16 }, -- FREEZE
+  P_5F = { 80, 16, 16, 16 }, -- INVINCIBILITY
+  P_6F = { 48, 16, 16, 16 }, -- EXTRA_LIFE
 })
 
 local PowerUp = Entity.extend({
@@ -83,8 +90,6 @@ update = function(self, dt)
   --  -- (tho maybe better to have a factor, so can slow/speedup!)
   --  Entity.update(self, dt)
   -- end
-  
-  -- TODO: this!
 end,
 
 draw = function(self)
@@ -97,6 +102,9 @@ draw = function(self)
   -- Should we draw the Power-up?
   if self.state == constants.POWERUP_STATE.VISIBLE then
     local sprite = "P_"..self.powerupType
+    if (gameTimer*10)%20 < 1 then
+     sprite = sprite.."F"
+    end
     love.graphics.setColor(1, 1, 1)
     SPRITESHEET:drawCentered(sprite, x, y, nil, nil, nil, 1, 1)
 
