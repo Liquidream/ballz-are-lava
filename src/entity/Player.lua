@@ -13,7 +13,7 @@ local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
 
 
 local Player = Entity.extend({
-  lives = 1,--3,
+  lives = 3,
   score = 0
   ,
   constructor = function(self)
