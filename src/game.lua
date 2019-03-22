@@ -231,12 +231,12 @@ local function updatePlayerCollisions()
         -- Next level (after delay)
         -- TODO: Probably not using Promise, 
         --       as will be after scores have tallied!
-        Promise.newActive(2.5)
-        :andThen(function()
-          print(">>>level up!!!")
-          levelNum = levelNum+1
-          initLevel(levelNum)
-        end)
+        -- Promise.newActive(2.5)
+        -- :andThen(function()
+        --   print(">>>level up!!!")
+        --   levelNum = levelNum+1
+        --   initLevel(levelNum)
+        -- end)
       end 
     end
   end
@@ -336,7 +336,7 @@ local function drawUI()
     gameTimer>10 and colour[19] or colour[25])
     
   -- score
-  gfx.drawOutlineText('000000',360 ,1 ,150,"right",colour[18])
+  gfx.drawOutlineText(string.format("%08d", p1.score),360 ,1 ,150,"right",colour[18])
 
   if (constants.DEBUG_MODE) then drawControllersDebug() end
 end
@@ -541,7 +541,7 @@ local function update(dt)
     updateBalls(dt)
 
     -- Tally scores
-    Scenes:updateLevelEnd(p1)
+    Scenes:updateLevelEnd(dt, p1)
     
     -- Allow skip score tally
     if actionButtonPressed then 
@@ -684,7 +684,7 @@ local function draw()
 
     -- Draw game elements (inc. UI)
     drawGame()
-    Scenes.drawLevelEnd()
+    Scenes:drawLevelEnd(p1)
 
   -- Lose Life
   elseif gameState == constants.GAME_STATE.LOSE_LIFE then
@@ -710,4 +710,5 @@ return {
  load = load,
  update = update,
  draw = draw,
+ initLevel = initLevel,
 }

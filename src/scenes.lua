@@ -2,6 +2,9 @@
 local constants = require 'src/constants'
 local gfx = require 'src/util/gfx'
 
+local delayCounter = 0
+local levelScore = 0
+
 Scenes = {
   -- Fields
   --Test = "hello"
@@ -54,17 +57,39 @@ end
 --
 function Scenes:initLevelEnd(player)
   --print("drawTitle()..."..Scenes.Test)
+  delayCounter = 1
+  levelScore = player.targetsCollected * 100
 end
 
 
-function Scenes:updateLevelEnd(dt)
+function Scenes:updateLevelEnd(dt, player)
   --print("drawTitle()..."..Scenes.Test)
+  delayCounter = delayCounter - 0.016
+  if delayCounter <= 0 then
+    -- add level score to player score
+    if (levelScore > 0) then
+      player.score = player.score + 10 
+      levelScore = levelScore - 10
+    end
+    -- add time bonus to score
+    if (gameTimer > 0.1) then
+      player.score = player.score + 1
+      gameTimer = gameTimer - 0.1
+    end
+    -- go to next level?
+    if (gameTimer < 0.1 and levelScore <= 0) then
+      levelNum = levelNum + 1
+      game.initLevel(levelNum)
+    end
+  end
 end
 
 function Scenes:drawLevelEnd()
   local txtWidth = 450
   local txtHeight = 50
-  gfx.drawOutlineText("- LEVEL "..(levelNum-2).." COMPLETE -", 
+  gfx.drawOutlineText("- LEVEL "..(levelNum-2).." COMPLETE -\n"
+      .."Level Score: "..levelScore.."\n"
+      .."Time Bonus: "..(math.floor(gameTimer)*10).."\n", 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 ,
     txtWidth,"center")

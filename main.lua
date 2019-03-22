@@ -36,9 +36,12 @@ if CASTLE_PREFETCH then
  })
 end
 
+-- global
+game = require 'src/game'
+
+-- local
 local constants = require 'src/constants'
 local gfx = require 'src/util/gfx'
-local game = require 'src/game'
 local colour = require 'src/util/colour'
 
 local translateScreenToCenterDx = 0
