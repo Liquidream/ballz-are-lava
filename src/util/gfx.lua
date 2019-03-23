@@ -50,7 +50,7 @@ local function updateDisplay(self)
 end
 
 local function drawOutlineText(text, x, y, limit, align, col, bgcol)
-  love.graphics.setColor(bgcol or colour[23])
+  love.graphics.setColor(bgcol or colour[6])
   for xx = -1, 1 do
     for yy = -1, 1 do
       love.graphics.printf(text,  x+xx, y+yy, limit, align)

@@ -10,12 +10,13 @@ local colour = require 'src/util/colour'
 local generateLevel = require 'src/generateLevel'
 local collision = require 'src/util/collision'
 local SpriteSheet = require 'src/util/SpriteSheet'
+local saveFile = require 'src/util/saveFile'
 local Sounds = require 'src/util/sounds'
 local Scenes = require 'src/scenes'
-
 require 'src/util/controller'
---local controller = require 'src/util/controller'
 
+-- Clear save file
+--saveFile.save(constants.SAVE_FILENAME, {})
 
 --
 -- global vars
@@ -37,6 +38,8 @@ gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
 levelNum = 3--3--12
 livesAtLevelStart = 0
+highScore = 0
+highLevel = 0
 --
 -- local vars
 --
@@ -357,7 +360,7 @@ local function updatePlayerDeath(dt)
     else
       -- game over
       gameState = constants.GAME_STATE.GAME_OVER
-      Scenes:initGameOver()
+      Scenes:initGameOver(p1)
       print("game over!!!")
       txtSize = 0
     end
@@ -418,9 +421,15 @@ local function load()
     -- Joystick/pad related
     print("joystick count="..love.joystick.getJoystickCount())
     checkControllers()
-    
+
     firstLoad = false
   end
+
+  -- Load save data
+  local saveData = saveFile.load(constants.SAVE_FILENAME)
+  highScore = saveData.highScore or 0
+  highLevel = saveData.highLevel or 0
+  
 
   -- -- Start at the title screen
   gameState = constants.GAME_STATE.TITLE

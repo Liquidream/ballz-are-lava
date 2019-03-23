@@ -2,11 +2,19 @@
 local constants = require 'src/constants'
 local gfx = require 'src/util/gfx'
 local colour = require 'src/util/colour'
+local SpriteSheet = require 'src/util/SpriteSheet'
 local PowerUp = require 'src/entity/PowerUp'
+local saveFile = require 'src/util/saveFile'
+
+
 
 local delayCounter = 0
 local levelScore = 0
 local flashCount = 0
+
+local SPRITESHEET = SpriteSheet.new('assets/img/ballz-logo.png', {
+  LOGO = { 0, 0, 320, 192 },
+})
 
 Scenes = {
   -- Fields
@@ -21,16 +29,50 @@ function Scenes:initTitle()
 end
 
 function Scenes:updateTitle(dt)
-  --print("drawTitle()..."..Scenes.Test)
+  flashCount = flashCount + 1 * dt
 end
 
 function Scenes:drawTitle()
-  local txtWidth = 450
+  local txtWidth = constants.GAME_WIDTH+20
   local txtHeight = 50
-  gfx.drawOutlineText('TODO: TITLE SCREEN', 
-    constants.GAME_WIDTH/2-(txtWidth/2) ,
-    constants.GAME_HEIGHT/2 ,
+
+  -- score
+  gfx.drawOutlineText(
+    string.format("HIGH:%08d", highScore)..
+    "                                   Level "..string.format("%02d",highLevel).."",
+    constants.GAME_WIDTH/2-(txtWidth/2),1 ,
+    txtWidth,"center",
+    colour[9],colour[6])
+  -- gfx.drawOutlineText(
+  --   string.format("HIGH:%08d", highScore).."\nLevel "..highLevel.."",
+  --   360,1 ,
+  --   150,"right",
+  --   colour[9],colour[6])
+
+
+  love.graphics.setColor(1, 1, 1)
+  SPRITESHEET:drawCentered(
+      "LOGO", 
+      constants.GAME_WIDTH/2, 
+      115, 
+      nil, nil, nil, 1, 1)
+
+  gfx.drawOutlineText('   Code & Art                 SFX & Music by', 
+    constants.GAME_WIDTH/2-(txtWidth/2),
+    240,
     txtWidth,"center")
+  gfx.drawOutlineText('Paul Nicholas                Jason Riggs', 
+    constants.GAME_WIDTH/2-(txtWidth/2),
+    260,
+    txtWidth,"center",colour[18])
+
+
+  if math.floor(flashCount)%2 == 0 then
+    gfx.drawOutlineText('- PRESS ANY KEY TO START -', 
+      constants.GAME_WIDTH/2-(txtWidth/2),
+      213,
+      txtWidth,"center",colour[11])
+  end
 end
 
 
@@ -166,8 +208,18 @@ end
 --
 -- Game Over screen
 --
-function Scenes:initGameOver()
+function Scenes:initGameOver(player)
   flashCount = 0
+  -- Save score (if new high score)
+  if p1.score > highScore then
+    highScore = p1.score
+    highLevel = levelNum
+
+    saveFile.save(constants.SAVE_FILENAME, {
+      highScore = p1.score,
+      highLevel = levelNum-2
+    })
+  end
 end
 
 
