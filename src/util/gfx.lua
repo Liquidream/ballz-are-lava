@@ -17,13 +17,25 @@ local shakeAmount = 0 -- how much to shake the screen (will stablise over time)
 local shakeX = 0
 local shakeY = 0
 local particles={}
-local font
+local fonts={}
 local RENDER_CANVAS
 
 local function init(self)
- font = love.graphics.newFont("assets/saxmono.ttf",17)
- font:setFilter("nearest", "nearest", 0 )
- love.graphics.setFont(font)
+  -- Load fonts/sizes
+  local font = love.graphics.newFont("assets/saxmono.ttf",17)
+  font:setFilter("nearest", "nearest", 0 )
+  table.insert(fonts, font)
+  --font = love.graphics.newFont("assets/den-pn.otf",16)
+  font = love.graphics.newFont("assets/rent.ttf",16)
+  font:setFilter("nearest", "nearest", 0 )
+  table.insert(fonts, font)
+  -- Default to first font
+  self.setFont(2)
+end
+
+-- Switch font bank
+local function setFont(num)
+  love.graphics.setFont(fonts[num])
 end
 
 -- Recalibrate the render display, based on current display dimensions
@@ -181,11 +193,12 @@ return {
  RENDER_Y = RENDER_Y,
  RENDER_CANVAS = RENDER_CANVAS,
 
- font = font,
+ --font = font,
 
  -- functions
  init = init,
  updateDisplay = updateDisplay,
+ setFont = setFont,
  drawOutlineText = drawOutlineText,
 
  boom = boom,

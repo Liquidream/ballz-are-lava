@@ -318,11 +318,26 @@ local function drawUI()
 
   -- state-dependent overlays
   if gameState == constants.GAME_STATE.LVL_INTRO then
+    local txtWidth = 450
+    gfx.drawOutlineText("- LEVEL "..(levelNum-2).." -", 
+    constants.GAME_WIDTH/2-(txtWidth/2) ,
+    50,
+    txtWidth,"center", colour[11],colour[6])
+
     -- intro countdown
     love.graphics.setColor(1, 1, 1, 6-txtSize)
     SPRITESHEET:drawCentered('INTRO_'..delayCounter,
                               constants.GAME_WIDTH/2, constants.GAME_HEIGHT/2, 
                               nil, nil, nil, txtSize, txtSize)
+
+  elseif gameState == constants.GAME_STATE.LOSE_LIFE then
+    if gameTimer== 0 then
+      local txtWidth = 450
+      gfx.drawOutlineText("- TIME'S UP -", 
+      constants.GAME_WIDTH/2-(txtWidth/2) ,
+      50,
+      txtWidth,"center", colour[25])
+    end
   elseif gameState == constants.GAME_STATE.GAME_OVER then
     -- Game Over!
     SPRITESHEET:drawCentered('GAME_OVER',
@@ -337,7 +352,7 @@ local function drawUI()
     constants.GAME_WIDTH/2-80/2 ,
     1 ,
     80,"center",
-    (gameTimer<10 and gameState == constants.GAME_STATE.LVL_PLAY) and colour[25] or colour[19])
+    (gameTimer<10 and gameState == constants.GAME_STATE.LVL_PLAY and math.random(2)==1) and colour[25] or colour[19])
     
   -- score
   gfx.drawOutlineText(string.format("%08d", p1.score),360 ,1 ,150,"right",colour[18])
@@ -427,8 +442,8 @@ local function load()
 
   -- Load save data
   local saveData = saveFile.load(constants.SAVE_FILENAME)
-  highScore = saveData.highScore or 0
-  highLevel = saveData.highLevel or 0
+  highScore = tonumber(saveData.highScore or 0)
+  highLevel = tonumber(saveData.highLevel or 0)
   
 
   -- -- Start at the title screen

@@ -38,9 +38,9 @@ function Scenes:drawTitle()
 
   -- score
   gfx.drawOutlineText(
-    string.format("HIGH:%08d", highScore)..
-    "                                   Level "..string.format("%02d",highLevel).."",
-    constants.GAME_WIDTH/2-(txtWidth/2),1 ,
+    string.format("HIGH:%06d", highScore)..
+    "                               Level "..string.format("%02d",highLevel).."",
+    constants.GAME_WIDTH/2-(txtWidth/2)+1,1 ,
     txtWidth,"center",
     colour[9],colour[6])
   -- gfx.drawOutlineText(
@@ -59,18 +59,18 @@ function Scenes:drawTitle()
 
   gfx.drawOutlineText('   Code & Art                 SFX & Music by', 
     constants.GAME_WIDTH/2-(txtWidth/2),
-    240,
-    txtWidth,"center")
+    242,
+    txtWidth,"center",colour[12])
   gfx.drawOutlineText('Paul Nicholas                Jason Riggs', 
     constants.GAME_WIDTH/2-(txtWidth/2),
     260,
-    txtWidth,"center",colour[18])
+    txtWidth,"center")
 
 
   if math.floor(flashCount)%2 == 0 then
     gfx.drawOutlineText('- PRESS ANY KEY TO START -', 
       constants.GAME_WIDTH/2-(txtWidth/2),
-      213,
+      216,
       txtWidth,"center",colour[11])
   end
 end
@@ -100,7 +100,8 @@ function Scenes:drawInstructions()
   yPos = yPos + 25
   
   gfx.drawOutlineText(
-    "Absorb all the Green orbs before the time runs out,\n"..
+    "Absorb all the Green orbs\n"..
+    "before the time runs out,\n"..
     "but remember...", 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     yPos,
@@ -120,7 +121,7 @@ function Scenes:drawInstructions()
     yPos,
     txtWidth,"left")
 
-  yPos = yPos + 30
+  yPos = yPos + 29
   
   local desc={
     "One-time lava protection",
@@ -132,18 +133,18 @@ function Scenes:drawInstructions()
   }
 
   for p=1,6 do
-    local yPosPU = yPos + (p-1)*20
+    local yPosPU = yPos + (p-1)*19
     love.graphics.setColor(1, 1, 1)
     PowerUp.SPRITESHEET:drawCentered(
-      "P_"..p, 125, yPosPU, nil, nil, nil, 1, 1)
+      "P_"..p, 125, yPosPU-1, nil, nil, nil, 1, 1)
     gfx.drawOutlineText(
       desc[p],
       150,
-      yPosPU-7,
+      yPosPU-9,
       txtWidth,"left", colour[18])
   end
 
-  yPos = yPos + 120
+  yPos = yPos + 117
   
   if math.floor(flashCount)%2 == 0 then
     gfx.drawOutlineText('- PRESS ANY KEY TO START -', 
@@ -190,7 +191,7 @@ end
 function Scenes:drawLevelEnd()
   local txtWidth = 450
   local txtHeight = 50
-  local yPos = 125
+  local yPos = 120
 
   gfx.drawOutlineText("- LEVEL "..(levelNum-2).." COMPLETE -", 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
