@@ -57,7 +57,7 @@ function Scenes:drawTitle()
       115, 
       nil, nil, nil, 1, 1)
 
-  gfx.drawOutlineText('   Code & Art                 SFX & Music by', 
+  gfx.drawOutlineText(' Code & Art                  SFX & Music', 
     constants.GAME_WIDTH/2-(txtWidth/2),
     242,
     txtWidth,"center",colour[12])
@@ -231,7 +231,7 @@ end
 function Scenes:drawGameOver(player)
   local txtWidth = 450
   local txtHeight = 50
-  gfx.drawOutlineText('FINAL SCORE: '..string.format("%08d", player.score), 
+  gfx.drawOutlineText('FINAL SCORE: '..string.format("%06d", player.score), 
     constants.GAME_WIDTH/2-(txtWidth/2) ,
     constants.GAME_HEIGHT/2 - 10,
     txtWidth,"center")

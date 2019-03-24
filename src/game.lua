@@ -16,7 +16,7 @@ local Scenes = require 'src/scenes'
 require 'src/util/controller'
 
 -- Clear save file
---saveFile.save(constants.SAVE_FILENAME, {})
+saveFile.save(constants.SAVE_FILENAME, {})
 
 --
 -- global vars
@@ -26,17 +26,13 @@ mouseX = nil  -- mouse pos (in game co-ordinates)
 mouseY = nil
 lastMouseBtnDownState = false
 actionButtonPressed = false
--- state variable(s)
--- gameState = constants.GAME_STATE.TITLE
---gameState = constants.GAME_STATE.LVL_PLAY
-
 gameTimer = 60  -- (Made Global so Power-ups can read it)
 gamePowerUp = 0       -- for Freeze powerup
 gamePowerUpTimer = 0  -- 
 gamePowerUpFrame = 0
 gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
-levelNum = 3--3--12
+levelNum = 3
 livesAtLevelStart = 0
 highScore = 0
 highLevel = 0
@@ -312,7 +308,7 @@ local function drawUI()
   -- lives
   for i=1,p1.lives do
     SPRITESHEET:drawCentered('EMPTY_HEART',
-      i*18-10 , 8 , 
+      i*16-8 , 8 , 
       nil, nil, nil, 1, 1)
   end
 
@@ -355,7 +351,7 @@ local function drawUI()
     (gameTimer<10 and gameState == constants.GAME_STATE.LVL_PLAY and math.random(2)==1) and colour[25] or colour[19])
     
   -- score
-  gfx.drawOutlineText(string.format("%08d", p1.score),360 ,1 ,150,"right",colour[18])
+  gfx.drawOutlineText(string.format("%06d", p1.score),360 ,1 ,150,"right",colour[18])
 
   if (constants.DEBUG_MODE) then drawControllersDebug() end
 end

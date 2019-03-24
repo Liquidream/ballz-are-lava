@@ -157,7 +157,7 @@ draw = function(self)
     love.graphics.setColor(colour[12])
     love.graphics.circle("fill", self.x, self.y, drawScale-3)
     -- Shrink power
-    local shrinkDrawScale=(self.radius-4)*self.shrinkPower
+    local shrinkDrawScale=(self.radius-5)*self.shrinkPower
     love.graphics.setColor(colour[18])
     love.graphics.circle("fill", self.x, self.y, shrinkDrawScale)
     love.graphics.setColor(colour[19])

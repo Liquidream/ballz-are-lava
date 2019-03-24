@@ -102,7 +102,7 @@ draw = function(self)
   -- Should we draw the Power-up?
   if self.state == constants.POWERUP_STATE.VISIBLE then
     local sprite = "P_"..self.powerupType
-    if (gameTimer*10)%20 < 1 then
+    if (gameTimer*10)%20 < .5 then
      sprite = sprite.."F"
     end
     love.graphics.setColor(1, 1, 1)
