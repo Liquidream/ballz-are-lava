@@ -22,15 +22,11 @@ local RENDER_CANVAS
 
 local function init(self)
   -- Load fonts/sizes
-  local font = love.graphics.newFont("assets/saxmono.ttf",17)
-  font:setFilter("nearest", "nearest", 0 )
-  table.insert(fonts, font)
-  --font = love.graphics.newFont("assets/den-pn.otf",16)
   font = love.graphics.newFont("assets/rent.ttf",16)
   font:setFilter("nearest", "nearest", 0 )
   table.insert(fonts, font)
   -- Default to first font
-  self.setFont(2)
+  self.setFont(1)
 end
 
 -- Switch font bank
