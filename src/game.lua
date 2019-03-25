@@ -36,6 +36,7 @@ levelNum = 3
 livesAtLevelStart = 0
 highScore = 0
 highLevel = 0
+gameTimerAtPrevFrame = 10000
 --
 -- local vars
 --
@@ -186,6 +187,7 @@ local function initLevel(levelNum)
 
   -- calc level time
   gameTimer = currLevel.numTargetBalls+10+0.9
+  gameTimerAtPrevFrame = gameTimer
 
   -- revive player player state (start small, etc.)
   p1:resetState()
@@ -619,10 +621,23 @@ local function update(dt)
     updatePowerUps(dt)
     
     -- Decrease game timer
+    gameTimerAtPrevFrame = gameTimer
     gameTimer = gameTimer - 0.016
     if gameTimer < 1 then
       gameTimer = 0 
       loseLife()
+    end
+
+    if gameTimer < 2 and gameTimerAtPrevFrame > 2 then
+      Sounds.one:play()
+    elseif gameTimer < 3 and gameTimerAtPrevFrame > 3 then
+      Sounds.two:play()
+    elseif gameTimer < 4 and gameTimerAtPrevFrame > 4 then
+      Sounds.three:play()
+    elseif gameTimer < 5 and gameTimerAtPrevFrame > 5 then
+      Sounds.four:play()
+    elseif gameTimer < 6 and gameTimerAtPrevFrame > 6 then
+      Sounds.five:play()
     end
 
   -- Level Complete
