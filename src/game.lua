@@ -138,6 +138,9 @@ local function initSounds()
   Sounds.kickAndCrash = Sound:new('kick_and_crash.mp3', 1)
   Sounds.kickAndCrash:setVolume(0.5)
 
+  Sounds.kick = Sound:new('kick.mp3', 1)
+  Sounds.kick:setVolume(0.5)
+
   Sounds.titleLoop = Sound:new('title_loop.mp3', 1)
   Sounds.titleLoop:setVolume(0.5)
   Sounds.titleLoop:setLooping(true)
@@ -229,7 +232,7 @@ local function loseLife()
   gameState = constants.GAME_STATE.LOSE_LIFE
   Sounds.freezeTimerLoop:stop()
   Sounds.loseLife:play()
-  Sounds.kickAndCrash:play()
+  Sounds.kick:play()
   Sounds.playingLoop:stop()
 end
 

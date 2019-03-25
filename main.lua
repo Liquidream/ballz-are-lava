@@ -50,6 +50,7 @@ if CASTLE_PREFETCH then
    'assets/snd/score_count_tick.mp3',
    'assets/snd/menu_blip.mp3',
    'assets/snd/kick_and_crash.mp3',
+   'assets/snd/kick.mp3',
    'assets/snd/5.mp3',
    'assets/snd/4.mp3',
    'assets/snd/3.mp3',
