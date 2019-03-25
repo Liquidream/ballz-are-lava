@@ -4,7 +4,7 @@ local Entity = require 'src/entity/Entity'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local colour = require 'src/util/colour'
 local gfx = require 'src/util/gfx'
-
+local Sounds = require 'src/util/sounds'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/player.png', {
   BASE = { 0, 0, 32, 32 },

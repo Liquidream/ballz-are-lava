@@ -71,17 +71,72 @@ local function initSounds()
   Sounds.collect:setVolume(0.5)
 
   Sounds.loseLife = Sound:new('lose_life.mp3', 4)
-  Sounds.loseLife:setVolume(0.5)
-
-  Sounds.ballzMoving = Sound:new('ballz_moving.mp3', 1)
-  Sounds.ballzMoving:setVolume(0.2)
-  Sounds.ballzMoving:setLooping(true)
+  Sounds.loseLife:setVolume(0.8)
 
   Sounds.beatLevel = Sound:new('beat_level.mp3', 1)
   Sounds.beatLevel:setVolume(0.5)
 
-  Sounds.collectPowerUp = Sound:new('collect.mp3', 4)
-  Sounds.collectPowerUp:setVolume(0.5)
+  Sounds.extraLife = Sound:new('extra_life.mp3', 4)
+  Sounds.extraLife:setVolume(0.5)
+
+  Sounds.gameOver = Sound:new('game_over.mp3', 1)
+  Sounds.gameOver:setVolume(0.75)
+
+  Sounds.countdownTick = Sound:new('countdown_tick.mp3', 3)
+  Sounds.countdownTick:setVolume(0.5)
+
+  Sounds.countdownGo = Sound:new('countdown_go.mp3', 1)
+  Sounds.countdownGo:setVolume(0.5)
+
+  Sounds.lavabombExplode = Sound:new('lavabomb_explode.mp3', 10)
+  Sounds.lavabombExplode:setVolume(1.0)
+
+  Sounds.countdownMusic = Sound:new('countdown_music.mp3', 1)
+  Sounds.countdownMusic:setVolume(constants.MUSIC_VOLUME)
+
+  Sounds.playingLoop = Sound:new('playing_loop.mp3', 1)
+  Sounds.playingLoop:setVolume(constants.MUSIC_VOLUME)
+  Sounds.playingLoop:setLooping(true)
+
+  Sounds.freezeTimerLoop = Sound:new('freeze_timer_loop.mp3', 1)
+  Sounds.freezeTimerLoop:setVolume(0.7)
+  Sounds.freezeTimerLoop:setLooping(true)
+
+  Sounds.freeze = Sound:new('freeze.mp3', 2)
+  Sounds.freeze:setVolume(1.0)
+
+  Sounds.shield = Sound:new('shield.mp3', 2)
+  Sounds.shield:setVolume(0.8)
+
+  Sounds.invincible = Sound:new('invincible.mp3', 2)
+  Sounds.invincible:setVolume(0.9)
+
+  Sounds.timeExtend = Sound:new('time_extend.mp3', 2)
+  Sounds.timeExtend:setVolume(0.75)
+
+  Sounds.scoreCountTick = Sound:new('score_count_tick.mp3', 16)
+  Sounds.scoreCountTick:setVolume(0.15)
+
+  Sounds.loseShield = Sound:new('lose_shield.mp3', 1)
+  Sounds.loseShield:setVolume(0.8)
+
+  Sounds.menuBlip = Sound:new('menu_blip.mp3', 1)
+  Sounds.menuBlip:setVolume(1.0)
+
+  Sounds.five = Sound:new('5.mp3', 1)
+  Sounds.four = Sound:new('4.mp3', 1)
+  Sounds.three = Sound:new('3.mp3', 1)
+  Sounds.two = Sound:new('2.mp3', 1)
+  Sounds.one = Sound:new('1.mp3', 1)
+  Sounds.five:setVolume(0.75)
+  Sounds.four:setVolume(0.75)
+  Sounds.three:setVolume(0.75)
+  Sounds.two:setVolume(0.75)
+  Sounds.one:setVolume(0.75)
+
+  Sounds.titleLoop = Sound:new('title_loop.mp3', 1)
+  Sounds.titleLoop:setVolume(0.5)
+  Sounds.titleLoop:setLooping(true)
 end
 
 -- Init level (either for first time or after restart)
@@ -148,9 +203,10 @@ local function initLevel(levelNum)
 
   -- Intro (3 sec countdown)
   gameState=constants.GAME_STATE.LVL_INTRO
+  Sounds.countdownTick:play()
+  Sounds.countdownMusic:play()
+  Sounds.titleLoop:stop()
   delayCounter = 3
-
-  Sounds.ballzMoving:play()
 end
 
 -- -----------------------------------------------------------
@@ -165,8 +221,9 @@ local function loseLife()
   gfx:shake(1)
   -- lose life
   gameState = constants.GAME_STATE.LOSE_LIFE
+  Sounds.freezeTimerLoop:stop()
   Sounds.loseLife:play()
-  Sounds.ballzMoving:stop()
+  Sounds.playingLoop:stop()
 end
 
 local function playerDieUnlessProtected()
@@ -176,7 +233,7 @@ local function playerDieUnlessProtected()
   elseif p1.powerup == constants.POWERUP_TYPES.SHIELD then
     -- Lose shield!
     gfx:shake(0.5)
-    Sounds.loseLife:play()
+    Sounds.loseShield:play()
     -- Temp invincibility
     p1.powerup = constants.POWERUP_TYPES.INVINCIBILITY
     p1.powerupTimer = 1 
@@ -221,8 +278,9 @@ local function updatePlayerCollisions()
       if collectedLastBall then
         -- level complete
         print("level complete!!")
-        Sounds.ballzMoving:stop()
         Sounds.beatLevel:play()
+        Sounds.freezeTimerLoop:stop()
+        Sounds.playingLoop:stop()
         gameState=constants.GAME_STATE.LVL_END
 
         -- (TODO: Show score, etc.)
@@ -246,14 +304,13 @@ local function updatePlayerCollisions()
      and pUp.state == constants.POWERUP_STATE.VISIBLE then
       -- Collected power-up
       table.remove(powerUps,index)
-      -- TODO: different SFX?
-      Sounds.collectPowerUp:play()
       pUp:activate(p1)
 
       -- Special power-ups
       -- BOOM!
       if pUp.powerupType == constants.POWERUP_TYPES.LAVABOMB then
         local n=love.math.random(#lavaBalls/4)+1
+        Sounds.lavabombExplode:play()
         for k = 1,n do
           local boomBall = table.remove(lavaBalls)
           -- kill lavaball
@@ -373,6 +430,7 @@ local function updatePlayerDeath(dt)
       gameState = constants.GAME_STATE.GAME_OVER
       Scenes:initGameOver(p1)
       print("game over!!!")
+      Sounds.gameOver:play()
       txtSize = 0
     end
   end
@@ -411,6 +469,8 @@ local function updatePowerUps(dt)
     if gamePowerUpTimer <= 0 then
       -- PowerUp over
       gamePowerUp = 0
+      Sounds.freezeTimerLoop:stop()
+      Sounds.playingLoop:setVolume(constants.MUSIC_VOLUME)
     end
     gamePowerUpFrame = (gamePowerUpFrame+1)%4
   end
@@ -444,6 +504,7 @@ local function load()
 
   -- -- Start at the title screen
   gameState = constants.GAME_STATE.TITLE
+  Sounds.titleLoop:play()
 
   -- Create player
   p1 = Player.new({
@@ -506,6 +567,7 @@ local function update(dt)
     if actionButtonPressed then 
       Scenes:initInstructions()
       gameState = constants.GAME_STATE.INFO
+      Sounds.menuBlip:play()
     end
 
   -- Instructions
@@ -515,6 +577,8 @@ local function update(dt)
     if actionButtonPressed then 
       initLevel(levelNum)
       gameState = constants.GAME_STATE.LVL_INTRO
+      print("lvl intro")
+      Sounds.countdownTick:play() -- plays first tick
     end
 
   -- Level Intro
@@ -525,12 +589,17 @@ local function update(dt)
     -- Update Lava + Target ballz (anim only)
     updateBalls(dt)
 
-    txtSize = txtSize + .14
+    txtSize = txtSize + .117
     if txtSize > 6 then 
       txtSize = 0
       delayCounter = delayCounter - 1
       if delayCounter < 0 then
         gameState = constants.GAME_STATE.LVL_PLAY
+        Sounds.playingLoop:play()
+      elseif delayCounter == 0 then
+        Sounds.countdownGo:play()
+      else
+        Sounds.countdownTick:play()
       end
     end
 
@@ -596,12 +665,14 @@ local function update(dt)
       gfx.boom(lavaBalls[1].x, lavaBalls[1].y, 200, constants.LAVA_DEATH_COLS)
       lavaBalls[1]:die()
       table.remove(lavaBalls, 1)
+      Sounds.lavabombExplode:playWithPitch(0.8 + 0.4 * math.random())
     end
     if love.math.random(15)==1 and #targetBalls > 0 then 
       -- kill target
       gfx.boom(targetBalls[1].x, targetBalls[1].y, 150, constants.PLAYER_DEATH_COLS)
       targetBalls[1]:die()
       table.remove(targetBalls, 1)
+      Sounds.lavabombExplode:playWithPitch(0.8 + 0.4 * math.random())
     end
 
     Scenes:updateGameOver(dt)

@@ -5,6 +5,7 @@ local SpriteSheet = require 'src/util/SpriteSheet'
 local Sounds = require 'src/util/sounds'
 local gfx = require 'src/util/gfx'
 local colour = require 'src/util/colour'
+local Sounds = require 'src/util/sounds'
 
 local SPRITESHEET = SpriteSheet.new('assets/img/powerup.png', {
   P_1 = { 0,  0, 16, 16 }, -- SHIELD
@@ -49,18 +50,24 @@ activate = function(self, player)
     player.powerupFrame = 1
     player.powerupFrameSpeed = 0.25
     player.powerupFrameMax = 4
+    Sounds.shield:play()
   
   elseif self.powerupType == constants.POWERUP_TYPES.FREEZE then
     player.powerup = self.powerupType
     player.powerupTimer = 5
     player.powerupFrame = 1
+    Sounds.freeze:play()
+    Sounds.freezeTimerLoop:play()
+    -- quiet volume while freeze sound is playing
+    Sounds.playingLoop:setVolume(constants.MUSIC_VOLUME / 2.0)
 
   elseif self.powerupType == constants.POWERUP_TYPES.EXTRA_LIFE then
     player.lives = player.lives + 1
+    Sounds.extraLife:play()
 
   elseif self.powerupType == constants.POWERUP_TYPES.TIME_EXTEND then
-    -- TODO: play sound!
     gameTimer = gameTimer + 10
+    Sounds.timeExtend:play()
 
   elseif self.powerupType == constants.POWERUP_TYPES.INVINCIBILITY then
     player.powerup = self.powerupType
@@ -68,6 +75,7 @@ activate = function(self, player)
     player.powerupFrame = 1
     player.powerupFrameSpeed = 0.25
     player.powerupFrameMax = 4
+    Sounds.invincible:play()
 
   else
     -- shouldn't be possible

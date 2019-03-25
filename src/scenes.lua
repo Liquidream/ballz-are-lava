@@ -5,12 +5,18 @@ local colour = require 'src/util/colour'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local PowerUp = require 'src/entity/PowerUp'
 local saveFile = require 'src/util/saveFile'
+local Sounds = require 'src/util/sounds'
 
 
 
 local delayCounter = 0
 local levelScore = 0
 local flashCount = 0
+
+local SECONDS_BETWEEN_LEVEL_SCORE_BLIPS = 0.06
+local secondsSinceLastLevelScoreBlip = SECONDS_BETWEEN_LEVEL_SCORE_BLIPS
+local SECONDS_BETWEEN_TIME_BONUS_BLIPS = 0.2
+local secondsSinceLastTimeBonusBlip = SECONDS_BETWEEN_TIME_BONUS_BLIPS
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ballz-logo.png', {
   LOGO = { 0, 0, 320, 192 },
@@ -162,13 +168,24 @@ function Scenes:initLevelEnd(player)
   --print("drawTitle()..."..Scenes.Test)
   delayCounter = 1
   levelScore = player.targetsCollected * 100
+  levelUpdateTotalTime = 0
 end
 
 
 function Scenes:updateLevelEnd(dt, player)
   --print("drawTitle()..."..Scenes.Test)
   delayCounter = delayCounter - 0.016
+  secondsSinceLastLevelScoreBlip = secondsSinceLastLevelScoreBlip - dt
+  secondsSinceLastTimeBonusBlip = secondsSinceLastTimeBonusBlip - dt
   if delayCounter <= 0 then
+    if levelScore > 0 and secondsSinceLastLevelScoreBlip <= 0 then
+      Sounds.scoreCountTick:play()
+      secondsSinceLastLevelScoreBlip = SECONDS_BETWEEN_LEVEL_SCORE_BLIPS
+    end
+    if secondsSinceLastTimeBonusBlip <= 0 then
+      Sounds.scoreCountTick:play()
+      secondsSinceLastTimeBonusBlip = SECONDS_BETWEEN_TIME_BONUS_BLIPS
+    end
     -- add level score to player score
     if (levelScore > 0) then
       player.score = player.score + 10 
