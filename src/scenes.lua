@@ -19,7 +19,9 @@ local SECONDS_BETWEEN_TIME_BONUS_BLIPS = 0.2
 local secondsSinceLastTimeBonusBlip = SECONDS_BETWEEN_TIME_BONUS_BLIPS
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ballz-logo.png', {
-  LOGO = { 0, 0, 320, 192 },
+  --LOGO = { 0, 0, 320, 192 },
+  LOGO_1 = { 30, 8, 260, 72 },
+  LOGO_2 = { 30, 90, 260, 90 },
 })
 
 Scenes = {
@@ -58,9 +60,17 @@ function Scenes:drawTitle()
 
   love.graphics.setColor(1, 1, 1)
   SPRITESHEET:drawCentered(
-      "LOGO", 
+      "LOGO_1", 
       constants.GAME_WIDTH/2, 
-      115, 
+      70, 
+      nil, nil, nil, 1, 1)
+
+  local offset = math.abs(math.sin(love.timer.getTime() * 8))
+  love.graphics.setColor(0.5+math.max(0.25,offset), math.max(0.25,offset), math.max(0.25,offset))
+  SPRITESHEET:drawCentered(
+      "LOGO_2", 
+      constants.GAME_WIDTH/2, 
+      160, 
       nil, nil, nil, 1, 1)
 
   gfx.drawOutlineText(' Code & Art                  SFX & Music', 
