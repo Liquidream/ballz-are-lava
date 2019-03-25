@@ -135,6 +135,9 @@ local function initSounds()
   Sounds.two:setVolume(0.75)
   Sounds.one:setVolume(0.75)
 
+  Sounds.kickAndCrash = Sound:new('kick_and_crash.mp3', 1)
+  Sounds.kickAndCrash:setVolume(0.5)
+
   Sounds.titleLoop = Sound:new('title_loop.mp3', 1)
   Sounds.titleLoop:setVolume(0.5)
   Sounds.titleLoop:setLooping(true)
@@ -225,6 +228,7 @@ local function loseLife()
   gameState = constants.GAME_STATE.LOSE_LIFE
   Sounds.freezeTimerLoop:stop()
   Sounds.loseLife:play()
+  Sounds.kickAndCrash:play()
   Sounds.playingLoop:stop()
 end
 
@@ -278,9 +282,18 @@ local function updatePlayerCollisions()
       end
 
       if collectedLastBall then
+
+        for k = 1,#lavaBalls do
+          local boomBall = table.remove(lavaBalls)
+          -- kill lavaball
+          gfx.boom(boomBall.x, boomBall.y, 200, constants.LAVA_DEATH_COLS)
+          boomBall:die()
+        end
+
         -- level complete
         print("level complete!!")
         Sounds.beatLevel:play()
+        Sounds.kickAndCrash:play()
         Sounds.freezeTimerLoop:stop()
         Sounds.playingLoop:stop()
         gameState=constants.GAME_STATE.LVL_END
