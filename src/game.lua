@@ -207,6 +207,7 @@ local function initLevel(levelNum)
   gamePowerUpTimer = 0
 
   -- Intro (3 sec countdown)
+  txtSize = 0
   gameState=constants.GAME_STATE.LVL_INTRO
   Sounds.countdownTick:play()
   Sounds.countdownMusic:play()
