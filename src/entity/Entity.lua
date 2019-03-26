@@ -28,7 +28,7 @@ local Entity = createClass({
   draw = function(self)
     love.graphics.setColor(1, 1, 1)
   end,
-  setVelocity = function(self, vx, y)
+  setVelocity = function(self, vx, vy)
     self.vx = vx
     self.vy = vy
     self.vxPrev = vx

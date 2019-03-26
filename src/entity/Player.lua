@@ -76,17 +76,32 @@ update = function(self, dt)
     self.y = mouseY -- mouse ypos
   end
 
+  local speed = constants.PLAYER_MAX_SPEED * 0.75
+  
   -- gamepad controls override mouse/keyboard
   if #gamepads > 0 then
+    -- axis/joystick controls
     local pad1_axis1 = controllerAxisPair(gamepads[1], 1)
     if pad1_axis1 ~= nil then
       self.x = self.x + (constants.PLAYER_MAX_SPEED * pad1_axis1.x) * dt
       self.y = self.y + (constants.PLAYER_MAX_SPEED * pad1_axis1.y) * dt
     end
+    -- dpad controls override
+    if controllerIsDown(gamepads[1], "dright") then
+      self.x = self.x + speed * dt
+    end
+    if controllerIsDown(gamepads[1], "dleft") then
+      self.x = self.x - speed * dt
+    end
+    if controllerIsDown(gamepads[1], "dup") then
+      self.y = self.y - speed * dt
+    end
+    if controllerIsDown(gamepads[1], "ddown") then
+      self.y = self.y + speed * dt
+    end
   end
 
   -- keyboard controls override both
-  local speed = constants.PLAYER_MAX_SPEED * 0.75
   if love.keyboard.isDown("right") then
     self.x = self.x + speed * dt
   end
@@ -95,7 +110,6 @@ update = function(self, dt)
   end
   if love.keyboard.isDown("up") then
     self.y = self.y - speed * dt
-  --print("up arrow pressed at "..total_time_elapsed)
   end
   if love.keyboard.isDown("down") then
     self.y = self.y + speed * dt

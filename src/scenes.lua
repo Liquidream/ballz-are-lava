@@ -6,7 +6,7 @@ local SpriteSheet = require 'src/util/SpriteSheet'
 local PowerUp = require 'src/entity/PowerUp'
 local saveFile = require 'src/util/saveFile'
 local Sounds = require 'src/util/sounds'
-
+local Ball = require 'src/entity/Ball'
 
 
 local delayCounter = 0
@@ -33,16 +33,33 @@ Scenes = {
 -- Title screen
 --
 function Scenes:initTitle()
-  --print("drawTitle()..."..Scenes.Test)
+  -- Create lava balls
+  for i=1,10 do
+    table.insert(lavaBalls, Ball.new({
+      -- optional overloads
+      id=i
+    }))
+  end
 end
 
 function Scenes:updateTitle(dt)
+  --Update Lava Balls
+  for index, lball in ipairs(lavaBalls) do
+    lball:applyVelocity(dt)
+    lball:update(dt)
+  end
+  
   flashCount = flashCount + 1 * dt
 end
 
 function Scenes:drawTitle()
   local txtWidth = constants.GAME_WIDTH+20
   local txtHeight = 50
+
+  -- Draw Lava Balls
+  for index, lball in ipairs(lavaBalls) do
+    lball:draw()
+  end
 
   -- score
   gfx.drawOutlineText(

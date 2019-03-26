@@ -37,6 +37,8 @@ livesAtLevelStart = 0
 highScore = 0
 highLevel = 0
 gameTimerAtPrevFrame = 10000
+lavaBalls = {}
+
 --
 -- local vars
 --
@@ -50,7 +52,6 @@ local SPRITESHEET = SpriteSheet.new('assets/img/game-ui.png', {
 })
 
 -- Initialize game vars
-local lavaBalls = {}
 local powerUps = {}
 local targetBalls = {}
 local delayCounter = 0
@@ -459,19 +460,19 @@ local function updateBalls(dt)
 
   -- Update Target Balls
   for index, tball in ipairs(targetBalls) do
-    tball:update(dt)
     if gameState == constants.GAME_STATE.LVL_PLAY 
       and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
       tball:applyVelocity(dt)
     end
+    tball:update(dt)
   end
   -- Update Lava Balls
   for index, lball in ipairs(lavaBalls) do
-    lball:update(dt)
     if gameState==constants.GAME_STATE.LVL_PLAY 
       and gamePowerUp ~= constants.POWERUP_TYPES.FREEZE then
       lball:applyVelocity(dt)
     end
+    lball:update(dt)
   end
 
 end
@@ -521,18 +522,16 @@ local function load()
   highLevel = tonumber(saveData.highLevel or 0)
   
 
-  -- -- Start at the title screen
+  -- Start at the title screen
   gameState = constants.GAME_STATE.TITLE
   Sounds.titleLoop:play()
+  Scenes:initTitle()
 
-  -- Create player
+  -- Create player (once)
   p1 = Player.new({
     x = constants.GAME_WIDTH/2,
     y = constants.GAME_HEIGHT/2,
   })
-
-  Scenes:initTitle()
-  --initLevel(levelNum)
 
 end
 
