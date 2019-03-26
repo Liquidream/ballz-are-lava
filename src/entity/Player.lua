@@ -77,43 +77,53 @@ update = function(self, dt)
   end
 
   local speed = constants.PLAYER_MAX_SPEED * 0.75
-  
+  local dx,dy=0,0
   -- gamepad controls override mouse/keyboard
   if #gamepads > 0 then
     -- axis/joystick controls
     local pad1_axis1 = controllerAxisPair(gamepads[1], 1)
     if pad1_axis1 ~= nil then
-      self.x = self.x + (constants.PLAYER_MAX_SPEED * pad1_axis1.x) * dt
-      self.y = self.y + (constants.PLAYER_MAX_SPEED * pad1_axis1.y) * dt
+      dx = (constants.PLAYER_MAX_SPEED * pad1_axis1.x) * dt
+      dy = (constants.PLAYER_MAX_SPEED * pad1_axis1.y) * dt
     end
     -- dpad controls override
     if controllerIsDown(gamepads[1], "dright") then
-      self.x = self.x + speed * dt
+      dx = speed * dt
     end
     if controllerIsDown(gamepads[1], "dleft") then
-      self.x = self.x - speed * dt
+      dx = -speed * dt
     end
     if controllerIsDown(gamepads[1], "dup") then
-      self.y = self.y - speed * dt
+      dy = -speed * dt
     end
     if controllerIsDown(gamepads[1], "ddown") then
-      self.y = self.y + speed * dt
+      dy = speed * dt
     end
   end
 
   -- keyboard controls override both
   if love.keyboard.isDown("right") then
-    self.x = self.x + speed * dt
+    dx = speed * dt
   end
   if love.keyboard.isDown("left") then
-    self.x = self.x - speed * dt
+    dx = -speed * dt
   end
   if love.keyboard.isDown("up") then
-    self.y = self.y - speed * dt
+    dy = -speed * dt
   end
   if love.keyboard.isDown("down") then
-    self.y = self.y + speed * dt
+    dy = speed * dt
   end
+
+  -- normalise diagonal movement
+  if dx~=0 and dy~=0 then
+    dx = dx * 0.707
+    dy = dy * 0.707
+  end
+
+  -- final increased movement
+  self.x = self.x + dx
+  self.y = self.y + dy
 
   -- keep player within screen bounds
   self.x = math.max(0, math.min(constants.GAME_WIDTH,self.x))
