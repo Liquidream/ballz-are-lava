@@ -117,7 +117,6 @@ update = function(self, dt)
 
   -- normalise diagonal movement
   if math.abs(dx)+math.abs(dy) == (speed*2*dt) then
-    print("normalised!!")
     dx = dx * 0.707
     dy = dy * 0.707
   end

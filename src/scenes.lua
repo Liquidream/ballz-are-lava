@@ -228,7 +228,6 @@ end
 -- Level End screen
 --
 function Scenes:initLevelEnd(player)
-  --print("drawTitle()..."..Scenes.Test)
   delayCounter = 1
   levelScore = player.targetsCollected * 100
   levelUpdateTotalTime = 0
@@ -236,7 +235,6 @@ end
 
 
 function Scenes:updateLevelEnd(dt, player)
-  --print("drawTitle()..."..Scenes.Test)
   delayCounter = delayCounter - 0.016
   secondsSinceLastLevelScoreBlip = secondsSinceLastLevelScoreBlip - dt
   secondsSinceLastTimeBonusBlip = secondsSinceLastTimeBonusBlip - dt

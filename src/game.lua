@@ -608,8 +608,8 @@ local function update(dt)
     -- Start game (level intro)
     if actionButtonPressed then 
       initLevel(levelNum)
-      gameState = constants.GAME_STATE.LVL_INTRO
       print("lvl intro")
+      gameState = constants.GAME_STATE.LVL_INTRO
       Sounds.countdownTick:play() -- plays first tick
     end
 
