@@ -12,6 +12,8 @@ local Ball = require 'src/entity/Ball'
 local delayCounter = 0
 local levelScore = 0
 local flashCount = 0
+local startTime = 0
+local duration = 0
 
 local SECONDS_BETWEEN_LEVEL_SCORE_BLIPS = 0.06
 local secondsSinceLastLevelScoreBlip = SECONDS_BETWEEN_LEVEL_SCORE_BLIPS
@@ -19,15 +21,49 @@ local SECONDS_BETWEEN_TIME_BONUS_BLIPS = 0.2
 local secondsSinceLastTimeBonusBlip = SECONDS_BETWEEN_TIME_BONUS_BLIPS
 
 local SPRITESHEET = SpriteSheet.new('assets/img/ballz-logo.png', {
-  --LOGO = { 0, 0, 320, 192 },
   LOGO_1 = { 30, 8, 260, 72 },
   LOGO_2 = { 30, 90, 260, 90 },
+})
+
+local SPRITESHEET_SPLASH = SpriteSheet.new('assets/img/retraux-logo.png', {
+  LOGO = { 0, 0, 102, 36 },
 })
 
 Scenes = {
   -- Fields
   --Test = "hello"
 }
+
+
+--
+-- Intro/Splash screen
+--
+function Scenes:initSplash()
+  -- 
+  startTime = love.timer.getTime()
+end
+
+function Scenes:updateSplash(dt)
+  duration = love.timer.getTime()-startTime 
+  if duration > 3.5 then
+    -- load the title screen
+    gameState = constants.GAME_STATE.TITLE
+    Sounds.titleLoop:play()
+    Scenes:initTitle()
+  end
+end
+
+function Scenes:drawSplash()
+  love.graphics.clear({0,0,0})
+  local offset = math.sin(duration)*2
+  --offset=1
+  love.graphics.setColor(1,1,1, offset)
+  SPRITESHEET_SPLASH:drawCentered(
+      "LOGO", 
+      constants.GAME_WIDTH/2, 
+      constants.GAME_HEIGHT/2, 
+      nil, nil, nil, 1, 1)
+end
 
 --
 -- Title screen

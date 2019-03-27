@@ -76,7 +76,7 @@ update = function(self, dt)
     self.y = mouseY -- mouse ypos
   end
 
-  local speed = constants.PLAYER_MAX_SPEED * 0.75
+  local speed = constants.PLAYER_MAX_SPEED-- * 0.75
   local dx,dy=0,0
   -- gamepad controls override mouse/keyboard
   if #gamepads > 0 then
@@ -116,7 +116,8 @@ update = function(self, dt)
   end
 
   -- normalise diagonal movement
-  if dx~=0 and dy~=0 then
+  if math.abs(dx)+math.abs(dy) == (speed*2*dt) then
+    print("normalised!!")
     dx = dx * 0.707
     dy = dy * 0.707
   end

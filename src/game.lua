@@ -33,7 +33,7 @@ gamePowerUpFrame = 0
 gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
 levelNum = 3
-livesAtLevelStart = 0
+livesAtLevelStart = 3
 highScore = 0
 highLevel = 0
 gameTimerAtPrevFrame = 10000
@@ -522,10 +522,14 @@ local function load()
   highLevel = tonumber(saveData.highLevel or 0)
   
 
+  -- Do splash screen first
+  gameState = constants.GAME_STATE.SPLASH
+  Scenes:initSplash()
+
   -- Start at the title screen
-  gameState = constants.GAME_STATE.TITLE
-  Sounds.titleLoop:play()
-  Scenes:initTitle()
+  -- gameState = constants.GAME_STATE.TITLE
+  -- Sounds.titleLoop:play()
+  -- Scenes:initTitle()
 
   -- Create player (once)
   p1 = Player.new({
@@ -579,8 +583,18 @@ local function update(dt)
     actionButtonPressed = true
   end
 
-  -- Level Intro
-  if gameState == constants.GAME_STATE.TITLE then
+  -- Splash/logo screen
+  if gameState == constants.GAME_STATE.SPLASH then
+    Scenes:updateSplash(dt)
+    if actionButtonPressed then 
+      -- skip to the title screen
+      gameState = constants.GAME_STATE.TITLE
+      Sounds.titleLoop:play()
+      Scenes:initTitle()
+    end
+   
+  -- Title screen
+  elseif gameState == constants.GAME_STATE.TITLE then
     Scenes:updateTitle(dt)
     if actionButtonPressed then 
       Scenes:initInstructions()
@@ -778,14 +792,20 @@ end
 
 local function draw()
 
+
+  -- Splash/logo screen
+  if gameState == constants.GAME_STATE.SPLASH then
+    Scenes:drawSplash()
+    return
+  end
+
   -- Adjust/update shack positioning first (if any)
   gfx:updateShake()
-
 
   -- Draw background
   drawBackground()
 
-  -- Level Intro
+  -- Title screen
   if gameState == constants.GAME_STATE.TITLE then
 
     Scenes.drawTitle()

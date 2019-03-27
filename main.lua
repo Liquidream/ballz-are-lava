@@ -29,6 +29,7 @@ if CASTLE_PREFETCH then
    'assets/img/player.png',
    'assets/img/ball.png',
    'assets/img/ballz-logo.png',
+   'assets/img/retraux-logo.png',
    'assets/rent.ttf',
    'assets/snd/bounce.mp3',
    'assets/snd/beat_level.mp3',
