@@ -25,6 +25,8 @@ if CASTLE_PREFETCH then
    'src/util/sounds.lua',
    'src/util/sound.lua',
    'src/util/SpriteSheet.lua',
+   'src/moonshine/init.lua',
+   'src/moonshine/vignette.lua',
    'assets/img/game-ui.png',
    'assets/img/player.png',
    'assets/img/ball.png',
@@ -67,22 +69,24 @@ game = require 'src/game'
 local constants = require 'src/constants'
 local gfx = require 'src/util/gfx'
 local colour = require 'src/util/colour'
+--local moonshine = require 'src/moonshine'
 
 local translateScreenToCenterDx = 0
 local translateScreenToCenterDy = 0
 
 function love.load()
- -- initialise and update the gfx display
- gfx:init()
- gfx:updateDisplay()
- print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
- local win_w,win_h=love.graphics.getDimensions()
- print("window size: "..win_w..","..win_h)
+  -- initialise and update the gfx display
+  gfx:init()
+  gfx:updateDisplay()
+  print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
+  local win_w,win_h=love.graphics.getDimensions()
+  print("window size: "..win_w..","..win_h)
 
- -- make default mouse invisible
- love.mouse.setVisible(false) 
+  -- make default mouse invisible
+  love.mouse.setVisible(false) 
 
- game.load()
+
+  game.load()
 end
 
 function love.update(dt)
@@ -103,6 +107,7 @@ function love.draw()
     -- Apply camera transformations
     love.graphics.translate(gfx.shakeX, gfx.shakeY)
 
+    -- Draw game only
     game.draw()
 
     -- Draw game bounds

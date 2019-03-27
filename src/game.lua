@@ -13,6 +13,7 @@ local SpriteSheet = require 'src/util/SpriteSheet'
 local saveFile = require 'src/util/saveFile'
 local Sounds = require 'src/util/sounds'
 local Scenes = require 'src/scenes'
+local moonshine = require 'src/moonshine'
 require 'src/util/controller'
 
 -- Clear save file
@@ -526,10 +527,10 @@ local function load()
   gameState = constants.GAME_STATE.SPLASH
   Scenes:initSplash()
 
-  -- Start at the title screen
-  -- gameState = constants.GAME_STATE.TITLE
-  -- Sounds.titleLoop:play()
-  -- Scenes:initTitle()
+  
+  -- test shader effect
+  bgEffect = moonshine(constants.GAME_WIDTH,constants.GAME_HEIGHT, 
+                      moonshine.effects.vignette)
 
   -- Create player (once)
   p1 = Player.new({
@@ -802,8 +803,12 @@ local function draw()
   -- Adjust/update shack positioning first (if any)
   gfx:updateShake()
 
-  -- Draw background
-  drawBackground()
+  bgEffect(function()
+    -- Draw background
+    drawBackground()
+    --love.graphics.rectangle("fill", 300,200, 200,200)
+  end)
+
 
   -- Title screen
   if gameState == constants.GAME_STATE.TITLE then
