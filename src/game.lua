@@ -70,6 +70,9 @@ local function initSounds()
   Sounds.bounce = Sound:new('bounce.mp3', 16)
   Sounds.bounce:setVolume(0.1)
 
+  Sounds.splash = Sound:new('splash.mp3', 1)
+  Sounds.splash:setVolume(0.7)
+
   Sounds.collect = Sound:new('collect.mp3', 4)
   Sounds.collect:setVolume(0.5)
 
@@ -586,6 +589,7 @@ local function update(dt)
 
   -- Splash/logo screen
   if gameState == constants.GAME_STATE.SPLASH then
+    Sounds.splash:play()
     Scenes:updateSplash(dt)
     if actionButtonPressed then 
       -- skip to the title screen

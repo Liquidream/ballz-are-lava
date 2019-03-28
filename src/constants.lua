@@ -8,7 +8,7 @@ local GAME_BOTTOM = GAME_HEIGHT
 local GAME_MIDDLE_X = GAME_WIDTH / 2
 local GAME_MIDDLE_Y = GAME_HEIGHT / 2
 local DEBUG_MODE = false
-local MUSIC_VOLUME = 0.58
+local MUSIC_VOLUME = 0.7
 --local DEBUG_MODE = true
 local SAVE_FILENAME = "ballz-are-lava.dat"
 local GAME_STATE = { SPLASH=0, TITLE=1, INFO=2, LVL_INTRO=3, LVL_PLAY=4, LVL_END=5, LOSE_LIFE=6, GAME_OVER=7 }
