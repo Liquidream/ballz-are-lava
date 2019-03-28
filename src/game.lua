@@ -622,7 +622,7 @@ local function update(dt)
     -- Update Lava + Target ballz (anim only)
     updateBalls(dt)
 
-    txtSize = txtSize + .117
+    txtSize = txtSize + .102
     if txtSize > 6 then 
       txtSize = 0
       delayCounter = delayCounter - 1
