@@ -25,8 +25,8 @@ local SPRITESHEET = SpriteSheet.new('assets/img/ballz-logo.png', {
   LOGO_2 = { 30, 90, 260, 90 },
 })
 
-local SPRITESHEET_SPLASH = SpriteSheet.new('assets/img/retraux-logo.png', {
-  LOGO = { 0, 0, 102, 36 },
+local SPRITESHEET_SPLASH = SpriteSheet.new('assets/img/game-ui.png', {
+  LOGO = { 136, 64, 51, 18},
 })
 
 Scenes = {
@@ -62,7 +62,7 @@ function Scenes:drawSplash()
       "LOGO", 
       constants.GAME_WIDTH/2, 
       constants.GAME_HEIGHT/2, 
-      nil, nil, nil, 1, 1)
+      nil, nil, nil, 3, 3)
 end
 
 --
