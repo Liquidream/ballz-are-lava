@@ -111,7 +111,7 @@ local function initSounds()
   Sounds.playingLoop:setLooping(true)
 
   Sounds.freezeTimerLoop = Sound:new('freeze_timer_loop.mp3', 1)
-  Sounds.freezeTimerLoop:setVolume(0.54)
+  Sounds.freezeTimerLoop:setVolume(0.4)
   Sounds.freezeTimerLoop:setLooping(true)
 
   Sounds.freeze = Sound:new('freeze.mp3', 2)
@@ -133,7 +133,7 @@ local function initSounds()
   Sounds.loseShield:setVolume(0.8)
 
   Sounds.menuBlip = Sound:new('menu_blip.mp3', 1)
-  Sounds.menuBlip:setVolume(1.0)
+  Sounds.menuBlip:setVolume(0.67)
 
   Sounds.five = Sound:new('5.mp3', 1)
   Sounds.four = Sound:new('4.mp3', 1)
@@ -678,7 +678,7 @@ local function update(dt)
 
     updatePulsingLinesTimes(dt)
 
-    txtSize = txtSize + .1130
+    txtSize = txtSize + .1133
     if txtSize > 6 then 
       txtSize = 0
       delayCounter = delayCounter - 1
