@@ -2,6 +2,6 @@
 main: main.lua
 name: The Ballz are Lava
 owner: liquidream
-description: Nobody knows why - it's just always been this way. Our chance of survival is to absorb all the Green Orbs floating around, while avoiding certain death by touching the Lava ballz... all before the time runs out!
+description: Nobody knows why - it's just always been this way. Our chance of survival is to absorb all the Green Orbs floating around, while avoiding certain death by touching the Lava ballz... all before the time runs out! (Best played with 'Left axis/stick' on a game controller - but also works with Dpad, Arrow keys and - for 'Easy mode' - Mouse control!)
 coverImage: cover-image.png
 primaryColor: e43b44
