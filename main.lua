@@ -77,9 +77,6 @@ function love.load()
   -- initialise and update the gfx display
   gfx:init()
   gfx:updateDisplay()
-  print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
-  local win_w,win_h=love.graphics.getDimensions()
-  print("window size: "..win_w..","..win_h)
 
   -- make default mouse invisible
   love.mouse.setVisible(false) 

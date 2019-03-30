@@ -60,9 +60,9 @@ function Scenes:drawSplash()
   love.graphics.setColor(1,1,1, offset)
   SPRITESHEET_SPLASH:drawCentered(
       "LOGO", 
-      constants.GAME_WIDTH/2, 
-      constants.GAME_HEIGHT/2, 
-      nil, nil, nil, 3, 3)
+      math.floor(constants.GAME_WIDTH/2), 
+      math.floor(constants.GAME_HEIGHT/2), 
+      nil, nil, nil, 2, 2)
 end
 
 --

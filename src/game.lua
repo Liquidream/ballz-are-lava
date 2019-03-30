@@ -563,9 +563,14 @@ local function load()
   highLevel = tonumber(saveData.highLevel or 0)
   
 
-  -- Do splash screen first
+  --Do splash screen first
   gameState = constants.GAME_STATE.SPLASH
   Scenes:initSplash()
+
+  -- skip to the title screen
+  -- gameState = constants.GAME_STATE.TITLE
+  -- Sounds.titleLoop:play()
+  -- Scenes:initTitle()
 
   
   -- test shader effect
