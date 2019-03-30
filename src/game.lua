@@ -133,7 +133,7 @@ local function initSounds()
   Sounds.loseShield:setVolume(0.8)
 
   Sounds.menuBlip = Sound:new('menu_blip.mp3', 1)
-  Sounds.menuBlip:setVolume(0.67)
+  Sounds.menuBlip:setVolume(0.5)
 
   Sounds.five = Sound:new('5.mp3', 1)
   Sounds.four = Sound:new('4.mp3', 1)
@@ -670,7 +670,7 @@ local function update(dt)
 
     updatePulsingLinesTimes(dt)
 
-    txtSize = txtSize + .1133
+    txtSize = txtSize + .1175
     if txtSize > 6 then 
       txtSize = 0
       delayCounter = delayCounter - 1
