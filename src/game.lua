@@ -40,6 +40,12 @@ highLevel = 0
 gameTimerAtPrevFrame = 10000
 lavaBalls = {}
 
+totalTime = 0
+local MUSIC_BPM = 135
+local SECONDS_PER_BEAT = (60 / MUSIC_BPM)
+local timeSinceLastPulse = 2 * SECONDS_PER_BEAT
+
+
 --
 -- local vars
 --
@@ -69,6 +75,9 @@ local currLevel = nil
 local function initSounds()
   Sounds.bounce = Sound:new('bounce.mp3', 16)
   Sounds.bounce:setVolume(0.1)
+
+  Sounds.splash = Sound:new('splash.mp3', 1)
+  Sounds.splash:setVolume(0.7)
 
   Sounds.collect = Sound:new('collect.mp3', 4)
   Sounds.collect:setVolume(0.5)
@@ -102,7 +111,7 @@ local function initSounds()
   Sounds.playingLoop:setLooping(true)
 
   Sounds.freezeTimerLoop = Sound:new('freeze_timer_loop.mp3', 1)
-  Sounds.freezeTimerLoop:setVolume(0.7)
+  Sounds.freezeTimerLoop:setVolume(0.4)
   Sounds.freezeTimerLoop:setLooping(true)
 
   Sounds.freeze = Sound:new('freeze.mp3', 2)
@@ -112,10 +121,10 @@ local function initSounds()
   Sounds.shield:setVolume(0.8)
 
   Sounds.invincible = Sound:new('invincible.mp3', 2)
-  Sounds.invincible:setVolume(0.9)
+  Sounds.invincible:setVolume(0.7)
 
   Sounds.timeExtend = Sound:new('time_extend.mp3', 2)
-  Sounds.timeExtend:setVolume(0.75)
+  Sounds.timeExtend:setVolume(0.6)
 
   Sounds.scoreCountTick = Sound:new('score_count_tick.mp3', 16)
   Sounds.scoreCountTick:setVolume(0.15)
@@ -124,7 +133,7 @@ local function initSounds()
   Sounds.loseShield:setVolume(0.8)
 
   Sounds.menuBlip = Sound:new('menu_blip.mp3', 1)
-  Sounds.menuBlip:setVolume(1.0)
+  Sounds.menuBlip:setVolume(0.5)
 
   Sounds.five = Sound:new('5.mp3', 1)
   Sounds.four = Sound:new('4.mp3', 1)
@@ -223,6 +232,14 @@ end
 -- -----------------------------------------------------------
 -- Update code
 -- -----------------------------------------------------------
+
+local function resetPulsingLineTimes()
+  timeSinceLastPulse = 2 * SECONDS_PER_BEAT
+end
+
+local function updatePulsingLinesTimes(dt)
+  timeSinceLastPulse = timeSinceLastPulse + dt
+end
 
 local function loseLife()
   print("dead!!")
@@ -364,8 +381,31 @@ local function drawBackground()
  local lineCols={[0]=24, 6, 15}
  -- navy
  love.graphics.clear(colour[26])
- love.graphics.setColor(colour[lineCols[levelNum%3]])
+ local baseColour = colour[lineCols[levelNum%3]]
+
  --
+
+ -- try pulsing lines w music a wee bit
+ if gameState == constants.GAME_STATE.LVL_PLAY or 
+    gameState == constants.GAME_STATE.LVL_INTRO or 
+    gameState == constants.GAME_STATE.INFO or 
+    gameState == constants.GAME_STATE.TITLE 
+ then
+    local PULSE_DUR = 0.6 -- seconds to fade out each pulse
+    if timeSinceLastPulse >= 2 * SECONDS_PER_BEAT then
+      timeSinceLastPulse = 0
+    end
+    local intensity = 1.0 + 0.3 * (1.0 - (timeSinceLastPulse / PULSE_DUR))
+    intensity = math.max(0.7, intensity)
+    -- TODO: TEMPORARILY DISABLED v
+    intensity = 1.0 -- == NO PULSING EFFECT
+    -------------
+    local pulsingColour = {baseColour[1] * intensity, baseColour[2] * intensity, baseColour[3] * intensity}
+    love.graphics.setColor(pulsingColour)
+ else
+    love.graphics.setColor(baseColour)
+ end
+
  for x=0, constants.GAME_WIDTH, gridSize do
     love.graphics.line(
       x,0,
@@ -586,16 +626,20 @@ local function update(dt)
 
   -- Splash/logo screen
   if gameState == constants.GAME_STATE.SPLASH then
+    Sounds.splash:play()
     Scenes:updateSplash(dt)
     if actionButtonPressed then 
       -- skip to the title screen
       gameState = constants.GAME_STATE.TITLE
+      Sounds.splash:stop()
       Sounds.titleLoop:play()
       Scenes:initTitle()
+      resetPulsingLineTimes()
     end
    
   -- Title screen
   elseif gameState == constants.GAME_STATE.TITLE then
+    updatePulsingLinesTimes(dt)
     Scenes:updateTitle(dt)
     if actionButtonPressed then 
       Scenes:initInstructions()
@@ -605,6 +649,7 @@ local function update(dt)
 
   -- Instructions
   elseif gameState == constants.GAME_STATE.INFO then
+    updatePulsingLinesTimes(dt)
     Scenes:updateInstructions(dt)
     -- Start game (level intro)
     if actionButtonPressed then 
@@ -612,6 +657,7 @@ local function update(dt)
       print("lvl intro")
       gameState = constants.GAME_STATE.LVL_INTRO
       Sounds.countdownTick:play() -- plays first tick
+      resetPulsingLineTimes()
     end
 
   -- Level Intro
@@ -622,7 +668,9 @@ local function update(dt)
     -- Update Lava + Target ballz (anim only)
     updateBalls(dt)
 
-    txtSize = txtSize + .117
+    updatePulsingLinesTimes(dt)
+
+    txtSize = txtSize + .1175
     if txtSize > 6 then 
       txtSize = 0
       delayCounter = delayCounter - 1
@@ -650,6 +698,9 @@ local function update(dt)
 
     -- Update Power-ups (Player + game-level)
     updatePowerUps(dt)
+
+    -- Update pulsing lines times
+    updatePulsingLinesTimes(dt)
     
     -- Decrease game timer
     gameTimerAtPrevFrame = gameTimer
@@ -729,6 +780,7 @@ local function update(dt)
       -- Restart level
       p1.lives = livesAtLevelStart
       game.initLevel(levelNum)
+      resetPulsingLineTimes()
     end
 
   end -- if gamestate
@@ -740,6 +792,8 @@ local function update(dt)
   -- Reset state for current frame
   actionButtonPressed = false
   lastMouseBtnDownState = mouseBtnDownState
+
+  totalTime = totalTime + dt
 end
 
 
