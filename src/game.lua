@@ -41,10 +41,10 @@ gameTimerAtPrevFrame = 10000
 lavaBalls = {}
 
 totalTime = 0
-local pulsingTimePeriodOffsetWithinSecond = 0
-local pulsingLinesPrevTime = 0
-local pulsingLinesCurrTime = 0
-local timeSinceLastPulse = 0
+local MUSIC_BPM = 135
+local SECONDS_PER_BEAT = (60 / MUSIC_BPM)
+local timeSinceLastPulse = 2 * SECONDS_PER_BEAT
+
 
 --
 -- local vars
@@ -234,15 +234,10 @@ end
 -- -----------------------------------------------------------
 
 local function resetPulsingLineTimes()
-  pulsingTimePeriodOffsetWithinSecond = totalTime - math.floor(totalTime)
-  pulsingLinesPrevTime = 0
-  pulsingLinesCurrTime = totalTime
-  timeSinceLastPulse = 0
+  timeSinceLastPulse = 2 * SECONDS_PER_BEAT
 end
 
 local function updatePulsingLinesTimes(dt)
-  pulsingLinesPrevTime = pulsingLinesCurrTime 
-  pulsingLinesCurrTime = totalTime - pulsingTimePeriodOffsetWithinSecond
   timeSinceLastPulse = timeSinceLastPulse + dt
 end
 
@@ -396,18 +391,15 @@ local function drawBackground()
     gameState == constants.GAME_STATE.INFO or 
     gameState == constants.GAME_STATE.TITLE 
  then
-      -- tempo is 120 BPM, so flash intensity twice a second
     local PULSE_DUR = 0.6 -- seconds to fade out each pulse
-    local currBeatT = math.floor(pulsingLinesCurrTime * 2.0) % 2
-    local prevBeatT = math.floor(pulsingLinesPrevTime * 2.0) % 2
-    if currBeatT == 0 and prevBeatT == 1 then
+    if timeSinceLastPulse >= 2 * SECONDS_PER_BEAT then
       timeSinceLastPulse = 0
-      --print(timeSinceLastPulse)
-      --print("currBeatT: "..currBeatT)
-      --print("prevBeatT: "..currBeatT)
     end
     local intensity = 1.0 + 0.3 * (1.0 - (timeSinceLastPulse / PULSE_DUR))
     intensity = math.max(0.7, intensity)
+    -- TODO: TEMPORARILY DISABLED v
+    intensity = 1.0 -- == NO PULSING EFFECT
+    -------------
     local pulsingColour = {baseColour[1] * intensity, baseColour[2] * intensity, baseColour[3] * intensity}
     love.graphics.setColor(pulsingColour)
  else
