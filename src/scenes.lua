@@ -99,7 +99,7 @@ function Scenes:drawTitle()
   -- score
   gfx.drawOutlineText(
     string.format("HIGH:%06d", storage.highScore)..
-    "                               Level "..string.format("%02d", math.max(storage.highLevel-2,0).."",
+    "                               Level "..string.format("%02d", math.max(storage.highLevel-2,0)).."",
     constants.GAME_WIDTH/2-(txtWidth/2)+1,1 ,
     txtWidth,"center",
     colour[9],colour[6])
