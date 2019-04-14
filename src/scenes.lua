@@ -4,7 +4,6 @@ local gfx = require 'src/util/gfx'
 local colour = require 'src/util/colour'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local PowerUp = require 'src/entity/PowerUp'
-local saveFile = require 'src/util/saveFile'
 local Sounds = require 'src/util/sounds'
 local Ball = require 'src/entity/Ball'
 
@@ -99,8 +98,8 @@ function Scenes:drawTitle()
 
   -- score
   gfx.drawOutlineText(
-    string.format("HIGH:%06d", highScore)..
-    "                               Level "..string.format("%02d",highLevel).."",
+    string.format("HIGH:%06d", storage.highScore)..
+    "                               Level "..string.format("%02d", storage.highLevel-2).."",
     constants.GAME_WIDTH/2-(txtWidth/2)+1,1 ,
     txtWidth,"center",
     colour[9],colour[6])
@@ -290,14 +289,9 @@ end
 function Scenes:initGameOver(player)
   flashCount = 0
   -- Save score (if new high score)
-  if p1.score > highScore then
-    highScore = p1.score
-    highLevel = levelNum
-
-    saveFile.save(constants.SAVE_FILENAME, {
-      highScore = p1.score,
-      highLevel = levelNum-2
-    })
+  if p1.score > storage.highScore then    
+    storage.setUserValue("highScore", p1.score)
+    storage.setUserValue("highLevel", levelNum)
   end
 end
 

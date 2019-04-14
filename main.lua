@@ -21,7 +21,7 @@ if CASTLE_PREFETCH then
    'src/util/controller.lua',
    'src/util/gfx.lua',
    'src/util/list.lua',
-   'src/util/saveFile.lua',
+   'src/util/storage.lua',
    'src/util/sounds.lua',
    'src/util/sound.lua',
    'src/util/SpriteSheet.lua',
