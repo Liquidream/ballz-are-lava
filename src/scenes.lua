@@ -98,22 +98,22 @@ function Scenes:drawTitle()
   
   -- world's best score
   gfx.drawOutlineText(
-    string.format("-World Best-"..
+    string.format("-WORLD BEST-"..
     "\n@"..storage.worldHighPlayer..
-    "\nHIGH:%06d", storage.worldHighScore)..
+    "\nScore:%06d", storage.worldHighScore)..
     "\nLevel:"..string.format("%02d", math.max(storage.worldHighLevel-2,0)),
     3,1 ,
     txtWidth,"left",
-    colour[17],colour[24])
+    colour[22],colour[24])
 
   -- player's best score
   gfx.drawOutlineText(
-    string.format("   -Your Best-"..
-    "\n HIGH:%06d", storage.highScore)..
-    "\n Level:"..string.format("%02d", math.max(storage.highLevel-2,0)).."",
+    string.format("  -YOUR BEST-"..
+    "\nScore:%06d", storage.highScore)..
+    "\nLevel:"..string.format("%02d", math.max(storage.highLevel-2,0)).."",
     constants.GAME_WIDTH-txtWidth,1 ,
     txtWidth,"right",
-    colour[9],colour[6])
+    colour[4],colour[6])
 
 
   -- gfx.drawOutlineText(
