@@ -552,10 +552,14 @@ local function load()
     firstLoad = false
   end
 
-  -- Load save data
+  -- Get User saved data
   storage.getUserValue("highScore", 0)
   storage.getUserValue("highLevel", 0)
-
+  -- Get Global saved data
+  storage.getGlobalValue("worldHighScore", 0)
+  storage.getGlobalValue("worldHighLevel", 0)
+  storage.getGlobalValue("worldHighPlayer", "<none>")
+  
   
   --Do splash screen first
   gameState = constants.GAME_STATE.SPLASH
