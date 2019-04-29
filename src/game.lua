@@ -10,18 +10,15 @@ local colour = require 'src/util/colour'
 local generateLevel = require 'src/generateLevel'
 local collision = require 'src/util/collision'
 local SpriteSheet = require 'src/util/SpriteSheet'
-local saveFile = require 'src/util/saveFile'
 local Sounds = require 'src/util/sounds'
 local Scenes = require 'src/scenes'
 local moonshine = require 'src/moonshine'
 require 'src/util/controller'
 
--- Clear save file
-saveFile.save(constants.SAVE_FILENAME, {})
-
 --
 -- global vars
 --
+storage = require 'src/util/storage'
 firstLoad = true
 mouseX = nil  -- mouse pos (in game co-ordinates)
 mouseY = nil
@@ -37,8 +34,6 @@ levelNum = 3
 currCountdownMusic = nil
 currPlayingMusic = nil
 livesAtLevelStart = 3
-highScore = 0
-highLevel = 0
 gameTimerAtPrevFrame = 10000
 lavaBalls = {}
 
@@ -616,15 +611,23 @@ local function load()
     firstLoad = false
   end
 
-  -- Load save data
-  local saveData = saveFile.load(constants.SAVE_FILENAME)
-  highScore = tonumber(saveData.highScore or 0)
-  highLevel = tonumber(saveData.highLevel or 0)
+  -- Get User saved data
+  storage.getUserValue("highScore", 0)
+  storage.getUserValue("highLevel", 0)
+  -- Get Global saved data
+  storage.getGlobalValue("worldHighScore", 0)
+  storage.getGlobalValue("worldHighLevel", 0)
+  storage.getGlobalValue("worldHighPlayer", "<none>")
   
-
-  -- Do splash screen first
+  
+  --Do splash screen first
   gameState = constants.GAME_STATE.SPLASH
   Scenes:initSplash()
+
+  -- skip to the title screen
+  -- gameState = constants.GAME_STATE.TITLE
+  -- Sounds.titleLoop:play()
+  -- Scenes:initTitle()
 
   
   -- test shader effect

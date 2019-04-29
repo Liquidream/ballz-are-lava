@@ -4,7 +4,6 @@ local gfx = require 'src/util/gfx'
 local colour = require 'src/util/colour'
 local SpriteSheet = require 'src/util/SpriteSheet'
 local PowerUp = require 'src/entity/PowerUp'
-local saveFile = require 'src/util/saveFile'
 local Sounds = require 'src/util/sounds'
 local Ball = require 'src/entity/Ball'
 
@@ -60,9 +59,9 @@ function Scenes:drawSplash()
   love.graphics.setColor(1,1,1, offset)
   SPRITESHEET_SPLASH:drawCentered(
       "LOGO", 
-      constants.GAME_WIDTH/2, 
-      constants.GAME_HEIGHT/2, 
-      nil, nil, nil, 3, 3)
+      math.floor(constants.GAME_WIDTH/2), 
+      math.floor(constants.GAME_HEIGHT/2), 
+      nil, nil, nil, 2, 2)
 end
 
 --
@@ -89,33 +88,50 @@ function Scenes:updateTitle(dt)
 end
 
 function Scenes:drawTitle()
-  local txtWidth = constants.GAME_WIDTH+20
+  local txtWidth = 150--constants.GAME_WIDTH+20
   local txtHeight = 50
 
   -- Draw Lava Balls
   for index, lball in ipairs(lavaBalls) do
     lball:draw()
   end
-
-  -- score
+  
+  -- world's best score
   gfx.drawOutlineText(
-    string.format("HIGH:%06d", highScore)..
-    "                               Level "..string.format("%02d",highLevel).."",
-    constants.GAME_WIDTH/2-(txtWidth/2)+1,1 ,
-    txtWidth,"center",
-    colour[9],colour[6])
+    string.format("-WORLD BEST-"..
+    "\n@"..storage.worldHighPlayer..
+    "\nScore:%06d", storage.worldHighScore)..
+    "\nLevel:"..string.format("%02d", math.max(storage.worldHighLevel-2,0)),
+    3,1 ,
+    txtWidth,"left",
+    colour[22],colour[24])
+
+  -- player's best score
+  gfx.drawOutlineText(
+    string.format("  -YOUR BEST-"..
+    "\nScore:%06d", storage.highScore)..
+    "\nLevel:"..string.format("%02d", math.max(storage.highLevel-2,0)).."",
+    constants.GAME_WIDTH-txtWidth,1 ,
+    txtWidth,"right",
+    colour[4],colour[6])
+
+
   -- gfx.drawOutlineText(
-  --   string.format("HIGH:%08d", highScore).."\nLevel "..highLevel.."",
-  --   360,1 ,
-  --   150,"right",
+  --   string.format("HIGH:%06d", storage.highScore)..
+  --   "                               Level "..string.format("%02d", math.max(storage.highLevel-2,0)).."",
+  --   constants.GAME_WIDTH/2-(txtWidth/2)+1,1 ,
+  --   txtWidth,"center",
   --   colour[9],colour[6])
+
+  --   storage.getGlobalValue("worldHighScore", 0)
+  -- storage.getGlobalValue("worldHighLevel", 0)
 
 
   love.graphics.setColor(1, 1, 1)
   SPRITESHEET:drawCentered(
       "LOGO_1", 
       constants.GAME_WIDTH/2, 
-      70, 
+      82, 
       nil, nil, nil, 1, 1)
 
   local offset = math.abs(math.sin(love.timer.getTime() * 8))
@@ -123,12 +139,14 @@ function Scenes:drawTitle()
   SPRITESHEET:drawCentered(
       "LOGO_2", 
       constants.GAME_WIDTH/2, 
-      160, 
+      172, 
       nil, nil, nil, 1, 1)
+
+  txtWidth = constants.GAME_WIDTH+20
 
   gfx.drawOutlineText(' Code & Art                  SFX & Music', 
     constants.GAME_WIDTH/2-(txtWidth/2),
-    242,
+    245,
     txtWidth,"center",colour[12])
   gfx.drawOutlineText('Paul Nicholas                Jason Riggs', 
     constants.GAME_WIDTH/2-(txtWidth/2),
@@ -139,7 +157,7 @@ function Scenes:drawTitle()
   if math.floor(flashCount)%2 == 0 then
     gfx.drawOutlineText('- PRESS ANY KEY TO START -', 
       constants.GAME_WIDTH/2-(txtWidth/2),
-      216,
+      223,
       txtWidth,"center",colour[11])
   end
 end
@@ -289,16 +307,24 @@ end
 --
 function Scenes:initGameOver(player)
   flashCount = 0
-  -- Save score (if new high score)
-  if p1.score > highScore then
-    highScore = p1.score
-    highLevel = levelNum
-
-    saveFile.save(constants.SAVE_FILENAME, {
-      highScore = p1.score,
-      highLevel = levelNum-2
-    })
+  -- Save user score (if new high score)
+  if p1.score > storage.highScore then    
+    storage.setUserValue("highScore", p1.score)
+    storage.setUserValue("highLevel", levelNum)
   end
+  -- Save global score (if new high score)
+  if p1.score > storage.worldHighScore then    
+    storage.setGlobalValue("worldHighScore", p1.score)
+    storage.setGlobalValue("worldHighLevel", levelNum)
+    network.async(function()
+      local playerInfo = castle.user.getMe()
+      storage.setGlobalValue("worldHighPlayer", playerInfo.username)
+    end)
+  end
+
+  -- storage.getGlobalValue("worldHighScore", 0)
+  -- storage.getGlobalValue("worldHighLevel", 0)
+  -- storage.getGlobalValue("worldHighPlayer", 0)
 end
 
 

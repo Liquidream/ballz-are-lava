@@ -42,6 +42,9 @@ local function updateDisplay(self)
   self.SCREEN_WIDTH = width
   self.SCREEN_HEIGHT = height
 
+  print("game res:    "..constants.GAME_WIDTH..","..constants.GAME_HEIGHT)
+  print("window size: "..width..","..height)
+
   -- Create new canvas for drawing on
   self.RENDER_CANVAS = love.graphics.newCanvas(constants.GAME_WIDTH, constants.GAME_HEIGHT)
   self.RENDER_CANVAS:setFilter("nearest", "nearest")
@@ -49,9 +52,9 @@ local function updateDisplay(self)
   self.RENDER_SCALE = math.floor(math.min(self.SCREEN_WIDTH / constants.GAME_WIDTH, self.SCREEN_HEIGHT / constants.GAME_HEIGHT))
   self.RENDER_WIDTH = self.RENDER_SCALE * constants.GAME_WIDTH
   self.RENDER_HEIGHT = self.RENDER_SCALE * constants.GAME_HEIGHT
-  -- print("RENDER_SCALE="..self.RENDER_SCALE)
-  -- print("RENDER_WIDTH="..self.RENDER_WIDTH)
-  -- print("RENDER_HEIGHT="..self.RENDER_HEIGHT)
+  print("RENDER_SCALE="..self.RENDER_SCALE)
+  print("RENDER_WIDTH="..self.RENDER_WIDTH)
+  print("RENDER_HEIGHT="..self.RENDER_HEIGHT)
 
   self.RENDER_X = math.floor((self.SCREEN_WIDTH - self.RENDER_WIDTH) / 2)
   self.RENDER_Y = math.floor((self.SCREEN_HEIGHT - self.RENDER_HEIGHT) / 2)
