@@ -31,6 +31,8 @@ gamePowerUpFrame = 0
 gameDeathLinesCount = 0 -- Not for first few levels
 gameDeathLines = {}   -- Death lines for Death Balls!
 levelNum = 3
+currCountdownMusic = nil
+currPlayingMusic = nil
 livesAtLevelStart = 3
 gameTimerAtPrevFrame = 10000
 lavaBalls = {}
@@ -71,8 +73,8 @@ local function initSounds()
   Sounds.bounce = Sound:new('bounce.mp3', 16)
   Sounds.bounce:setVolume(0.1)
 
-  Sounds.splash = Sound:new('splash.mp3', 1)
-  Sounds.splash:setVolume(0.7)
+  Sounds.splashIntro = Sound:new('splash_intro.mp3', 1)
+  Sounds.splashIntro:setVolume(0.7)
 
   Sounds.collect = Sound:new('collect.mp3', 4)
   Sounds.collect:setVolume(0.5)
@@ -98,12 +100,38 @@ local function initSounds()
   Sounds.lavabombExplode = Sound:new('lavabomb_explode.mp3', 10)
   Sounds.lavabombExplode:setVolume(1.0)
 
-  Sounds.countdownMusic = Sound:new('countdown_music.mp3', 1)
-  Sounds.countdownMusic:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl1Intro = Sound:new('lvl_1_intro.mp3', 1)
+  Sounds.lvl2And3Intro = Sound:new('lvl_2_and_3_intro.mp3', 1)
+  Sounds.lvl4And5Intro = Sound:new('lvl_4_and_5_intro.mp3', 1)
+  Sounds.lvl6PlusIntro = Sound:new('lvl_6_plus_intro.mp3', 1)
+  Sounds.lvl1Intro:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl2And3Intro:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl4And5Intro:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl6PlusIntro:setVolume(constants.MUSIC_VOLUME)
 
-  Sounds.playingLoop = Sound:new('playing_loop.mp3', 1)
-  Sounds.playingLoop:setVolume(constants.MUSIC_VOLUME)
-  Sounds.playingLoop:setLooping(true)
+  Sounds.lvl1 = Sound:new('lvl_1.mp3', 1)
+  Sounds.lvl2 = Sound:new('lvl_2.mp3', 1)
+  Sounds.lvl3 = Sound:new('lvl_3.mp3', 1)
+  Sounds.lvl4 = Sound:new('lvl_4.mp3', 1)
+  Sounds.lvl5 = Sound:new('lvl_5.mp3', 1)
+  Sounds.lvl6AndEvens = Sound:new('lvl_6_and_evens.mp3', 1)
+  Sounds.lvl7AndOdds = Sound:new('lvl_7_and_odds.mp3', 1)
+
+  Sounds.lvl1:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl2:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl3:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl4:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl5:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl6AndEvens:setVolume(constants.MUSIC_VOLUME)
+  Sounds.lvl7AndOdds:setVolume(constants.MUSIC_VOLUME)
+
+  Sounds.lvl1:setLooping(true)
+  Sounds.lvl2:setLooping(true)
+  Sounds.lvl3:setLooping(true)
+  Sounds.lvl4:setLooping(true)
+  Sounds.lvl5:setLooping(true)
+  Sounds.lvl6AndEvens:setLooping(true)
+  Sounds.lvl7AndOdds:setLooping(true)
 
   Sounds.freezeTimerLoop = Sound:new('freeze_timer_loop.mp3', 1)
   Sounds.freezeTimerLoop:setVolume(0.4)
@@ -150,6 +178,10 @@ local function initSounds()
   Sounds.titleLoop = Sound:new('title_loop.mp3', 1)
   Sounds.titleLoop:setVolume(0.5)
   Sounds.titleLoop:setLooping(true)
+
+  Sounds.instructionsLoop = Sound:new('instructions_loop.mp3', 1)
+  Sounds.instructionsLoop:setVolume(0.5)
+  Sounds.instructionsLoop:setLooping(true)
 end
 
 -- Init level (either for first time or after restart)
@@ -159,6 +191,33 @@ local function initLevel(levelNum)
   targetBalls={}
   lavaBalls={}
   powerUps={}
+
+  print("levelnum: "..levelNum)
+
+  levelNumIndex = levelNum - 2
+
+  if levelNumIndex == 1 then
+    currPlayingMusic = Sounds.lvl1
+    currCountdownMusic = Sounds.lvl1Intro
+  elseif levelNumIndex == 2 then
+    currPlayingMusic = Sounds.lvl2
+    currCountdownMusic = Sounds.lvl2And3Intro
+  elseif levelNumIndex == 3 then
+    currPlayingMusic = Sounds.lvl3
+    currCountdownMusic = Sounds.lvl2And3Intro
+  elseif levelNumIndex == 4 then
+    currPlayingMusic = Sounds.lvl4
+    currCountdownMusic = Sounds.lvl4And5Intro
+  elseif levelNumIndex == 5 then
+    currPlayingMusic = Sounds.lvl5
+    currCountdownMusic = Sounds.lvl4And5Intro
+  elseif levelNumIndex >= 6 and levelNum % 2 == 0 then
+    currPlayingMusic = Sounds.lvl6AndEvens
+    currCountdownMusic = Sounds.lvl6PlusIntro
+  elseif levelNumIndex >= 7 and levelNum % 2 == 1 then
+    currPlayingMusic = Sounds.lvl7AndOdds
+    currCountdownMusic = Sounds.lvl6PlusIntro
+  end
 
   -- Generate a new level properies (num balls, etc.)
   currLevel = generateLevel(levelNum)
@@ -219,8 +278,8 @@ local function initLevel(levelNum)
   txtSize = 0
   gameState=constants.GAME_STATE.LVL_INTRO
   Sounds.countdownTick:play()
-  Sounds.countdownMusic:play()
-  Sounds.titleLoop:stop()
+  currCountdownMusic:play()
+  Sounds.instructionsLoop:stop()
   delayCounter = 3
 end
 
@@ -247,7 +306,7 @@ local function loseLife()
   Sounds.freezeTimerLoop:stop()
   Sounds.loseLife:play()
   Sounds.kick:play()
-  Sounds.playingLoop:stop()
+  currPlayingMusic:stop()
 end
 
 local function playerDieUnlessProtected()
@@ -313,7 +372,7 @@ local function updatePlayerCollisions()
         Sounds.beatLevel:play()
         Sounds.kickAndCrash:play()
         Sounds.freezeTimerLoop:stop()
-        Sounds.playingLoop:stop()
+        currPlayingMusic:stop()
         gameState=constants.GAME_STATE.LVL_END
 
         -- (TODO: Show score, etc.)
@@ -526,7 +585,7 @@ local function updatePowerUps(dt)
       -- PowerUp over
       gamePowerUp = 0
       Sounds.freezeTimerLoop:stop()
-      Sounds.playingLoop:setVolume(constants.MUSIC_VOLUME)
+      currPlayingMusic:setVolume(constants.MUSIC_VOLUME)
     end
     gamePowerUpFrame = (gamePowerUpFrame+1)%4
   end
@@ -629,12 +688,12 @@ local function update(dt)
 
   -- Splash/logo screen
   if gameState == constants.GAME_STATE.SPLASH then
-    Sounds.splash:play()
+    Sounds.splashIntro:play()
     Scenes:updateSplash(dt)
     if actionButtonPressed then 
       -- skip to the title screen
       gameState = constants.GAME_STATE.TITLE
-      Sounds.splash:stop()
+      Sounds.splashIntro:stop()
       Sounds.titleLoop:play()
       Scenes:initTitle()
       resetPulsingLineTimes()
@@ -647,6 +706,8 @@ local function update(dt)
     if actionButtonPressed then 
       Scenes:initInstructions()
       gameState = constants.GAME_STATE.INFO
+      Sounds.titleLoop:stop()
+      Sounds.instructionsLoop:play()
       Sounds.menuBlip:play()
     end
 
@@ -679,7 +740,7 @@ local function update(dt)
       delayCounter = delayCounter - 1
       if delayCounter < 0 then
         gameState = constants.GAME_STATE.LVL_PLAY
-        Sounds.playingLoop:play()
+        currPlayingMusic:play()
       elseif delayCounter == 0 then
         Sounds.countdownGo:play()
       else
