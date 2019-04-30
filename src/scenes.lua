@@ -44,7 +44,7 @@ end
 
 function Scenes:updateSplash(dt)
   duration = love.timer.getTime()-startTime 
-  if duration > 3.5 then
+  if duration > 3.53 then
     -- load the title screen
     gameState = constants.GAME_STATE.TITLE
     Sounds.titleLoop:play()
