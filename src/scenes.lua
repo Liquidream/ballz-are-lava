@@ -144,15 +144,29 @@ function Scenes:drawTitle()
 
   txtWidth = constants.GAME_WIDTH+20
 
-  gfx.drawOutlineText(' Code & Art                  SFX & Music', 
+  
+  
+  if math.floor( love.timer.getTime())%6 < 3 then
+    gfx.drawOutlineText('        Code & Art                    Music', 
     constants.GAME_WIDTH/2-(txtWidth/2),
     245,
-    txtWidth,"center",colour[12])
-  gfx.drawOutlineText('Paul Nicholas                Jason Riggs', 
+    txtWidth,"left",colour[12])
+
+    gfx.drawOutlineText('       Paul Nicholas                 Deepsky', 
     constants.GAME_WIDTH/2-(txtWidth/2),
     260,
-    txtWidth,"center")
-
+    txtWidth,"left")
+  else
+    gfx.drawOutlineText('        Code & Art                     SFX', 
+    constants.GAME_WIDTH/2-(txtWidth/2),
+    245,
+    txtWidth,"left",colour[12])
+    
+    gfx.drawOutlineText('       Paul Nicholas               Jason Riggs', 
+    constants.GAME_WIDTH/2-(txtWidth/2),
+    260,
+    txtWidth,"left")
+  end
 
   if math.floor(flashCount)%2 == 0 then
     gfx.drawOutlineText('- PRESS ANY KEY TO START -', 
