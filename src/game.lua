@@ -607,6 +607,8 @@ local function load()
     -- Joystick/pad related
     print("joystick count="..love.joystick.getJoystickCount())
     checkControllers()
+    --connectControllers()
+    print("...after")
 
     firstLoad = false
   end

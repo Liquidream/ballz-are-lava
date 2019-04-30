@@ -6,7 +6,7 @@ local table, math, tonumber            = table, math, tonumber
 
 local joystick                         = love.joystick
 
-local print                            = love.graphics.print
+--local print                            = love.graphics.print
 local setColorO                        = love.graphics.setColor
 local setColor                         = setNormalisedColour
 local rectangle                        = love.graphics.rectangle
@@ -554,34 +554,34 @@ function drawControllersDebug()
     -- Controller Data
     local ypos   = 20
     setNormalisedColour(255, 255, 255, 255)
-    print(mainGamepad.joystick:getName(), 10, ypos)
+    love.graphics.print(mainGamepad.joystick:getName(), 10, ypos)
     ypos       = ypos + 20
     if mainGamepad.joystick:isGamepad() == true then
-      print("is a gamepad", 10, ypos)
+      love.graphics.print("is a gamepad", 10, ypos)
     else
-      print("is not a gamepad", 10, ypos)
+      love.graphics.print("is not a gamepad", 10, ypos)
     end
     ypos       = ypos + 20
     if mainGamepad.joystick:isConnected() == true then
-      print("is connected", 10, ypos)
+      love.graphics.print("is connected", 10, ypos)
     else
-      print("is not connected", 10, ypos)
+      love.graphics.print("is not connected", 10, ypos)
     end
     ypos       = ypos + 20
-    print("GUID: "..mainGamepad.joystick:getGUID() .. " / ID: "..mainGamepad.joystick:getID(), 10, ypos)
+    love.graphics.print("GUID: "..mainGamepad.joystick:getGUID() .. " / ID: "..mainGamepad.joystick:getID(), 10, ypos)
     ypos       = ypos + 20
-    print("buttons: "..mainGamepad.joystick:getButtonCount(), 10, ypos)
+    love.graphics.print("buttons: "..mainGamepad.joystick:getButtonCount(), 10, ypos)
     ypos       = ypos + 20
-    print("hats: "..mainGamepad.joystick:getHatCount(), 10, ypos)
+    love.graphics.print("hats: "..mainGamepad.joystick:getHatCount(), 10, ypos)
     ypos       = ypos + 20
-    print("axes: "..mainGamepad.joystick:getAxisCount(), 10, ypos)
+    love.graphics.print("axes: "..mainGamepad.joystick:getAxisCount(), 10, ypos)
     if debugButton ~= nil then
       ypos       = ypos + 20
-      print("* last button: "..debugButton, 10, ypos)
+      love.graphics.print("* last button: "..debugButton, 10, ypos)
     end      
     if debugAxis ~= nil then
       ypos       = ypos + 20
-      print("* last axis: "..debugAxis, 10, ypos)
+      love.graphics.print("* last axis: "..debugAxis, 10, ypos)
     end
     
     -- Pressed Released input test
@@ -590,12 +590,12 @@ function drawControllersDebug()
     local xpos   = inputTextX
     ypos         = inputTextY    
     setNormalisedColour(130, 30, 100, 255)
-    print("PRESSED / RELEASED", xpos-20, ypos-5)    
+    love.graphics.print("PRESSED / RELEASED", xpos-20, ypos-5)    
     for i = startL, endL do
       local this = history[i]
       ypos       = ypos + 20
       setNormalisedColour(255, 255, 255, 255 * this.t)  
-      print(this.b, xpos, ypos)
+      love.graphics.print(this.b, xpos, ypos)
     end
     
     -- Is down input test
@@ -604,19 +604,19 @@ function drawControllersDebug()
     xpos         = inputText2X
     ypos         = inputText2Y
     setNormalisedColour(130, 30, 100, 255)
-    print("HELD DOWN", xpos-20, ypos-5)
+    love.graphics.print("HELD DOWN", xpos-20, ypos-5)
     for i = startL, endL do
       local this = history2[i]
       ypos       = ypos + 20
       setNormalisedColour(255, 255, 255, 255 * this.t)  
-      print(this.b, xpos, ypos)
+      love.graphics.print(this.b, xpos, ypos)
     end
   
   else
     
     local ypos   = 20
     setNormalisedColour(255, 255, 255, 255)
-    print("No game-pads", 10, ypos)
+    love.graphics.print("No game-pads", 10, ypos)
     
   end
   
@@ -629,6 +629,8 @@ function connectControllers(contolMap)
   gamepads             = {}
   
   for i = 1, #joy do
+
+    print("connectControllers:"..i)
     
     -- Where 
     gamepads[i]       = { 
@@ -652,16 +654,23 @@ function checkControllers(controlMap)
   local joy            = joystick.getJoysticks()
   local nJoy           = #joy
   
+  print("njoy = "..nJoy)
+  print("type= = "..type(joy[1]))
+  print("#gamepads = "..#gamepads)
+
   if nJoy > 0 and (gamepads == nil or nJoy > #gamepads) then    
     
     connectControllers(controlMap or CONTROL_MAP)   
     
     -- Link the main controller input to controller 1
     if gamepads[1] ~= nil then    
-      mainGamepad      = gamepads[1]    
+      mainGamepad      = gamepads[1]   
     end
     
-  elseif #gamepads > 0 then
+  -- (PN) changed from the original, which was "if #gamepads > 0..."
+  elseif #gamepads == 0 then
+    print("no gamepads...")
+
     gamepads           = {}
     mainGamepad        = nil
     
