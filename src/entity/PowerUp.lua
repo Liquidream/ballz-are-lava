@@ -59,7 +59,7 @@ activate = function(self, player)
     Sounds.freeze:play()
     Sounds.freezeTimerLoop:play()
     -- quiet volume while freeze sound is playing
-    Sounds.playingLoop:setVolume(constants.MUSIC_VOLUME / 2.0)
+    currPlayingMusic:setVolume(constants.MUSIC_VOLUME / 2.0)
 
   elseif self.powerupType == constants.POWERUP_TYPES.EXTRA_LIFE then
     player.lives = player.lives + 1
