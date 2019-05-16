@@ -5,3 +5,4 @@ owner: liquidream
 description: Absorb all the Green Orbs, avoiding the Lava ballz... all before the time runs out! (Best played with 'Left axis/stick' on a game controller - but also works with Dpad, Arrow keys and - for 'Easy mode' - Mouse control!)
 coverImage: cover-image.png
 primaryColor: e43b44
+dimensions: full

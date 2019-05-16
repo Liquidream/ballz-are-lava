@@ -85,6 +85,10 @@ local translateScreenToCenterDx = 0
 local translateScreenToCenterDy = 0
 
 function love.load()
+  -- Test for Nikki
+  local width, height = love.graphics.getDimensions()
+  print(">>>> getDimensions: "..width..","..height)
+
   -- initialise and update the gfx display
   gfx:init()
   gfx:updateDisplay()
